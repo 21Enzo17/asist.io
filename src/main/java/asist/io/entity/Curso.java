@@ -22,4 +22,10 @@ public class Curso {
     private String descripcion;
     @Column(name = "carrera", nullable = false)
     private String carrera;
+    /* Se agrego la relacion con horario (Unidireccional) */
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "horario_id", nullable = false)
+    private Horario horario;
+
+    
 }

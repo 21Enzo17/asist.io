@@ -11,19 +11,23 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "estudiantes")
-public class Estudiante {
+@Table(name = "usuarios")
+public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
+
     @Column(name = "nombre", nullable = false)
     private String nombre;
-    @Column(name = "apellido", nullable = false, unique = true) // No se si sea correcto que el apellido este como unique
-    private String lu;
-    /* Se agrego la relacion de estudiante con asistencia (Unidireccional) */
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "asistencia_id", nullable = false)
-    private Asistencia asistencia;
 
-    
-}
+    @Column(name = "correo", nullable = false, unique = true)
+    private String correo;
+
+    @Column(name = "contrasena", nullable = false)
+    private String contrasena;
+
+    /* Se agrego la relacion de Usuario con curso (Unidireccional) */
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "curso_id", nullable = false)
+    private Curso curso;
+}   
