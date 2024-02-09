@@ -20,6 +20,5 @@ public interface EstudianteRepository extends JpaRepository<Estudiante, String> 
      * @param lu legajo del estudiante
      * @return true si existe un estudiante con el legajo especificado, false si no existe
      */
-    @Query("SELECT e FROM Estudiante e WHERE e.lu = ?1")
     public boolean existsByLu(String lu);
 }

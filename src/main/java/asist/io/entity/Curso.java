@@ -20,6 +20,6 @@ public class Curso {
     private String descripcion;
     @Column(name = "carrera", nullable = false)
     private String carrera;
-    @Column(name = "codigo_asistencia", nullable = true)
+    @Column(name = "codigo_asistencia", nullable = true, unique = true)
     private String codigoAsistencia;
 }

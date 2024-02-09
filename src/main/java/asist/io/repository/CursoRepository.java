@@ -20,6 +20,5 @@ public interface CursoRepository extends JpaRepository<Curso, String> {
      * @param codigoAsistencia Código de asistencia a verificar
      * @return true si existe, false si no
      */
-    @Query("SELECT c FROM Curso c WHERE c.codigoAsistencia = ?1")
     public boolean existsByCodigoAsistencia(String codigoAsistencia);
 }
