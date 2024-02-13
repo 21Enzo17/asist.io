@@ -1,13 +1,19 @@
 package asist.io;
 
+import asist.io.entity.Curso;
 import asist.io.entity.Estudiante;
+import asist.io.entity.Inscripcion;
 import asist.io.exception.ModelException;
+import asist.io.service.ICursoService;
 import asist.io.service.IEstudianteService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import asist.io.service.IInscripcionService;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.event.annotation.AfterTestMethod;
+import org.springframework.test.context.event.annotation.BeforeTestMethod;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,15 +21,39 @@ import static org.junit.jupiter.api.Assertions.*;
 public class EstudianteServiceTest {
     @Autowired
     private IEstudianteService estudianteService;
-    Estudiante estudiante;
+    @Autowired
+    private ICursoService cursoService;
+    @Autowired
+    private IInscripcionService inscripcionService;
+
+     Estudiante estudiante;
+    Curso curso;
+    Inscripcion inscripcion;
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws ModelException {
         estudiante = new Estudiante();
         estudiante.setLu("ING123");
         estudiante.setNombre("Juan Perez");
+
+        curso = new Curso();
+        curso.setNombre("Algoritmos");
+        curso.setDescripcion("Curso de algoritmos");
+        curso.setCarrera("Ingeniería en Sistemas");
+
+        inscripcion = new Inscripcion();
+        inscripcion.setCurso(curso);
+        inscripcion.setEstudiante(estudiante);
     }
 
+
+    @AfterEach
+    public void tearDown() throws ModelException {
+        estudiante = null;
+
+        curso = null;
+        inscripcion = null;
+    }
 
     /**
      * Test para registrar un estudiante
@@ -87,5 +117,26 @@ public class EstudianteServiceTest {
         assertThrows(ModelException.class, () -> estudianteService.obtenerEstudiantePorLu(null));
         assertThrows(ModelException.class, () -> estudianteService.obtenerEstudiantePorLu(""));
         assertThrows(ModelException.class, () -> estudianteService.obtenerEstudiantePorLu("    "));
+    }
+
+    /**
+     * Test para obtener estudiantes por id de curso
+     * @throws ModelException
+     */
+    @Test
+    @DisplayName("Obtener estudiantes por id de curso")
+    public void obtenerEstudiantesPorIdCurso() throws ModelException {
+        curso = cursoService.registrarCurso(curso);
+        estudiante = estudianteService.registrarEstudiante(estudiante);
+        inscripcion = inscripcionService.registrarInscripcion(inscripcion);
+
+        List<Estudiante> estudiantesObtenidos = estudianteService.obtenerEstudiantesPorIdCurso(curso.getId());
+
+        assertNotNull(estudiantesObtenidos);
+        assertEquals(estudiantesObtenidos.get(0).getId(), estudiante.getId());
+
+        inscripcionService.eliminarInscripcionPorId(inscripcion.getId());
+        cursoService.eliminarCurso(curso.getId());
+        estudianteService.eliminarEstudiante(estudiante.getId());
     }
 }

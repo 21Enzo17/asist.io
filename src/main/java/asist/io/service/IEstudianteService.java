@@ -3,6 +3,8 @@ package asist.io.service;
 import asist.io.entity.Estudiante;
 import asist.io.exception.ModelException;
 
+import java.util.List;
+
 public interface IEstudianteService {
     /**
      * Registra un estudiante en la base de datos
@@ -16,7 +18,7 @@ public interface IEstudianteService {
      * Elimina un estudiante en la base de datos
      * @param id Id del estudiante a eliminar
      * @return true si se eliminó el estudiante, false si no existe el estudiante
-     * @throws ModelException
+     * @throws ModelException Si el id es nulo o vacío
      */
     public boolean eliminarEstudiante(String id) throws ModelException;
 
@@ -27,4 +29,12 @@ public interface IEstudianteService {
      * @throws ModelException Si el lu es nulo o vacío
      */
     public Estudiante obtenerEstudiantePorLu(String lu) throws ModelException;
+
+    /**
+     * Obtiene los estudiantes que están inscriptos en un curso
+     * @param id Id del curso
+     * @return Lista de estudiantes inscriptos en el curso
+     * @throws ModelException Si el id del curso es nulo o vacío
+     */
+    public List<Estudiante> obtenerEstudiantesPorIdCurso(String id) throws ModelException;
 }

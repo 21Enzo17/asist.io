@@ -2,15 +2,20 @@ package asist.io.service.impl;
 
 import asist.io.entity.Estudiante;
 import asist.io.exception.ModelException;
+import asist.io.repository.CursoRepository;
 import asist.io.repository.EstudianteRepository;
 import asist.io.service.IEstudianteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class EstudianteServiceImpl implements IEstudianteService {
     @Autowired
     private EstudianteRepository estudianteRepository;
+    @Autowired
+    private CursoRepository cursoRepository;
 
     /**
      * Registra un estudiante en la base de datos
@@ -56,5 +61,14 @@ public class EstudianteServiceImpl implements IEstudianteService {
         if (!estudianteRepository.existsByLu(lu)) return null;
 
         return estudianteRepository.findByLu(lu);
+    }
+
+    @Override
+    public List<Estudiante> obtenerEstudiantesPorIdCurso(String id) throws ModelException {
+        if (id == null || id.isEmpty() || id.isBlank()) throw new ModelException("El id del curso no puede ser nulo ni vacío");
+
+        if (!cursoRepository.existsById(id)) throw new ModelException("El curso con el id " + id + " no existe");
+
+        return estudianteRepository.obtenerEstudiantesPorIdCurso(id);
     }
 }
