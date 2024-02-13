@@ -14,8 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 public class EstudianteServiceTest {
     @Autowired
-    IEstudianteService estudianteService;
-
+    private IEstudianteService estudianteService;
     Estudiante estudiante;
 
     @BeforeEach

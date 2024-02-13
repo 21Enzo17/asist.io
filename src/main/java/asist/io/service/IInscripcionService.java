@@ -1,11 +1,10 @@
 package asist.io.service;
 
-import asist.io.entity.Estudiante;
 import asist.io.entity.Inscripcion;
-
-import java.util.List;
+import asist.io.exception.ModelException;
 
 public interface IInscripcionService {
-    public List<Estudiante> obtenerEstudiantesPorIdCurso(String id);
-    public Inscripcion obtenerInscripcionPorId(String id);
+    public Inscripcion registrarInscripcion(Inscripcion inscripcion) throws ModelException;
+    public Inscripcion obtenerInscripcionPorId(String id) throws ModelException;
+    public boolean eliminarInscripcionPorId(String id) throws ModelException;
 }

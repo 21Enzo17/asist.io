@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 public class CursoServiceTest {
     @Autowired
-    ICursoService cursoService;
+    private ICursoService cursoService;
     Curso curso;
 
     @BeforeEach
