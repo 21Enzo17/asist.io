@@ -18,6 +18,6 @@ public class Estudiante {
     private String id;
     @Column(name = "nombre", nullable = false)
     private String nombre;
-    @Column(name = "apellido", nullable = false, unique = true)
+    @Column(name = "lu", nullable = false, unique = true)
     private String lu;
 }
