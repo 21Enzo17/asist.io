@@ -27,7 +27,7 @@ public class EstudianteServiceImpl implements IEstudianteService {
     public Estudiante registrarEstudiante(Estudiante estudiante) throws ModelException {
         if (estudiante == null) throw new ModelException("El estudiante no puede ser nulo");
 
-        if (estudianteRepository.existsByLu(estudiante.getLu())) throw new ModelException("El lu del alumno ya esta registrado");
+        if (estudianteRepository.existsByLu(estudiante.getLu())) throw new ModelException("El lu del alumno con el LU " + estudiante.getLu() + " ya esta registrado");
 
         return estudianteRepository.save(estudiante);
     }

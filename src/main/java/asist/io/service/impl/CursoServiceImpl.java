@@ -23,9 +23,9 @@ public class CursoServiceImpl implements ICursoService {
     public Curso registrarCurso(Curso curso) throws ModelException {
         if (curso == null) throw new ModelException("El curso no puede ser nulo");
 
-        if (curso.getId() != null && cursoRepository.existsById(curso.getId())) throw new ModelException("El id del curso ya existe");
+        if (curso.getId() != null && cursoRepository.existsById(curso.getId())) throw new ModelException("El id " + curso.getId() + " del curso ya existe");
 
-        if (curso.getCodigoAsistencia() != null && cursoRepository.existsByCodigoAsistencia(curso.getCodigoAsistencia())) throw new ModelException("El código de asistencia ya esta en uso");
+        if (curso.getCodigoAsistencia() != null && cursoRepository.existsByCodigoAsistencia(curso.getCodigoAsistencia())) throw new ModelException("El código de asistencia " + curso.getCodigoAsistencia() + " ya esta en uso");
 
         return cursoRepository.save(curso);
     }
@@ -58,9 +58,9 @@ public class CursoServiceImpl implements ICursoService {
 
         if (curso.getId() == null || curso.getId().isBlank() || curso.getId().isEmpty()) throw new ModelException("El id no puede ser nulo ni vacío");
 
-        if (!cursoRepository.existsById(curso.getId())) throw new ModelException("El curso no existe");
+        if (!cursoRepository.existsById(curso.getId())) throw new ModelException("El curso con id " + curso.getId() + " no existe");
 
-        if (curso.getCodigoAsistencia() != null && cursoRepository.existsByCodigoAsistencia(curso.getCodigoAsistencia())) throw new ModelException("El código de asistencia ya esta en uso");
+        if (curso.getCodigoAsistencia() != null && cursoRepository.existsByCodigoAsistencia(curso.getCodigoAsistencia())) throw new ModelException("El código de asistencia, " + curso.getCodigoAsistencia() + ",ya esta en uso");
 
         return cursoRepository.save(curso);
     }
@@ -88,7 +88,7 @@ public class CursoServiceImpl implements ICursoService {
     public Curso ObtenerCursoPorCodigoAsistencia(String codigoAsistencia) throws ModelException {
         if (codigoAsistencia == null || codigoAsistencia.isBlank() || codigoAsistencia.isEmpty()) throw new ModelException("El código de asistencia no puede ser nulo ni vacío");
 
-        if (!cursoRepository.existsByCodigoAsistencia(codigoAsistencia)) throw new ModelException("El curso no existe");
+        if (!cursoRepository.existsByCodigoAsistencia(codigoAsistencia)) throw new ModelException("El curso con el código de asistencia " + codigoAsistencia + " no existe");
 
         return cursoRepository.findByCodigoAsistencia(codigoAsistencia);
     }
