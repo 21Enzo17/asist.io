@@ -42,7 +42,7 @@ public interface ICursoService {
      * @return Curso si existe
      * @throws ModelException Si el código de asistencia es nulo o vacío, o el curso no existe
      */
-    public Curso ObtenerCursoPorCodigoAsistencia(String codigoAsistencia) throws ModelException;
+    public Curso obtenerCursoPorCodigoAsistencia(String codigoAsistencia) throws ModelException;
 
     /**
      * Obtiene un curso por el id de un usuario

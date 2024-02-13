@@ -60,7 +60,7 @@ public class CursoServiceImpl implements ICursoService {
 
         if (!cursoRepository.existsById(curso.getId())) throw new ModelException("El curso con id " + curso.getId() + " no existe");
 
-        if (curso.getCodigoAsistencia() != null && cursoRepository.existsByCodigoAsistencia(curso.getCodigoAsistencia())) throw new ModelException("El código de asistencia, " + curso.getCodigoAsistencia() + ",ya esta en uso");
+        if (curso.getCodigoAsistencia() != null && obtenerCursoPorCodigoAsistencia(curso.getCodigoAsistencia()) == null ) throw new ModelException("El código de asistencia, " + curso.getCodigoAsistencia() + ",ya esta en uso");
 
         return cursoRepository.save(curso);
     }
@@ -85,10 +85,10 @@ public class CursoServiceImpl implements ICursoService {
      * @throws ModelException Si el código de asistencia es nulo o vacío, o el curso no existe
      */
     @Override
-    public Curso ObtenerCursoPorCodigoAsistencia(String codigoAsistencia) throws ModelException {
+    public Curso obtenerCursoPorCodigoAsistencia(String codigoAsistencia) throws ModelException {
         if (codigoAsistencia == null || codigoAsistencia.isBlank() || codigoAsistencia.isEmpty()) throw new ModelException("El código de asistencia no puede ser nulo ni vacío");
 
-        if (!cursoRepository.existsByCodigoAsistencia(codigoAsistencia)) throw new ModelException("El curso con el código de asistencia " + codigoAsistencia + " no existe");
+        if (!cursoRepository.existsByCodigoAsistencia(codigoAsistencia)) return null;
 
         return cursoRepository.findByCodigoAsistencia(codigoAsistencia);
     }

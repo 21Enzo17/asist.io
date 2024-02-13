@@ -104,15 +104,15 @@ public class CursoServiceTest {
     @DisplayName("Obtener curso por código de asistencia - Argumento inválido")
     public void obtenerCursoPorCodigoAsistenciaArgumentoInvalido() throws ModelException {
         assertThrows(ModelException.class, () -> {
-            cursoService.ObtenerCursoPorCodigoAsistencia("");
+            cursoService.obtenerCursoPorCodigoAsistencia("");
         });
 
         assertThrows(ModelException.class, () -> {
-            cursoService.ObtenerCursoPorCodigoAsistencia(null);
+            cursoService.obtenerCursoPorCodigoAsistencia(null);
         });
 
         assertThrows(ModelException.class, () -> {
-            cursoService.ObtenerCursoPorCodigoAsistencia("    ");
+            cursoService.obtenerCursoPorCodigoAsistencia("    ");
         });
     }
 
@@ -121,7 +121,7 @@ public class CursoServiceTest {
     public void obtenerCursoPorCodigoAsistenciaArgumentoValido() throws ModelException {
         curso.setCodigoAsistencia("123ABC");
         Curso expected = cursoService.registrarCurso(curso);
-        Curso result = cursoService.ObtenerCursoPorCodigoAsistencia(expected.getCodigoAsistencia());
+        Curso result = cursoService.obtenerCursoPorCodigoAsistencia(expected.getCodigoAsistencia());
 
         assertEquals(expected.getId(), result.getId());
 
