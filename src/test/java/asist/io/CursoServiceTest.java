@@ -87,6 +87,28 @@ public class CursoServiceTest {
         });
     }
 
+    @Test
+    @DisplayName("Actualizar curso - Código asistencia")
+    public void actualizarCursoCodigoAsistencia() throws ModelException {
+        curso.setCodigoAsistencia("123ABC");
+        Curso cursoRegistrado = cursoService.registrarCurso(curso);
+
+        assertDoesNotThrow(() -> {
+            cursoService.actualizarCurso(cursoRegistrado);
+        });
+
+        assertDoesNotThrow(() -> {
+            cursoRegistrado.setCodigoAsistencia("124ABC");
+            cursoService.actualizarCurso(cursoRegistrado);
+        });
+
+        assertThrows(ModelException.class, () -> {
+            Curso cursoRegistrado2 = cursoService.registrarCurso(curso);
+        });
+
+        cursoService.eliminarCurso(cursoRegistrado.getId());
+    }
+
     @Test()
     @DisplayName("Obtener curso por id")
     public void obtenerCursoPorId() throws ModelException {

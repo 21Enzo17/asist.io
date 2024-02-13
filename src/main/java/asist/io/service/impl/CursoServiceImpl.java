@@ -60,7 +60,7 @@ public class CursoServiceImpl implements ICursoService {
 
         if (!cursoRepository.existsById(curso.getId())) throw new ModelException("El curso con id " + curso.getId() + " no existe");
 
-        if (curso.getCodigoAsistencia() != null && obtenerCursoPorCodigoAsistencia(curso.getCodigoAsistencia()) == null ) throw new ModelException("El código de asistencia, " + curso.getCodigoAsistencia() + ",ya esta en uso");
+        if (curso.getCodigoAsistencia() != null && (obtenerCursoPorCodigoAsistencia(curso.getCodigoAsistencia()) != null && !obtenerCursoPorCodigoAsistencia(curso.getCodigoAsistencia()).getId().equals(curso.getId())) ) throw new ModelException("El código de asistencia, " + curso.getCodigoAsistencia() + ",ya esta en uso");
 
         return cursoRepository.save(curso);
     }
