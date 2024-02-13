@@ -18,12 +18,6 @@ public class Estudiante {
     private String id;
     @Column(name = "nombre", nullable = false)
     private String nombre;
-    @Column(name = "apellido", nullable = false, unique = true) // No se si sea correcto que el apellido este como unique
+    @Column(name = "lu", nullable = false, unique = true)
     private String lu;
-    /* Se agrego la relacion de estudiante con asistencia (Unidireccional) */
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "asistencia_id", nullable = false)
-    private Asistencia asistencia;
-
-    
 }

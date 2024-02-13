@@ -1,15 +1,13 @@
 package asist.io.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Entity
 @Table(name = "Cursos")
 public class Curso {
@@ -22,10 +20,6 @@ public class Curso {
     private String descripcion;
     @Column(name = "carrera", nullable = false)
     private String carrera;
-    /* Se agrego la relacion con horario (Unidireccional) */
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "horario_id", nullable = false)
-    private Horario horario;
-
-    
+    @Column(name = "codigo_asistencia", nullable = true)
+    private String codigoAsistencia;
 }
