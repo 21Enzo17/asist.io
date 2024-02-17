@@ -1,10 +1,11 @@
 package asist.io.service;
 
-import asist.io.entity.Inscripcion;
+import asist.io.dto.InscripcionGetDTO;
+import asist.io.dto.InscripcionPostDTO;
 import asist.io.exception.ModelException;
 
 public interface IInscripcionService {
-    public Inscripcion registrarInscripcion(Inscripcion inscripcion) throws ModelException;
-    public Inscripcion obtenerInscripcionPorId(String id) throws ModelException;
+    public InscripcionGetDTO registrarInscripcion(InscripcionPostDTO inscripcion) throws ModelException;
+    public InscripcionGetDTO obtenerInscripcionPorId(String id) throws ModelException;
     public boolean eliminarInscripcionPorId(String id) throws ModelException;
 }

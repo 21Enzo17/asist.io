@@ -1,7 +1,9 @@
 package asist.io.service.impl;
 
-import asist.io.entity.Estudiante;
+import asist.io.dto.EstudianteGetDTO;
+import asist.io.dto.EstudiantePostDTO;
 import asist.io.exception.ModelException;
+import asist.io.mapper.EstudianteMapper;
 import asist.io.repository.CursoRepository;
 import asist.io.repository.EstudianteRepository;
 import asist.io.service.IEstudianteService;
@@ -24,12 +26,13 @@ public class EstudianteServiceImpl implements IEstudianteService {
      * @throws ModelException Si el estudiante es nulo o si el lu del estudiante ya está registrado
      */
     @Override
-    public Estudiante registrarEstudiante(Estudiante estudiante) throws ModelException {
+    public EstudianteGetDTO registrarEstudiante(EstudiantePostDTO estudiante) throws ModelException {
         if (estudiante == null) throw new ModelException("El estudiante no puede ser nulo");
 
         if (estudianteRepository.existsByLu(estudiante.getLu())) throw new ModelException("El lu del alumno con el LU " + estudiante.getLu() + " ya esta registrado");
 
-        return estudianteRepository.save(estudiante);
+        EstudianteGetDTO estudianteRegistrado = EstudianteMapper.toGetDTO(estudianteRepository.save(EstudianteMapper.toEntity(estudiante)));
+        return estudianteRegistrado;
     }
 
     /**
@@ -55,20 +58,35 @@ public class EstudianteServiceImpl implements IEstudianteService {
      * @throws ModelException Si el lu es nulo o vacío
      */
     @Override
-    public Estudiante obtenerEstudiantePorLu(String lu) throws ModelException {
+    public EstudianteGetDTO obtenerEstudiantePorLu(String lu) throws ModelException {
         if (lu == null || lu.isEmpty() || lu.isBlank()) throw new ModelException("El lu no puede ser nulo ni vacío");
 
         if (!estudianteRepository.existsByLu(lu)) return null;
 
-        return estudianteRepository.findByLu(lu);
+        EstudianteGetDTO estudianteEncontrado = EstudianteMapper.toGetDTO(estudianteRepository.findByLu(lu));
+        return estudianteEncontrado;
+    }
+
+    /**
+     * Obtiene un estudiante por id
+     * @param id id del estudiante
+     * @return Estudiante si existe, null si no existe
+     */
+    @Override
+    public EstudianteGetDTO obtenerEstudiantePorId(String id) throws ModelException {
+        if (id == null || id.isEmpty() || id.isBlank()) throw new ModelException("El id del estudiante no puede ser nulo ni vacío");
+
+        EstudianteGetDTO estudianteEncontrado = EstudianteMapper.toGetDTO(estudianteRepository.findById(id).get());
+        return estudianteEncontrado;
     }
 
     @Override
-    public List<Estudiante> obtenerEstudiantesPorIdCurso(String id) throws ModelException {
+    public List<EstudianteGetDTO> obtenerEstudiantesPorIdCurso(String id) throws ModelException {
         if (id == null || id.isEmpty() || id.isBlank()) throw new ModelException("El id del curso no puede ser nulo ni vacío");
 
         if (!cursoRepository.existsById(id)) throw new ModelException("El curso con el id " + id + " no existe");
 
-        return estudianteRepository.obtenerEstudiantesPorIdCurso(id);
+        List<EstudianteGetDTO> estudiantesEncontrados = EstudianteMapper.toGetDTO(estudianteRepository.obtenerEstudiantesPorIdCurso(id));
+        return estudiantesEncontrados;
     }
 }

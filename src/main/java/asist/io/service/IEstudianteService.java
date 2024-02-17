@@ -1,6 +1,7 @@
 package asist.io.service;
 
-import asist.io.entity.Estudiante;
+import asist.io.dto.EstudianteGetDTO;
+import asist.io.dto.EstudiantePostDTO;
 import asist.io.exception.ModelException;
 
 import java.util.List;
@@ -12,7 +13,7 @@ public interface IEstudianteService {
      * @return Estudiante registrado
      * @throws ModelException Si el estudiante es nulo o si el lu del estudiante ya está registrado
      */
-    public Estudiante registrarEstudiante(Estudiante estudiante) throws ModelException;
+    public EstudianteGetDTO registrarEstudiante(EstudiantePostDTO estudiante) throws ModelException;
 
     /**
      * Elimina un estudiante en la base de datos
@@ -28,7 +29,14 @@ public interface IEstudianteService {
      * @return Estudiante si existe, null si no existe
      * @throws ModelException Si el lu es nulo o vacío
      */
-    public Estudiante obtenerEstudiantePorLu(String lu) throws ModelException;
+    public EstudianteGetDTO obtenerEstudiantePorLu(String lu) throws ModelException;
+
+    /**
+     * Obtiene un estudiante por id
+     * @param id id del estudiante
+     * @return Estudiante si existe, null si no existe
+     */
+    public EstudianteGetDTO obtenerEstudiantePorId(String id) throws ModelException;
 
     /**
      * Obtiene los estudiantes que están inscriptos en un curso
@@ -36,5 +44,5 @@ public interface IEstudianteService {
      * @return Lista de estudiantes inscriptos en el curso
      * @throws ModelException Si el id del curso es nulo o vacío
      */
-    public List<Estudiante> obtenerEstudiantesPorIdCurso(String id) throws ModelException;
+    public List<EstudianteGetDTO> obtenerEstudiantesPorIdCurso(String id) throws ModelException;
 }

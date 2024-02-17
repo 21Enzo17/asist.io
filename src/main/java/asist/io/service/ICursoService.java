@@ -1,6 +1,8 @@
 package asist.io.service;
 
-import asist.io.entity.Curso;
+import asist.io.dto.CursoGetDTO;
+import asist.io.dto.CursoPatchDTO;
+import asist.io.dto.CursoPostDTO;
 import asist.io.exception.ModelException;
 
 public interface ICursoService {
@@ -10,7 +12,7 @@ public interface ICursoService {
      * @return Curso registrado
      * @throws ModelException Si el curso es nulo
      */
-    public Curso registrarCurso(Curso curso) throws ModelException;
+    public CursoGetDTO registrarCurso(CursoPostDTO curso) throws ModelException;
 
     /**
      * Elimina un curso de la base de datos
@@ -26,7 +28,7 @@ public interface ICursoService {
      * @return Curso actualizado
      * @throws ModelException Si el curso es nulo, el id es nulo o vacío o el curso no existe
      */
-    public Curso actualizarCurso(Curso curso) throws ModelException;
+    public CursoGetDTO actualizarCurso(CursoPatchDTO curso) throws ModelException;
 
     /**
      * Obtiene un curso por su id
@@ -34,7 +36,7 @@ public interface ICursoService {
      * @return Curso si existe, null si no existe
      * @throws ModelException Si el id es nulo o vacío
      */
-    public Curso obtenerCursoPorId(String id) throws ModelException;
+    public CursoGetDTO obtenerCursoPorId(String id) throws ModelException;
 
     /**
      * Obtiene un curso por su código de asistencia
@@ -42,7 +44,7 @@ public interface ICursoService {
      * @return Curso si existe
      * @throws ModelException Si el código de asistencia es nulo o vacío, o el curso no existe
      */
-    public Curso obtenerCursoPorCodigoAsistencia(String codigoAsistencia) throws ModelException;
+    public CursoGetDTO obtenerCursoPorCodigoAsistencia(String codigoAsistencia) throws ModelException;
 
     /**
      * Obtiene un curso por el id de un usuario
@@ -50,5 +52,5 @@ public interface ICursoService {
      * @return Curso si existe, null si no existe
      * @throws ModelException Si el id es nulo o vacío
      */
-    public Curso obtenerCursoPorIdUsuario(String id) throws ModelException;
+    public CursoGetDTO obtenerCursoPorIdUsuario(String id) throws ModelException;
 }

@@ -1,7 +1,10 @@
 package asist.io;
 
-import asist.io.entity.Curso;
+import asist.io.dto.CursoGetDTO;
+import asist.io.dto.CursoPatchDTO;
+import asist.io.dto.CursoPostDTO;
 import asist.io.exception.ModelException;
+import asist.io.mapper.CursoMapper;
 import asist.io.service.ICursoService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,29 +16,38 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CursoServiceTest {
     @Autowired
     private ICursoService cursoService;
-    Curso curso;
+    CursoPostDTO cursoPostDTO;
+    CursoPatchDTO cursoPatchDTO;
+    CursoGetDTO cursoGetDTO;
 
     @BeforeEach
     public void setup() {
-        curso = new Curso();
-        curso.setNombre("Curso de prueba");
-        curso.setDescripcion("Curso de prueba");
-        curso.setCarrera("Ingeniería en Sistemas");
+        cursoPostDTO = new CursoPostDTO();
+        cursoPostDTO.setNombre("Curso de prueba");
+        cursoPostDTO.setDescripcion("Curso de prueba");
+        cursoPostDTO.setCarrera("Ingeniería en Sistemas");
+
+        cursoPatchDTO = new CursoPatchDTO();
+
+        cursoGetDTO = new CursoGetDTO();
     }
 
     @AfterEach
     public void tearDown() {
-        curso = null;
+        cursoPostDTO = null;
+        cursoPatchDTO = null;
+        cursoGetDTO = null;
     }
 
     @Test()
     @DisplayName("Registrar curso")
     public void registrarCursoTest() throws ModelException {
-        Curso cursoRegistrado = cursoService.registrarCurso(curso);
+        CursoGetDTO cursoRegistrado = cursoService.registrarCurso(cursoPostDTO);
         assertNotNull(cursoRegistrado);
 
         assertThrows(ModelException.class, () -> {
-            cursoService.registrarCurso(cursoRegistrado);
+            cursoPostDTO = null;
+            cursoService.registrarCurso(cursoPostDTO);
         });
 
         cursoService.eliminarCurso(cursoRegistrado.getId());
@@ -44,7 +56,7 @@ public class CursoServiceTest {
     @Test()
     @DisplayName("Eliminar curso")
     public void eliminarCursoTest() throws ModelException {
-        Curso cursoRegistrado = cursoService.registrarCurso(curso);
+        CursoGetDTO cursoRegistrado = cursoService.registrarCurso(cursoPostDTO);
         boolean result = cursoService.eliminarCurso(cursoRegistrado.getId());
         assertTrue(result);
 
@@ -60,10 +72,10 @@ public class CursoServiceTest {
     @Test()
     @DisplayName("Actualizar curso")
     public void actualizarCursoTest() throws ModelException {
-        Curso cursoRegistrado = cursoService.registrarCurso(curso);
+        CursoGetDTO cursoRegistrado = cursoService.registrarCurso(cursoPostDTO);
         String nuevoNombre = "Curso de prueba actualizado";
         cursoRegistrado.setNombre(nuevoNombre);
-        Curso cursoActualizado = cursoService.actualizarCurso(cursoRegistrado);
+        CursoGetDTO cursoActualizado = cursoService.actualizarCurso(CursoMapper.toPatchDTO(cursoRegistrado));
 
         assertEquals(cursoActualizado.getNombre(), nuevoNombre);
         assertEquals(cursoActualizado.getId(), cursoRegistrado.getId());
@@ -79,31 +91,33 @@ public class CursoServiceTest {
         });
 
         assertThrows(ModelException.class, () -> {
-            cursoService.actualizarCurso(new Curso());
+            cursoService.actualizarCurso(new CursoPatchDTO());
         });
 
         assertThrows(ModelException.class, () -> {
-            cursoService.actualizarCurso(curso);
+            cursoPatchDTO.setId("");
+            cursoService.actualizarCurso(cursoPatchDTO);
         });
     }
 
     @Test
     @DisplayName("Actualizar curso - Código asistencia")
     public void actualizarCursoCodigoAsistencia() throws ModelException {
-        curso.setCodigoAsistencia("123ABC");
-        Curso cursoRegistrado = cursoService.registrarCurso(curso);
+        cursoPostDTO.setCodigoAsistencia("123ABC");
+        CursoGetDTO cursoRegistrado = cursoService.registrarCurso(cursoPostDTO);
 
         assertDoesNotThrow(() -> {
-            cursoService.actualizarCurso(cursoRegistrado);
+            cursoService.actualizarCurso(CursoMapper.toPatchDTO(cursoRegistrado));
         });
 
         assertDoesNotThrow(() -> {
             cursoRegistrado.setCodigoAsistencia("124ABC");
-            cursoService.actualizarCurso(cursoRegistrado);
+            cursoService.actualizarCurso(CursoMapper.toPatchDTO(cursoRegistrado));
         });
 
         assertThrows(ModelException.class, () -> {
-            Curso cursoRegistrado2 = cursoService.registrarCurso(curso);
+            cursoPostDTO.setCodigoAsistencia("124ABC");
+            CursoGetDTO cursoRegistrado2 = cursoService.registrarCurso(cursoPostDTO);
         });
 
         cursoService.eliminarCurso(cursoRegistrado.getId());
@@ -112,8 +126,8 @@ public class CursoServiceTest {
     @Test()
     @DisplayName("Obtener curso por id")
     public void obtenerCursoPorId() throws ModelException {
-        Curso expected = cursoService.registrarCurso(curso);
-        Curso result = cursoService.obtenerCursoPorId(expected.getId());
+        CursoGetDTO expected = cursoService.registrarCurso(cursoPostDTO);
+        CursoGetDTO result = cursoService.obtenerCursoPorId(expected.getId());
 
         assertEquals(expected.getId(), result.getId());
 
@@ -124,7 +138,7 @@ public class CursoServiceTest {
 
     @Test()
     @DisplayName("Obtener curso por código de asistencia - Argumento inválido")
-    public void obtenerCursoPorCodigoAsistenciaArgumentoInvalido() throws ModelException {
+    public void obtenerCursoPorCodigoAsistenciaArgumentoInvalido() {
         assertThrows(ModelException.class, () -> {
             cursoService.obtenerCursoPorCodigoAsistencia("");
         });
@@ -141,26 +155,26 @@ public class CursoServiceTest {
     @Test()
     @DisplayName("Obtener curso por código de asistencia - Argumento válido")
     public void obtenerCursoPorCodigoAsistenciaArgumentoValido() throws ModelException {
-        curso.setCodigoAsistencia("123ABC");
-        Curso expected = cursoService.registrarCurso(curso);
-        Curso result = cursoService.obtenerCursoPorCodigoAsistencia(expected.getCodigoAsistencia());
+        cursoPostDTO.setCodigoAsistencia("123ABC");
+        CursoGetDTO expected = cursoService.registrarCurso(cursoPostDTO);
+        CursoGetDTO result = cursoService.obtenerCursoPorCodigoAsistencia(expected.getCodigoAsistencia());
 
         assertEquals(expected.getId(), result.getId());
 
         cursoService.eliminarCurso(expected.getId());
-        curso.setCodigoAsistencia(null);
+        cursoPostDTO.setCodigoAsistencia(null);
     }
 
     @Test()
     @DisplayName("Comprobar unicidad de código de asistencia")
     public void comprobarUnicidadCodigoAsistencia() throws ModelException {
-        curso.setCodigoAsistencia("123ABC");
-        Curso cursoRegistrado = cursoService.registrarCurso(curso);
+        cursoPostDTO.setCodigoAsistencia("123ABC");
+        CursoGetDTO cursoRegistrado = cursoService.registrarCurso(cursoPostDTO);
         assertThrows(ModelException.class, () -> {
-            cursoService.registrarCurso(curso);
+            cursoService.registrarCurso(cursoPostDTO);
         });
 
         cursoService.eliminarCurso(cursoRegistrado.getId());
-        curso.setCodigoAsistencia(null);
+        cursoPostDTO.setCodigoAsistencia(null);
     }
 }
