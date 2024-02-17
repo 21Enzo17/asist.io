@@ -5,7 +5,6 @@ import asist.io.dto.InscripcionPostDTO;
 import asist.io.entity.Curso;
 import asist.io.entity.Estudiante;
 import asist.io.entity.Inscripcion;
-import asist.io.exception.ModelException;
 
 public class InscripcionMapper {
 

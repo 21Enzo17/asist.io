@@ -39,6 +39,10 @@ public class CursoServiceTest {
         cursoGetDTO = null;
     }
 
+    /**
+     * Test para registrar un curso
+     * @throws ModelException
+     */
     @Test()
     @DisplayName("Registrar curso")
     public void registrarCursoTest() throws ModelException {
@@ -53,6 +57,10 @@ public class CursoServiceTest {
         cursoService.eliminarCurso(cursoRegistrado.getId());
     }
 
+    /**
+     * Test para eliminar un curso
+     * @throws ModelException
+     */
     @Test()
     @DisplayName("Eliminar curso")
     public void eliminarCursoTest() throws ModelException {
@@ -69,6 +77,10 @@ public class CursoServiceTest {
         });
     }
 
+    /**
+     * Test para actualizar un curso
+     * @throws ModelException
+     */
     @Test()
     @DisplayName("Actualizar curso")
     public void actualizarCursoTest() throws ModelException {
@@ -83,6 +95,9 @@ public class CursoServiceTest {
         cursoService.eliminarCurso(cursoRegistrado.getId());
     }
 
+    /**
+     * Test para actualizar un curso - Argumento inválido
+     */
     @Test
     @DisplayName("Actualizar curso - Argumento inválido")
     public void actualizarCursoArgumentoInvalido() {
@@ -100,6 +115,10 @@ public class CursoServiceTest {
         });
     }
 
+    /**
+     * Test para actualizar un curso - Código asistencia
+     * @throws ModelException
+     */
     @Test
     @DisplayName("Actualizar curso - Código asistencia")
     public void actualizarCursoCodigoAsistencia() throws ModelException {
@@ -123,6 +142,10 @@ public class CursoServiceTest {
         cursoService.eliminarCurso(cursoRegistrado.getId());
     }
 
+    /**
+     * Test para obtener un curso por id
+     * @throws ModelException
+     */
     @Test()
     @DisplayName("Obtener curso por id")
     public void obtenerCursoPorId() throws ModelException {
@@ -135,7 +158,9 @@ public class CursoServiceTest {
     }
 
 
-
+    /**
+     * Test para obtener un curso por código de asistencia - Argumento inválido
+     */
     @Test()
     @DisplayName("Obtener curso por código de asistencia - Argumento inválido")
     public void obtenerCursoPorCodigoAsistenciaArgumentoInvalido() {
@@ -152,6 +177,10 @@ public class CursoServiceTest {
         });
     }
 
+    /**
+     * Test para obtener un curso por código de asistencia
+     * @throws ModelException
+     */
     @Test()
     @DisplayName("Obtener curso por código de asistencia - Argumento válido")
     public void obtenerCursoPorCodigoAsistenciaArgumentoValido() throws ModelException {
@@ -165,6 +194,10 @@ public class CursoServiceTest {
         cursoPostDTO.setCodigoAsistencia(null);
     }
 
+    /**
+     * Test para comparar la unicidad de código de asistencia
+     * @throws ModelException
+     */
     @Test()
     @DisplayName("Comprobar unicidad de código de asistencia")
     public void comprobarUnicidadCodigoAsistencia() throws ModelException {

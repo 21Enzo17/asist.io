@@ -80,6 +80,12 @@ public class EstudianteServiceImpl implements IEstudianteService {
         return estudianteEncontrado;
     }
 
+    /**
+     * Obtiene los estudiantes que están inscriptos en un curso
+     * @param id Id del curso
+     * @return Lista de estudiantes inscriptos en el curso
+     * @throws ModelException Si el id del curso es nulo o vacío
+     */
     @Override
     public List<EstudianteGetDTO> obtenerEstudiantesPorIdCurso(String id) throws ModelException {
         if (id == null || id.isEmpty() || id.isBlank()) throw new ModelException("El id del curso no puede ser nulo ni vacío");

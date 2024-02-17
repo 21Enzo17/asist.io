@@ -21,6 +21,12 @@ public class InscripcionServiceImpl implements IInscripcionService {
     @Autowired
     private EstudianteRepository estudianteRepository;
 
+    /**
+     * Registra una inscripción en la base de datos
+     * @param inscripcion Inscripción a registrar
+     * @return Inscripción registrada
+     * @throws ModelException Si la inscripción es nula o si el id del curso o del estudiante no existen
+     */
     @Override
     public InscripcionGetDTO registrarInscripcion(InscripcionPostDTO inscripcion) throws ModelException {
         if (inscripcion == null) throw new ModelException("La inscripción no puede ser nula");
@@ -35,6 +41,12 @@ public class InscripcionServiceImpl implements IInscripcionService {
         return inscripcionRegistrada;
     }
 
+    /**
+     * Obtiene una inscripción por su id
+     * @param id Id de la inscripción a obtener
+     * @return Inscripción si existe, null si no existe
+     * @throws ModelException Si el id es nulo o vacío
+     */
     @Override
     public InscripcionGetDTO obtenerInscripcionPorId(String id) throws ModelException {
         if (id == null || id.isEmpty() || id.isBlank()) throw new ModelException("El id del curso no puede ser nulo, vacío o en blanco");
@@ -44,6 +56,12 @@ public class InscripcionServiceImpl implements IInscripcionService {
         return inscripcionEncontrada;
     }
 
+    /**
+     * Elimina una inscripción por su id
+     * @param id Id de la inscripción a eliminar
+     * @return true si se eliminó la inscripción, false si no existe la inscripción
+     * @throws ModelException
+     */
     @Override
     public boolean eliminarInscripcionPorId(String id) throws ModelException {
         if (id == null || id.isEmpty() || id.isBlank()) throw new ModelException("El id del curso no puede ser nulo, vacío o en blanco");
