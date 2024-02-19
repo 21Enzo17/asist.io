@@ -61,7 +61,7 @@ public class EstudianteServiceImpl implements IEstudianteService {
     public EstudianteGetDTO obtenerEstudiantePorLu(String lu) throws ModelException {
         if (lu == null || lu.isEmpty() || lu.isBlank()) throw new ModelException("El lu no puede ser nulo ni vacío");
 
-        if (!estudianteRepository.existsByLu(lu)) return null;
+        if (!estudianteRepository.existsByLu(lu)) throw new ModelException("El estudiante con el lu " + lu + " no existe");
 
         EstudianteGetDTO estudianteEncontrado = EstudianteMapper.toGetDTO(estudianteRepository.findByLu(lu));
         return estudianteEncontrado;
@@ -75,6 +75,8 @@ public class EstudianteServiceImpl implements IEstudianteService {
     @Override
     public EstudianteGetDTO obtenerEstudiantePorId(String id) throws ModelException {
         if (id == null || id.isEmpty() || id.isBlank()) throw new ModelException("El id del estudiante no puede ser nulo ni vacío");
+
+        if (!estudianteRepository.existsById(id)) throw new ModelException("El estudiante con el id " + id + " no existe");
 
         EstudianteGetDTO estudianteEncontrado = EstudianteMapper.toGetDTO(estudianteRepository.findById(id).get());
         return estudianteEncontrado;
