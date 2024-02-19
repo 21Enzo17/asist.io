@@ -1,20 +1,15 @@
 package asist.io.controller;
 
 import asist.io.dto.EstudianteGetDTO;
-import asist.io.dto.EstudiantePathDTO;
 import asist.io.dto.EstudiantePostDTO;
 import asist.io.exception.ModelException;
 import asist.io.service.IEstudianteService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.HashMap;
 import java.util.List;
