@@ -26,6 +26,11 @@ public class EstudianteController {
     @Autowired
     private IEstudianteService estudianteService;
 
+    /**
+     * Endpoint que registra un estudiante en la base de datos
+     * @param estudiante Estudiante a registrar
+     * @return ResponseEntity con la respuesta de la petición
+     */
     @PostMapping()
     public ResponseEntity registrarEstudiante(@Valid @RequestBody EstudiantePostDTO estudiante) {
         Map<String, Object> response = new HashMap<>();
@@ -47,6 +52,11 @@ public class EstudianteController {
         }
     }
 
+    /**
+     * Endpoint que obtiene un estudiante de la base de datos
+     * @param idEstudiante id del estudiante a obtener
+     * @return ResponseEntity con la respuesta de la petición
+     */
     @GetMapping("/id/{idEstudiante}")
     public ResponseEntity obtenerEstudiantePorId(@PathVariable String idEstudiante) {
         Map<String, Object> response = new HashMap<>();
@@ -64,6 +74,11 @@ public class EstudianteController {
         }
     }
 
+    /**
+     * Endpoint que obtiene un estudiante de la base de datos
+     * @param lu lu del estudiante a obtener
+     * @return ResponseEntity con la respuesta de la petición
+     */
     @GetMapping("/lu/{lu}")
     public ResponseEntity obtenerEstudiantePorLu(@PathVariable String lu) {
         Map<String, Object> response = new HashMap<>();
@@ -81,6 +96,11 @@ public class EstudianteController {
         }
     }
 
+    /**
+     * Endpoint que obtiene una lista de estudiantes que entan registrados en un curso
+     * @param id id del curso
+     * @return ResponseEntity con la respuesta de la petición
+     */
     @GetMapping("/curso/{id}")
     public ResponseEntity obtenerEstudiantesPorIdCurso(@PathVariable String id) {
         Map<String, Object> response = new HashMap<>();
@@ -98,6 +118,11 @@ public class EstudianteController {
         }
     }
 
+    /**
+     * Endpoint que elimina un estudiante de la base de datos
+     * @param id id del estudiante a eliminar
+     * @return ResponseEntity con la respuesta de la petición
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity eliminarEstudiantePorId(@PathVariable String id) {
         Map<String, Object> response = new HashMap<>();
