@@ -21,6 +21,11 @@ public class CursoController {
     @Autowired
     private ICursoService cursoService;
 
+    /**
+     * Registra un curso en la base de datos
+     * @param curso Curso a registrar
+     * @return El resultado de la operación en un ResponseEntity
+     */
     @PostMapping()
     public ResponseEntity registrarCurso(@Valid @RequestBody CursoPostDTO curso) {
         Map<String, Object> response = new HashMap<>();
@@ -42,6 +47,11 @@ public class CursoController {
         }
     }
 
+    /**
+     * Elimina un curso de la base de datos
+     * @param id Id del curso a eliminar
+     * @return El resultado de la operación en un ResponseEntity
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity eliminarCurso(@PathVariable String id) {
         Map<String, Object> response = new HashMap<>();
@@ -58,6 +68,11 @@ public class CursoController {
         }
     }
 
+    /**
+     * Actualiza un curso en la base de datos
+     * @param curso Curso a actualizar
+     * @return El resultado de la operación en un ResponseEntity
+     */
     @PatchMapping()
     public ResponseEntity actualizarCurso(@Valid @RequestBody CursoPatchDTO curso) {
         Map<String, Object> response = new HashMap<>();
@@ -79,6 +94,11 @@ public class CursoController {
         }
     }
 
+    /**
+     * Obtiene un curso por su id
+     * @param id Id del curso a obtener
+     * @return El resultado de la operación en un ResponseEntity
+     */
     @GetMapping("/id/{id}")
     public ResponseEntity obtenerCursoPorId(@PathVariable String id) {
         Map<String, Object> response = new HashMap<>();
@@ -96,6 +116,11 @@ public class CursoController {
         }
     }
 
+    /**
+     * Obtiene un curso por su código de asistencia
+     * @param codigoAsistencia Código de asistencia del curso a obtener
+     * @return El resultado de la operación en un ResponseEntity
+     */
     @GetMapping("/codigo-asistencia/{codigoAsistencia}")
     public ResponseEntity obtenerCursoPorCodigoAsistencia(@PathVariable String codigoAsistencia) {
         Map<String, Object> response = new HashMap<>();
@@ -113,6 +138,11 @@ public class CursoController {
         }
     }
 
+    /**
+     * Obtiene una lista de cursos por el id de un usuario
+     * @param idUsuario Id del usuario
+     * @return El resultado de la operación en un ResponseEntity
+     */
     @GetMapping("/usuario/{idUsuario}")
     public ResponseEntity obtenerCursosPorIdUsuario(@PathVariable String idUsuario) {
         Map<String, Object> response = new HashMap<>();
