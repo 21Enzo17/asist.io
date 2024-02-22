@@ -48,6 +48,38 @@ public class EstudianteController {
     }
 
     /**
+     * Endpoint que registra una lista de estudiantes en la base de datos
+     * @param estudiantes Lista de estudiantes a registrar
+     * @return ResponseEntity que contiene los estudiantes registrados si la petición fue exitosa o un mensaje de error si no lo fue
+     */
+    @PostMapping()
+    public ResponseEntity registrarEstudiantes(@Valid @RequestBody List<EstudiantePostDTO> estudiantes) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            List<EstudianteGetDTO> estudiantesRegistrados = estudianteService.registrarEstudiantes(estudiantes);
+            response.put("estudiantes", estudiantesRegistrados);
+            response.put("success", true);
+            return new ResponseEntity(response, HttpStatus.CREATED);
+        }
+        catch (ModelException e) {
+            response.put("error", e.getMessage());
+            response.put("success", false);
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+        catch (DataIntegrityViolationException e) {
+            response.put("error", "Body can't be null");
+            response.put("success", false);
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception e) {
+            response.put("error", "Error interno del servidor");
+            response.put("success", false);
+            return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
      * Endpoint que obtiene un estudiante de la base de datos
      * @param idEstudiante id del estudiante a obtener
      * @return ResponseEntity con la respuesta de la petición
@@ -130,6 +162,30 @@ public class EstudianteController {
         catch (ModelException e) {
             response.put("error", e.getMessage());
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * Endpoint que elimina una lista de estudiantes de la base de datos
+     * @param ids Lista de ids de estudiantes a eliminar
+     * @return ResponseEntity con un mensaje de éxito si la petición fue exitosa o un mensaje de error si no lo fue
+     */
+    @DeleteMapping()
+    public ResponseEntity eliminarEstudiantes(@RequestBody List<String> ids) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            boolean eliminado = estudianteService.eliminarEstudiantes(ids);
+            response.put("success", eliminado);
+            return new ResponseEntity(response, HttpStatus.OK);
+        }
+        catch (ModelException e) {
+            response.put("error", e.getMessage());
+            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception e) {
+            response.put("error", "Error interno del servidor");
+            return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
