@@ -1,8 +1,8 @@
 package asist.io.service.impl;
 
-import asist.io.dto.CursoGetDTO;
-import asist.io.dto.CursoPatchDTO;
-import asist.io.dto.CursoPostDTO;
+import asist.io.dto.cursoDTO.CursoGetDTO;
+import asist.io.dto.cursoDTO.CursoPatchDTO;
+import asist.io.dto.cursoDTO.CursoPostDTO;
 import asist.io.exception.ModelException;
 import asist.io.mapper.CursoMapper;
 import asist.io.repository.CursoRepository;

@@ -1,5 +1,7 @@
-package asist.io.dto;
+package asist.io.dto.inscripcionDTO;
 
+import asist.io.dto.cursoDTO.CursoGetDTO;
+import asist.io.dto.estudianteDTO.EstudianteGetDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

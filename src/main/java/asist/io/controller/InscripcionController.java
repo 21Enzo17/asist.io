@@ -1,7 +1,7 @@
 package asist.io.controller;
 
-import asist.io.dto.InscripcionGetDTO;
-import asist.io.dto.InscripcionPostDTO;
+import asist.io.dto.inscripcionDTO.InscripcionGetDTO;
+import asist.io.dto.inscripcionDTO.InscripcionPostDTO;
 import asist.io.exception.ModelException;
 import asist.io.service.IInscripcionService;
 import jakarta.validation.Valid;

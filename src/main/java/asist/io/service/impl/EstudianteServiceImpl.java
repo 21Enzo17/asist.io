@@ -1,7 +1,7 @@
 package asist.io.service.impl;
 
-import asist.io.dto.EstudianteGetDTO;
-import asist.io.dto.EstudiantePostDTO;
+import asist.io.dto.estudianteDTO.EstudianteGetDTO;
+import asist.io.dto.estudianteDTO.EstudiantePostDTO;
 import asist.io.exception.ModelException;
 import asist.io.mapper.EstudianteMapper;
 import asist.io.repository.CursoRepository;

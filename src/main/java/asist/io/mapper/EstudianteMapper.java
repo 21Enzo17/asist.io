@@ -1,8 +1,8 @@
 package asist.io.mapper;
 
-import asist.io.dto.EstudianteGetDTO;
-import asist.io.dto.EstudiantePathDTO;
-import asist.io.dto.EstudiantePostDTO;
+import asist.io.dto.estudianteDTO.EstudianteGetDTO;
+import asist.io.dto.estudianteDTO.EstudiantePathDTO;
+import asist.io.dto.estudianteDTO.EstudiantePostDTO;
 import asist.io.entity.Estudiante;
 
 import java.util.ArrayList;

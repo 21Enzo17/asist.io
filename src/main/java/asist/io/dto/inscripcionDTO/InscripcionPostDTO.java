@@ -1,4 +1,4 @@
-package asist.io.dto;
+package asist.io.dto.inscripcionDTO;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;

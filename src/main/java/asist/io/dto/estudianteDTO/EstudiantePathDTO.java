@@ -1,4 +1,4 @@
-package asist.io.dto;
+package asist.io.dto.estudianteDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
