@@ -36,6 +36,19 @@ public class EstudianteServiceImpl implements IEstudianteService {
     }
 
     /**
+     * Registra una lista de estudiantes en la base de datos
+     * @param estudiantes Lista de estudiantes a registrar
+     * @return Lista de estudiantes registrados
+     * @throws ModelException Si la lista de estudiantes es nula o vacía
+     */
+    public List<EstudianteGetDTO> registrarEstudiantes(List<EstudiantePostDTO> estudiantes) throws ModelException {
+        if (estudiantes == null || estudiantes.isEmpty()) throw new ModelException("La lista de estudiantes no puede ser nula ni vacía");
+
+        List<EstudianteGetDTO> estudiantesRegistrados = EstudianteMapper.toGetDTO(estudianteRepository.saveAll(EstudianteMapper.toEntity(estudiantes)));
+        return estudiantesRegistrados;
+    }
+
+    /**
      * Elimina un estudiante en la base de datos
      * @param id Id del estudiante a eliminar
      * @return true si se eliminó el estudiante, false si no existe el estudiante
@@ -48,6 +61,24 @@ public class EstudianteServiceImpl implements IEstudianteService {
         if (!estudianteRepository.existsById(id)) return false;
 
         estudianteRepository.deleteById(id);
+        return true;
+    }
+
+    /**
+     * Elimina una lista de estudiantes en la base de datos
+     * @param ids Lista de ids de estudiantes a eliminar
+     * @return true si se eliminaron los estudiantes, false si no existe alguno de los estudiantes
+     * @throws ModelException Si la lista de ids es nula o vacía
+     */
+    public boolean eliminarEstudiantes(List<String> ids) throws ModelException {
+        if (ids == null || ids.isEmpty()) throw new ModelException("La lista de ids no puede ser nula ni vacía");
+
+
+        for (String id : ids) {
+            if (!estudianteRepository.existsById(id)) return false;
+        }
+
+        estudianteRepository.deleteAllById(ids);
         return true;
     }
 

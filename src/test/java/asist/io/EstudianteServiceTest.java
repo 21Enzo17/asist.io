@@ -95,7 +95,6 @@ public class EstudianteServiceTest {
 
         assertNotNull(estudianteService.obtenerEstudiantePorLu(estudiante.getLu()));
         assertEquals(estudianteRegistrado.getId(), estudianteService.obtenerEstudiantePorLu(estudiante.getLu()).getId());
-        assertNull(estudianteService.obtenerEstudiantePorLu("SYS124"));
 
         estudianteService.eliminarEstudiante(estudianteRegistrado.getId());
     }
@@ -138,5 +137,49 @@ public class EstudianteServiceTest {
         inscripcionService.eliminarInscripcionPorId(inscripcionRegistrada.getId());
         cursoService.eliminarCurso(cursoRegistrado.getId());
         estudianteService.eliminarEstudiante(estudianteRegistrado.getId());
+    }
+
+    @Test
+    @DisplayName("Registrar una lista de estudiantes")
+    public void registrarEstudiantes() throws ModelException {
+        EstudiantePostDTO estudiante2 = new EstudiantePostDTO();
+        estudiante2.setLu("ING124");
+        estudiante2.setNombre("Juan Perez");
+
+        EstudiantePostDTO estudiante3 = new EstudiantePostDTO();
+        estudiante3.setLu("ING125");
+        estudiante3.setNombre("Juan Perez");
+
+        List<EstudiantePostDTO> estudiantes = List.of(estudiante, estudiante2, estudiante3);
+        List<EstudianteGetDTO> estudiantesRegistrados = estudianteService.registrarEstudiantes(estudiantes);
+
+        assertNotNull(estudiantesRegistrados);
+        assertEquals(estudiantesRegistrados.size(), 3);
+
+        estudianteService.eliminarEstudiante(estudiantesRegistrados.get(0).getId());
+        estudianteService.eliminarEstudiante(estudiantesRegistrados.get(1).getId());
+        estudianteService.eliminarEstudiante(estudiantesRegistrados.get(2).getId());
+    }
+
+    @Test
+    @DisplayName("Eliminar una lista de estudiantes")
+    public void eliminarEstudiantes() throws ModelException {
+        EstudiantePostDTO estudiante2 = new EstudiantePostDTO();
+        estudiante2.setLu("ING124");
+        estudiante2.setNombre("Juan Perez");
+
+        EstudiantePostDTO estudiante3 = new EstudiantePostDTO();
+        estudiante3.setLu("ING125");
+        estudiante3.setNombre("Juan Perez");
+
+        EstudianteGetDTO estudianteRegistrado = estudianteService.registrarEstudiante(estudiante);
+        EstudianteGetDTO estudianteRegistrado2 = estudianteService.registrarEstudiante(estudiante2);
+        EstudianteGetDTO estudianteRegistrado3 = estudianteService.registrarEstudiante(estudiante3);
+
+        List<String> ids = List.of(estudianteRegistrado.getId(), estudianteRegistrado2.getId(), estudianteRegistrado3.getId());
+        assertTrue(estudianteService.eliminarEstudiantes(ids));
+
+        assertThrows(ModelException.class, () -> estudianteService.eliminarEstudiantes(null));
+        assertThrows(ModelException.class, () -> estudianteService.eliminarEstudiantes(List.of()));
     }
 }

@@ -37,6 +37,19 @@ public class EstudianteMapper {
     }
 
     /**
+     * Convierte una lista de EstudiantePostDTO a una lista de Estudiante
+     * @param estudiantes Lista de EstudiantePostDTO a convertir
+     * @return Lista de Estudiante convertida
+     */
+    public static List<Estudiante> toEntity(List<EstudiantePostDTO> estudiantes) {
+        List<Estudiante> entities = new ArrayList<>();
+        for (EstudiantePostDTO estudiante : estudiantes) {
+            entities.add(toEntity(estudiante));
+        }
+        return entities;
+    }
+
+    /**
      * Convierte un Estudiante a un EstudiantePostDTO
      * @param estudiante Estudiante a convertir
      * @return EstudiantePostDTO convertido
