@@ -1,5 +1,7 @@
 package asist.io.entity;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,7 +29,7 @@ public class Usuario {
     private String contrasena;
 
     /* Se agrego la relacion de Usuario con curso (Unidireccional) */
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "curso_id", nullable = false)
-    private Curso curso;
+    private List<Curso> cursos;
 }   
