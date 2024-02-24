@@ -41,10 +41,6 @@ public class EstudianteController {
             response.put("success", false);
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
         }
-        catch (DataIntegrityViolationException e) {
-            response.put("error", "Body can't be null");
-            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-        }
     }
 
     /**
@@ -52,7 +48,7 @@ public class EstudianteController {
      * @param estudiantes Lista de estudiantes a registrar
      * @return ResponseEntity que contiene los estudiantes registrados si la petición fue exitosa o un mensaje de error si no lo fue
      */
-    @PostMapping()
+    @PostMapping("/lista")
     public ResponseEntity registrarEstudiantes(@Valid @RequestBody List<EstudiantePostDTO> estudiantes) {
         Map<String, Object> response = new HashMap<>();
 
@@ -66,16 +62,6 @@ public class EstudianteController {
             response.put("error", e.getMessage());
             response.put("success", false);
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-        }
-        catch (DataIntegrityViolationException e) {
-            response.put("error", "Body can't be null");
-            response.put("success", false);
-            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-        }
-        catch (Exception e) {
-            response.put("error", "Error interno del servidor");
-            response.put("success", false);
-            return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -182,10 +168,6 @@ public class EstudianteController {
         catch (ModelException e) {
             response.put("error", e.getMessage());
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-        }
-        catch (Exception e) {
-            response.put("error", "Error interno del servidor");
-            return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
