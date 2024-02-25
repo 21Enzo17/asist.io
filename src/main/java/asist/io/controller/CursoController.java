@@ -24,7 +24,8 @@ public class CursoController {
     /**
      * Registra un curso en la base de datos
      * @param curso Curso a registrar
-     * @return El resultado de la operación en un ResponseEntity
+     * @return ResponseEntity con la información del curso registrado si la operación fue exitosa,
+     * de lo contrario la ResponseEntity contendrá un mensaje de error
      */
     @PostMapping()
     public ResponseEntity registrarCurso(@Valid @RequestBody CursoPostDTO curso) {
@@ -50,7 +51,7 @@ public class CursoController {
     /**
      * Elimina un curso de la base de datos
      * @param id Id del curso a eliminar
-     * @return El resultado de la operación en un ResponseEntity
+     * @return ResponseEntity que indica si la operación fue exitosa o no
      */
     @DeleteMapping("/{id}")
     public ResponseEntity eliminarCurso(@PathVariable String id) {
@@ -71,7 +72,8 @@ public class CursoController {
     /**
      * Actualiza un curso en la base de datos
      * @param curso Curso a actualizar
-     * @return El resultado de la operación en un ResponseEntity
+     * @return ResponseEntity con la información del curso actualizado si la operación fue exitosa,
+     * de lo contrario la ResponseEntity contendrá un mensaje de error
      */
     @PatchMapping()
     public ResponseEntity actualizarCurso(@Valid @RequestBody CursoPatchDTO curso) {
@@ -97,7 +99,8 @@ public class CursoController {
     /**
      * Obtiene un curso por su id
      * @param id Id del curso a obtener
-     * @return El resultado de la operación en un ResponseEntity
+     * @return ResponseEntity con la información del curso si se encontró un curso con el id proporcionado,
+     * de lo contrario la ResponseEntity contendrá un mensaje de error
      */
     @GetMapping("/id/{id}")
     public ResponseEntity obtenerCursoPorId(@PathVariable String id) {
@@ -119,7 +122,8 @@ public class CursoController {
     /**
      * Obtiene un curso por su código de asistencia
      * @param codigoAsistencia Código de asistencia del curso a obtener
-     * @return El resultado de la operación en un ResponseEntity
+     * @return ResponseEntity con la información del curso si se encontró un curso con el código de asistencia proporcionado,
+     * de lo contrario la ResponseEntity contendrá un mensaje de error
      */
     @GetMapping("/codigo-asistencia/{codigoAsistencia}")
     public ResponseEntity obtenerCursoPorCodigoAsistencia(@PathVariable String codigoAsistencia) {
@@ -141,7 +145,8 @@ public class CursoController {
     /**
      * Obtiene una lista de cursos por el id de un usuario
      * @param idUsuario Id del usuario
-     * @return El resultado de la operación en un ResponseEntity
+     * @return ResponseEntity con la lista de cursos si se encontraron cursos con el id de usuario proporcionado,
+     * de lo contrario la ResponseEntity contendrá un mensaje de error
      */
     @GetMapping("/usuario/{idUsuario}")
     public ResponseEntity obtenerCursosPorIdUsuario(@PathVariable String idUsuario) {

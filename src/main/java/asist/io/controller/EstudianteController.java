@@ -23,7 +23,8 @@ public class EstudianteController {
     /**
      * Endpoint que registra un estudiante en la base de datos
      * @param estudiante Estudiante a registrar
-     * @return ResponseEntity con la respuesta de la petición
+     * @return ResponseEntity que contiene el estudiante registrado si
+     * la petición fue exitosa o un mensaje de error en caso contrario
      */
     @PostMapping()
     public ResponseEntity registrarEstudiante(@Valid @RequestBody EstudiantePostDTO estudiante) {
@@ -45,7 +46,8 @@ public class EstudianteController {
     /**
      * Endpoint que registra una lista de estudiantes en la base de datos
      * @param estudiantes Lista de estudiantes a registrar
-     * @return ResponseEntity que contiene los estudiantes registrados si la petición fue exitosa o un mensaje de error si no lo fue
+     * @return ResponseEntity que contiene los estudiantes registrados si la
+     * petición fue exitosa o un mensaje de error en caso contrario
      */
     @PostMapping("/lista")
     public ResponseEntity registrarEstudiantes(@Valid @RequestBody List<EstudiantePostDTO> estudiantes) {
@@ -67,7 +69,8 @@ public class EstudianteController {
     /**
      * Endpoint que obtiene un estudiante de la base de datos
      * @param idEstudiante id del estudiante a obtener
-     * @return ResponseEntity con la respuesta de la petición
+     * @return ResponseEntity que contiene el estudiante obtenido si la
+     * petición fue exitosa o un mensaje de error en caso contrario
      */
     @GetMapping("/id/{idEstudiante}")
     public ResponseEntity obtenerEstudiantePorId(@PathVariable String idEstudiante) {
@@ -89,7 +92,8 @@ public class EstudianteController {
     /**
      * Endpoint que obtiene un estudiante de la base de datos
      * @param lu lu del estudiante a obtener
-     * @return ResponseEntity con la respuesta de la petición
+     * @return ResponseEntity que contiene el estudiante obtenido si la
+     * petición fue exitosa o un mensaje de error en caso contrario
      */
     @GetMapping("/lu/{lu}")
     public ResponseEntity obtenerEstudiantePorLu(@PathVariable String lu) {
@@ -111,7 +115,8 @@ public class EstudianteController {
     /**
      * Endpoint que obtiene una lista de estudiantes que entan registrados en un curso
      * @param id id del curso
-     * @return ResponseEntity con la respuesta de la petición
+     * @return ResponseEntity que contiene la lista de estudiantes obtenidos si la
+     * petición fue exitosa o un mensaje de error en caso contrario
      */
     @GetMapping("/curso/{id}")
     public ResponseEntity obtenerEstudiantesPorIdCurso(@PathVariable String id) {
@@ -133,7 +138,8 @@ public class EstudianteController {
     /**
      * Endpoint que elimina un estudiante de la base de datos
      * @param id id del estudiante a eliminar
-     * @return ResponseEntity con la respuesta de la petición
+     * @return ResponseEntity que contiene un mensaje de éxito si la
+     * petición fue exitosa o un mensaje de error en caso contrario
      */
     @DeleteMapping("/{id}")
     public ResponseEntity eliminarEstudiantePorId(@PathVariable String id) {
@@ -153,7 +159,8 @@ public class EstudianteController {
     /**
      * Endpoint que elimina una lista de estudiantes de la base de datos
      * @param ids Lista de ids de estudiantes a eliminar
-     * @return ResponseEntity con un mensaje de éxito si la petición fue exitosa o un mensaje de error si no lo fue
+     * @return ResponseEntity que contiene un mensaje de éxito si la
+     * petición fue exitosa o un mensaje de error en caso contrario
      */
     @DeleteMapping()
     public ResponseEntity eliminarEstudiantes(@RequestBody List<String> ids) {
