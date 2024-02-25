@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/cursos")
+@RequestMapping("/api/v1/cursos")
 public class CursoController {
     @Autowired
     private ICursoService cursoService;

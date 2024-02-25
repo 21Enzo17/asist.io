@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/inscripciones")
+@RequestMapping("/api/v1/inscripciones")
 public class InscripcionController {
     @Autowired
     private IInscripcionService inscripcionService;
