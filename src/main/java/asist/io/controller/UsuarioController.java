@@ -17,6 +17,7 @@ import asist.io.dto.usuarioDtos.UsuarioRegDto;
 import asist.io.exceptions.ModelException;
 import asist.io.service.IAuthService;
 import asist.io.service.IUsuarioService;
+import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,7 +34,7 @@ public class UsuarioController {
     private IAuthService authService;
     
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody UsuarioRegDto usuario) {
+    public ResponseEntity<?> register(@Valid @RequestBody UsuarioRegDto usuario) {
         Map<String, Object> response = new HashMap<>();
         try {
             usuarioService.guardarUsuario(usuario);

@@ -34,7 +34,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Metodo para validar el token
+     * Metodo para validar el token y refrescar el token actual
      * @param request
      * @param response
      * @param filterChain
