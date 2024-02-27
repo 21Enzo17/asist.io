@@ -5,6 +5,8 @@ import asist.io.dto.cursoDTO.CursoPatchDTO;
 import asist.io.dto.cursoDTO.CursoPostDTO;
 import asist.io.exception.ModelException;
 
+import java.util.List;
+
 public interface ICursoService {
     /**
      * Registra un curso en la base de datos
@@ -53,4 +55,11 @@ public interface ICursoService {
      * @throws ModelException Si el id es nulo o vacío
      */
     public CursoGetDTO obtenerCursoPorIdUsuario(String id) throws ModelException;
+
+    /**
+     * Obtiene los cursos según una palabra clave que coincida con el nombre
+     * @param termino Palabra clave para buscar cursos
+     * @return Lista de cursos que contienen la palabra clave
+     */
+    public List<CursoGetDTO> obtenerCursosPorTermino(String termino) throws ModelException;
 }

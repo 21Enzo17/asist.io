@@ -210,4 +210,21 @@ public class CursoServiceTest {
         cursoService.eliminarCurso(cursoRegistrado.getId());
         cursoPostDTO.setCodigoAsistencia(null);
     }
+
+    /**
+     * Test para obtener un curso por término de búsqueda
+     * @throws ModelException
+     */
+    @Test()
+    @DisplayName("Obtener curso por término de búsqueda")
+    public void obtenerCursosPorTermino() throws ModelException {
+        CursoGetDTO cursoRegistrado = cursoService.registrarCurso(cursoPostDTO);
+        assertTrue(!cursoService.obtenerCursosPorTermino("Curso").isEmpty());
+        assertTrue(!cursoService.obtenerCursosPorTermino("prueba").isEmpty());
+        assertThrows( ModelException.class,() -> {
+            System.out.println(cursoService.obtenerCursosPorTermino("fisica"));
+            cursoService.obtenerCursosPorTermino("halve");
+        });
+        cursoService.eliminarCurso(cursoRegistrado.getId());
+    }
 }

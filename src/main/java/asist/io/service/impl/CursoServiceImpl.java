@@ -10,6 +10,8 @@ import asist.io.service.ICursoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CursoServiceImpl implements ICursoService {
     @Autowired
@@ -109,5 +111,18 @@ public class CursoServiceImpl implements ICursoService {
     @Override
     public CursoGetDTO obtenerCursoPorIdUsuario(String id) throws ModelException {
         throw new ModelException("Not implemented yet");
+    }
+
+    /**
+     * Obtiene los cursos según una palabra clave que coincida con el nombre
+     * @param termino Palabra clave para buscar cursos
+     * @return Lista de cursos que contienen la palabra clave
+     */
+    public List<CursoGetDTO> obtenerCursosPorTermino(String termino) throws ModelException {
+        if (termino == null || termino.isBlank() || termino.isEmpty()) return List.of();
+
+        List<CursoGetDTO> cursosObtenidos = CursoMapper.toGetDTO(cursoRepository.findByNombreContaining(termino));
+        if (cursosObtenidos.isEmpty()) throw new ModelException("No se encontraron cursos con el término " + termino);
+        return cursosObtenidos;
     }
 }

@@ -5,6 +5,9 @@ import asist.io.dto.cursoDTO.CursoPatchDTO;
 import asist.io.dto.cursoDTO.CursoPostDTO;
 import asist.io.entity.Curso;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CursoMapper {
 
     /**
@@ -73,6 +76,11 @@ public class CursoMapper {
         return dto;
     }
 
+    /**
+     * Convertir un Curso a un CursoPatchDTO
+     * @param curso Curso a convertir
+     * @return
+     */
     public static CursoPatchDTO toPatchDTO(Curso curso) {
         if (curso == null) return null;
 
@@ -85,6 +93,11 @@ public class CursoMapper {
         return dto;
     }
 
+    /**
+     * Convertir un CursoGetDTO a un CursoPatchDTO
+     * @param curso CursoGetDTO a convertir
+     * @return
+     */
     public static CursoPatchDTO toPatchDTO(CursoGetDTO curso) {
         if (curso == null) return null;
 
@@ -97,6 +110,11 @@ public class CursoMapper {
         return dto;
     }
 
+    /**
+     * Convertir un Curso a un CursoGetDTO
+     * @param curso Curso a convertir
+     * @return
+     */
     public static CursoGetDTO toGetDTO(Curso curso) {
         if (curso == null) return null;
 
@@ -107,6 +125,21 @@ public class CursoMapper {
         dto.setCarrera(curso.getCarrera());
         dto.setCodigoAsistencia(curso.getCodigoAsistencia());
         return dto;
+    }
+
+    /**
+     * Convertir una lista de Curso a una lista de CursoGetDTO
+     * @param cursos Lista de cursos a convertir
+     * @return
+     */
+    public static List<CursoGetDTO> toGetDTO(List<Curso> cursos) {
+        if (cursos == null) return null;
+
+        List<CursoGetDTO> dtos = new ArrayList<>();
+        for (Curso curso : cursos) {
+            dtos.add(toGetDTO(curso));
+        }
+        return dtos;
     }
 
 
