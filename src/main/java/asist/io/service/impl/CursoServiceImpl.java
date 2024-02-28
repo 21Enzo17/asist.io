@@ -3,9 +3,11 @@ package asist.io.service.impl;
 import asist.io.dto.cursoDTO.CursoGetDTO;
 import asist.io.dto.cursoDTO.CursoPatchDTO;
 import asist.io.dto.cursoDTO.CursoPostDTO;
+import asist.io.entity.Usuario;
 import asist.io.exception.ModelException;
 import asist.io.mapper.CursoMapper;
 import asist.io.repository.CursoRepository;
+import asist.io.repository.UsuarioRepository;
 import asist.io.service.ICursoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,8 @@ import java.util.List;
 public class CursoServiceImpl implements ICursoService {
     @Autowired
     private CursoRepository cursoRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
 
     /**
@@ -30,7 +34,10 @@ public class CursoServiceImpl implements ICursoService {
 
         if (curso.getCodigoAsistencia() != null && cursoRepository.existsByCodigoAsistencia(curso.getCodigoAsistencia())) throw new ModelException("El código de asistencia " + curso.getCodigoAsistencia() + " ya esta en uso");
 
-        CursoGetDTO cursoRegistrado = CursoMapper.toGetDTO(cursoRepository.save(CursoMapper.toEntity(curso)));
+        if (!usuarioRepository.existsById(curso.getIdUsuario())) throw new ModelException("El usuario con id " + curso.getIdUsuario() + " no existe");
+
+        Usuario usuario = usuarioRepository.findById(curso.getIdUsuario()).get();
+        CursoGetDTO cursoRegistrado = CursoMapper.toGetDTO(cursoRepository.save(CursoMapper.toEntity(curso, usuario)));
         return cursoRegistrado;
     }
 

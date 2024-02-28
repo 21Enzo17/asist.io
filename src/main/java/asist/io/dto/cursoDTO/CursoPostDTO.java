@@ -31,4 +31,9 @@ public class CursoPostDTO implements Serializable {
     private String carrera;
 
     private String codigoAsistencia;
+
+    @NotNull(message = "El id del usuario no puede ser nulo")
+    @NotEmpty(message = "El id del usuario no puede estar vacío")
+    @NotBlank(message = "El id del usuario no puede estar en blanco")
+    private String idUsuario;
 }

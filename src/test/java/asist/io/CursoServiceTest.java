@@ -227,4 +227,11 @@ public class CursoServiceTest {
         });
         cursoService.eliminarCurso(cursoRegistrado.getId());
     }
+
+    @Test()
+    @DisplayName("Obtener cursos por id de usuario")
+    @Disabled
+    public void obtenerCursosPorIdUsuario() throws ModelException {
+        throw new ModelException("Not tested");
+    }
 }

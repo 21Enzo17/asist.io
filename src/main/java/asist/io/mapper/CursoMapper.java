@@ -4,6 +4,7 @@ import asist.io.dto.cursoDTO.CursoGetDTO;
 import asist.io.dto.cursoDTO.CursoPatchDTO;
 import asist.io.dto.cursoDTO.CursoPostDTO;
 import asist.io.entity.Curso;
+import asist.io.entity.Usuario;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ public class CursoMapper {
      * @param curso CursoPostDTO a convertir
      * @return Curso convertido
      */
-    public static Curso toEntity(CursoPostDTO curso) {
+    public static Curso toEntity(CursoPostDTO curso, Usuario usuario) {
         if (curso == null) return null;
 
         Curso entity = new Curso();
@@ -23,6 +24,7 @@ public class CursoMapper {
         entity.setDescripcion(curso.getDescripcion());
         entity.setCarrera(curso.getCarrera());
         entity.setCodigoAsistencia(curso.getCodigoAsistencia());
+        entity.setUsuario(usuario);
         return entity;
     }
 

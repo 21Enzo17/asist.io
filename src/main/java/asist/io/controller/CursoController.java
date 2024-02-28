@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -153,7 +154,7 @@ public class CursoController {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            CursoGetDTO curso = cursoService.obtenerCursoPorIdUsuario(idUsuario);
+            List<CursoGetDTO> curso = cursoService.obtenerCursosPorIdUsuario(idUsuario);
             response.put("cursos", curso);
             response.put("success", true);
             return new ResponseEntity(response, HttpStatus.OK);
