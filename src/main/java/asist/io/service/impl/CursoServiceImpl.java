@@ -103,14 +103,20 @@ public class CursoServiceImpl implements ICursoService {
     }
 
     /**
-     * Obtiene un curso por el id de un usuario
+     * Obtiene los cursos que pertenecen a un usuario
      * @param id Id del usuario
-     * @return Curso si existe, null si no existe
+     * @return Lista de cursos que pertenecen al usuario
      * @throws ModelException Si el id es nulo o vacío
      */
     @Override
-    public CursoGetDTO obtenerCursoPorIdUsuario(String id) throws ModelException {
-        throw new ModelException("Not implemented yet");
+    public List<CursoGetDTO> obtenerCursosPorIdUsuario(String id) throws ModelException {
+        if (id == null || id.isBlank() || id.isEmpty()) throw new ModelException("El id no puede ser nulo ni vacío");
+
+        if (cursoRepository.findByUsuarioId(id).isEmpty()) return null;
+
+        List<CursoGetDTO> cursosEncontrados = CursoMapper.toGetDTO(cursoRepository.findByUsuarioId(id));
+        if (cursosEncontrados.isEmpty()) throw new ModelException("El usuario con id " + id + " no tiene cursos registrados");
+        return cursosEncontrados;
     }
 
     /**
