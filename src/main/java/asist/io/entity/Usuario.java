@@ -31,3 +31,4 @@ public class Usuario {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "usuario")
     private List<Curso> cursos;
 }   
+
