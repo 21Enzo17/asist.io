@@ -1,8 +1,8 @@
 package asist.io;
 
-import asist.io.dto.CursoGetDTO;
-import asist.io.dto.CursoPatchDTO;
-import asist.io.dto.CursoPostDTO;
+import asist.io.dto.cursoDTO.CursoGetDTO;
+import asist.io.dto.cursoDTO.CursoPatchDTO;
+import asist.io.dto.cursoDTO.CursoPostDTO;
 import asist.io.exception.ModelException;
 import asist.io.mapper.CursoMapper;
 import asist.io.service.ICursoService;
@@ -209,5 +209,29 @@ public class CursoServiceTest {
 
         cursoService.eliminarCurso(cursoRegistrado.getId());
         cursoPostDTO.setCodigoAsistencia(null);
+    }
+
+    /**
+     * Test para obtener un curso por término de búsqueda
+     * @throws ModelException
+     */
+    @Test()
+    @DisplayName("Obtener curso por término de búsqueda")
+    public void obtenerCursosPorTermino() throws ModelException {
+        CursoGetDTO cursoRegistrado = cursoService.registrarCurso(cursoPostDTO);
+        assertTrue(!cursoService.obtenerCursosPorTermino("Curso").isEmpty());
+        assertTrue(!cursoService.obtenerCursosPorTermino("prueba").isEmpty());
+        assertThrows( ModelException.class,() -> {
+            System.out.println(cursoService.obtenerCursosPorTermino("fisica"));
+            cursoService.obtenerCursosPorTermino("halve");
+        });
+        cursoService.eliminarCurso(cursoRegistrado.getId());
+    }
+
+    @Test()
+    @DisplayName("Obtener cursos por id de usuario")
+    @Disabled
+    public void obtenerCursosPorIdUsuario() throws ModelException {
+        throw new ModelException("Not tested");
     }
 }

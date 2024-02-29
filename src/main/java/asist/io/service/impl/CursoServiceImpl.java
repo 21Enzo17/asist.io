@@ -1,19 +1,25 @@
 package asist.io.service.impl;
 
-import asist.io.dto.CursoGetDTO;
-import asist.io.dto.CursoPatchDTO;
-import asist.io.dto.CursoPostDTO;
+import asist.io.dto.cursoDTO.CursoGetDTO;
+import asist.io.dto.cursoDTO.CursoPatchDTO;
+import asist.io.dto.cursoDTO.CursoPostDTO;
+import asist.io.entity.Usuario;
 import asist.io.exception.ModelException;
 import asist.io.mapper.CursoMapper;
 import asist.io.repository.CursoRepository;
+import asist.io.repository.UsuarioRepository;
 import asist.io.service.ICursoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CursoServiceImpl implements ICursoService {
     @Autowired
     private CursoRepository cursoRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
 
     /**
@@ -28,7 +34,10 @@ public class CursoServiceImpl implements ICursoService {
 
         if (curso.getCodigoAsistencia() != null && cursoRepository.existsByCodigoAsistencia(curso.getCodigoAsistencia())) throw new ModelException("El código de asistencia " + curso.getCodigoAsistencia() + " ya esta en uso");
 
-        CursoGetDTO cursoRegistrado = CursoMapper.toGetDTO(cursoRepository.save(CursoMapper.toEntity(curso)));
+        if (!usuarioRepository.existsById(curso.getIdUsuario())) throw new ModelException("El usuario con id " + curso.getIdUsuario() + " no existe");
+
+        Usuario usuario = usuarioRepository.findById(curso.getIdUsuario()).get();
+        CursoGetDTO cursoRegistrado = CursoMapper.toGetDTO(cursoRepository.save(CursoMapper.toEntity(curso, usuario)));
         return cursoRegistrado;
     }
 
@@ -101,13 +110,32 @@ public class CursoServiceImpl implements ICursoService {
     }
 
     /**
-     * Obtiene un curso por el id de un usuario
+     * Obtiene los cursos que pertenecen a un usuario
      * @param id Id del usuario
-     * @return Curso si existe, null si no existe
+     * @return Lista de cursos que pertenecen al usuario
      * @throws ModelException Si el id es nulo o vacío
      */
     @Override
-    public CursoGetDTO obtenerCursoPorIdUsuario(String id) throws ModelException {
-        throw new ModelException("Not implemented yet");
+    public List<CursoGetDTO> obtenerCursosPorIdUsuario(String id) throws ModelException {
+        if (id == null || id.isBlank() || id.isEmpty()) throw new ModelException("El id no puede ser nulo ni vacío");
+
+        if (cursoRepository.findByUsuarioId(id).isEmpty()) return null;
+
+        List<CursoGetDTO> cursosEncontrados = CursoMapper.toGetDTO(cursoRepository.findByUsuarioId(id));
+        if (cursosEncontrados.isEmpty()) throw new ModelException("El usuario con id " + id + " no tiene cursos registrados");
+        return cursosEncontrados;
+    }
+
+    /**
+     * Obtiene los cursos según una palabra clave que coincida con el nombre
+     * @param termino Palabra clave para buscar cursos
+     * @return Lista de cursos que contienen la palabra clave
+     */
+    public List<CursoGetDTO> obtenerCursosPorTermino(String termino) throws ModelException {
+        if (termino == null || termino.isBlank() || termino.isEmpty()) return List.of();
+
+        List<CursoGetDTO> cursosObtenidos = CursoMapper.toGetDTO(cursoRepository.findByNombreContaining(termino));
+        if (cursosObtenidos.isEmpty()) throw new ModelException("No se encontraron cursos con el término " + termino);
+        return cursosObtenidos;
     }
 }

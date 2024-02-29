@@ -1,8 +1,8 @@
 package asist.io.mapper;
 
-import asist.io.dto.EstudianteGetDTO;
-import asist.io.dto.EstudiantePathDTO;
-import asist.io.dto.EstudiantePostDTO;
+import asist.io.dto.estudianteDTO.EstudianteGetDTO;
+import asist.io.dto.estudianteDTO.EstudiantePathDTO;
+import asist.io.dto.estudianteDTO.EstudiantePostDTO;
 import asist.io.entity.Estudiante;
 
 import java.util.ArrayList;
@@ -34,6 +34,19 @@ public class EstudianteMapper {
         entity.setLu(estudiante.getLu());
 
         return entity;
+    }
+
+    /**
+     * Convierte una lista de EstudiantePostDTO a una lista de Estudiante
+     * @param estudiantes Lista de EstudiantePostDTO a convertir
+     * @return Lista de Estudiante convertida
+     */
+    public static List<Estudiante> toEntity(List<EstudiantePostDTO> estudiantes) {
+        List<Estudiante> entities = new ArrayList<>();
+        for (EstudiantePostDTO estudiante : estudiantes) {
+            entities.add(toEntity(estudiante));
+        }
+        return entities;
     }
 
     /**

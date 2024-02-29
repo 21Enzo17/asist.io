@@ -22,4 +22,7 @@ public class Curso {
     private String carrera;
     @Column(name = "codigo_asistencia", nullable = true, unique = true)
     private String codigoAsistencia;
+    @ManyToOne()
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
 }

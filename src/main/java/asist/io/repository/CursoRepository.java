@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface CursoRepository extends JpaRepository<Curso, String> {
     /**
@@ -21,4 +23,19 @@ public interface CursoRepository extends JpaRepository<Curso, String> {
      * @return true si existe, false si no
      */
     public boolean existsByCodigoAsistencia(String codigoAsistencia);
+
+    /**
+     * Busca cursos por el nombre que coincida con la palabra clave
+     * @param nombre Palabra clave para buscar cursos
+     * @return Lista de cursos que contienen la palabra clave
+     */
+    @Query("SELECT c FROM Curso c WHERE c.nombre LIKE %?1%")
+    public List<Curso> findByNombreContaining(String nombre);
+
+    /**
+     * Busca cursos por el id de un usuario
+     * @param id Id del usuario
+     * @return Lista de cursos que pertenecen al usuario
+     */
+    public List<Curso> findByUsuarioId(String id);
 }

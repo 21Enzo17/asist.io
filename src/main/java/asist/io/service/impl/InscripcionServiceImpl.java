@@ -1,7 +1,7 @@
 package asist.io.service.impl;
 
-import asist.io.dto.InscripcionGetDTO;
-import asist.io.dto.InscripcionPostDTO;
+import asist.io.dto.inscripcionDTO.InscripcionGetDTO;
+import asist.io.dto.inscripcionDTO.InscripcionPostDTO;
 import asist.io.entity.Inscripcion;
 import asist.io.exception.ModelException;
 import asist.io.mapper.InscripcionMapper;

@@ -1,7 +1,7 @@
 package asist.io.mapper;
 
-import asist.io.dto.InscripcionGetDTO;
-import asist.io.dto.InscripcionPostDTO;
+import asist.io.dto.inscripcionDTO.InscripcionGetDTO;
+import asist.io.dto.inscripcionDTO.InscripcionPostDTO;
 import asist.io.entity.Curso;
 import asist.io.entity.Estudiante;
 import asist.io.entity.Inscripcion;

@@ -1,4 +1,4 @@
-package asist.io.dto;
+package asist.io.dto.estudianteDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,10 +11,8 @@ import java.io.Serializable;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CursoGetDTO implements Serializable {
+public class EstudiantePathDTO implements Serializable {
     private String id;
+    private String lu;
     private String nombre;
-    private String descripcion;
-    private String carrera;
-    private String codigoAsistencia;
 }

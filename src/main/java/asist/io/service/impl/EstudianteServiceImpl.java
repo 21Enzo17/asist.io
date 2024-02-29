@@ -1,7 +1,7 @@
 package asist.io.service.impl;
 
-import asist.io.dto.EstudianteGetDTO;
-import asist.io.dto.EstudiantePostDTO;
+import asist.io.dto.estudianteDTO.EstudianteGetDTO;
+import asist.io.dto.estudianteDTO.EstudiantePostDTO;
 import asist.io.exception.ModelException;
 import asist.io.mapper.EstudianteMapper;
 import asist.io.repository.CursoRepository;
@@ -36,6 +36,19 @@ public class EstudianteServiceImpl implements IEstudianteService {
     }
 
     /**
+     * Registra una lista de estudiantes en la base de datos
+     * @param estudiantes Lista de estudiantes a registrar
+     * @return Lista de estudiantes registrados
+     * @throws ModelException Si la lista de estudiantes es nula o vacía
+     */
+    public List<EstudianteGetDTO> registrarEstudiantes(List<EstudiantePostDTO> estudiantes) throws ModelException {
+        if (estudiantes == null || estudiantes.isEmpty()) throw new ModelException("La lista de estudiantes no puede ser nula ni vacía");
+
+        List<EstudianteGetDTO> estudiantesRegistrados = EstudianteMapper.toGetDTO(estudianteRepository.saveAll(EstudianteMapper.toEntity(estudiantes)));
+        return estudiantesRegistrados;
+    }
+
+    /**
      * Elimina un estudiante en la base de datos
      * @param id Id del estudiante a eliminar
      * @return true si se eliminó el estudiante, false si no existe el estudiante
@@ -52,6 +65,24 @@ public class EstudianteServiceImpl implements IEstudianteService {
     }
 
     /**
+     * Elimina una lista de estudiantes en la base de datos
+     * @param ids Lista de ids de estudiantes a eliminar
+     * @return true si se eliminaron los estudiantes, false si no existe alguno de los estudiantes
+     * @throws ModelException Si la lista de ids es nula o vacía
+     */
+    public boolean eliminarEstudiantes(List<String> ids) throws ModelException {
+        if (ids == null || ids.isEmpty()) throw new ModelException("La lista de ids no puede ser nula ni vacía");
+
+
+        for (String id : ids) {
+            if (!estudianteRepository.existsById(id)) return false;
+        }
+
+        estudianteRepository.deleteAllById(ids);
+        return true;
+    }
+
+    /**
      * Obtiene un estudiante por su lu
      * @param lu Lu del estudiante a obtener
      * @return Estudiante si existe, null si no existe
@@ -61,7 +92,7 @@ public class EstudianteServiceImpl implements IEstudianteService {
     public EstudianteGetDTO obtenerEstudiantePorLu(String lu) throws ModelException {
         if (lu == null || lu.isEmpty() || lu.isBlank()) throw new ModelException("El lu no puede ser nulo ni vacío");
 
-        if (!estudianteRepository.existsByLu(lu)) return null;
+        if (!estudianteRepository.existsByLu(lu)) throw new ModelException("El estudiante con el lu " + lu + " no existe");
 
         EstudianteGetDTO estudianteEncontrado = EstudianteMapper.toGetDTO(estudianteRepository.findByLu(lu));
         return estudianteEncontrado;
@@ -75,6 +106,8 @@ public class EstudianteServiceImpl implements IEstudianteService {
     @Override
     public EstudianteGetDTO obtenerEstudiantePorId(String id) throws ModelException {
         if (id == null || id.isEmpty() || id.isBlank()) throw new ModelException("El id del estudiante no puede ser nulo ni vacío");
+
+        if (!estudianteRepository.existsById(id)) throw new ModelException("El estudiante con el id " + id + " no existe");
 
         EstudianteGetDTO estudianteEncontrado = EstudianteMapper.toGetDTO(estudianteRepository.findById(id).get());
         return estudianteEncontrado;

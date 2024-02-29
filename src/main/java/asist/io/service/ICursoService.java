@@ -1,9 +1,11 @@
 package asist.io.service;
 
-import asist.io.dto.CursoGetDTO;
-import asist.io.dto.CursoPatchDTO;
-import asist.io.dto.CursoPostDTO;
+import asist.io.dto.cursoDTO.CursoGetDTO;
+import asist.io.dto.cursoDTO.CursoPatchDTO;
+import asist.io.dto.cursoDTO.CursoPostDTO;
 import asist.io.exception.ModelException;
+
+import java.util.List;
 
 public interface ICursoService {
     /**
@@ -47,10 +49,17 @@ public interface ICursoService {
     public CursoGetDTO obtenerCursoPorCodigoAsistencia(String codigoAsistencia) throws ModelException;
 
     /**
-     * Obtiene un curso por el id de un usuario
+     * Obtiene los cursos que pertenecen a un usuario
      * @param id Id del usuario
-     * @return Curso si existe, null si no existe
+     * @return Lista de cursos que pertenecen al usuario
      * @throws ModelException Si el id es nulo o vacío
      */
-    public CursoGetDTO obtenerCursoPorIdUsuario(String id) throws ModelException;
+    public List<CursoGetDTO> obtenerCursosPorIdUsuario(String id) throws ModelException;
+
+    /**
+     * Obtiene los cursos según una palabra clave que coincida con el nombre
+     * @param termino Palabra clave para buscar cursos
+     * @return Lista de cursos que contienen la palabra clave
+     */
+    public List<CursoGetDTO> obtenerCursosPorTermino(String termino) throws ModelException;
 }
