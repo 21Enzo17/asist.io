@@ -27,6 +27,10 @@ public class AuthController {
         try {
             UsuarioLoginResDto loginRes = authService.login(loginReq);
             HttpHeaders responseHeaders = new HttpHeaders();
+            if(!loginRes.getUsuario().getVerificado()){
+                response.put("ErrorInicioSesion", "Usuario no verificado, revise su casilla de email para verificar su cuenta.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(new HttpHeaders()).body(response);
+            }
             responseHeaders.set("Authorization", "Bearer " + loginRes.getToken());
             response.put("Usuario", loginRes.getUsuario());
             return ResponseEntity.ok().headers(responseHeaders).body(response);

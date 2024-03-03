@@ -65,7 +65,11 @@ public class SecurityConfig  {
             })
             .authorizeHttpRequests(auth ->{
                 auth.requestMatchers("/api/v1/auth/**").permitAll();
-                auth.requestMatchers("/api/v1/usuario/register").permitAll();
+                auth.requestMatchers("/api/v1/usuario/registro").permitAll();
+                auth.requestMatchers("/api/v1/usuario/validar/**").permitAll();
+                auth.requestMatchers("/api/v1/usuario/olvide-mi-contrasena").permitAll();
+                auth.requestMatchers("/api/v1/usuario/cambiar-contrasena/**").permitAll();
+                auth.requestMatchers("/api/v1/usuario/reenviar-correo-confirmacion").permitAll();
                 auth.requestMatchers("/testeo").permitAll();
                 auth.anyRequest().authenticated();
             })

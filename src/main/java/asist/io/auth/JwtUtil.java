@@ -15,7 +15,7 @@ public class JwtUtil {
 
 
     private final String secret_key = "mysecretkey";
-    private long accessTokenValidity = 604800;
+    private long accessTokenValidity = 21600;
 
     private final JwtParser jwtParser;
 

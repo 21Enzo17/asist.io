@@ -16,7 +16,7 @@ public class CustomUserDetailsServiceImp implements ICustomUserDetailsService{
 
 
     /**
-     * Metodo encargado de buscar un usuario por su correo y retornarlo como UserDetails
+     * Metodo encargado de buscar un usuario por su correo y retornarlo como UserDetails, usado por AuthenticationManager
      * @param email
      * @return UserDetails
      * @throws UsernameNotFoundException

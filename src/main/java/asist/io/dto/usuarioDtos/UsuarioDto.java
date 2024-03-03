@@ -1,5 +1,6 @@
 package asist.io.dto.usuarioDtos;
 
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,4 +10,5 @@ public class UsuarioDto {
     private String id;
     private String nombre;
     private String correo;
+    private Boolean verificado;
 }

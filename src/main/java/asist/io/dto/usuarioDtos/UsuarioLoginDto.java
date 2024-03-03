@@ -2,6 +2,8 @@ package asist.io.dto.usuarioDtos;
 
 import java.io.Serializable;
 
+import org.apache.xpath.operations.Bool;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +15,8 @@ public class UsuarioLoginDto implements Serializable{
     private String correo;
 
     private String contrasena;
+
+    private Boolean verificado;
 
 
 }

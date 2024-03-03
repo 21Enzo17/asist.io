@@ -25,6 +25,7 @@ public class UsuarioMapper {
         usuarioDto.setId(usuario.getId());
         usuarioDto.setNombre(usuario.getNombre());
         usuarioDto.setCorreo(usuario.getCorreo());
+        usuarioDto.setVerificado(usuario.getVerificado());
         return usuarioDto;
     }
 
@@ -52,6 +53,7 @@ public class UsuarioMapper {
         usuarioDto.setId(usuario.getId());
         usuarioDto.setNombre(usuario.getNombre());
         usuarioDto.setCorreo(usuario.getCorreo());
+        usuarioDto.setVerificado(usuario.isVerificado());
         return usuarioDto;
     }
 

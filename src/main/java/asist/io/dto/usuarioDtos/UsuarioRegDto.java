@@ -1,5 +1,7 @@
 package asist.io.dto.usuarioDtos;
 
+import java.io.Serializable;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -9,7 +11,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UsuarioRegDto {
+public class UsuarioRegDto implements Serializable{
     @NotEmpty(message = "El correo no puede ser nulo ni vacío")
     @Email(message = "El correo no es valido")
     private String correo;
