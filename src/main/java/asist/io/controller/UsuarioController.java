@@ -107,7 +107,7 @@ public class UsuarioController {
         }
     }
 
-    @PatchMapping("/cambiar-contrasena")
+    @PatchMapping("/cambiar-contrasena-logueado")
     public ResponseEntity<?> cambiarContrasena(@RequestParam String correo, @RequestParam String contrasenaNueva, @RequestParam String contrasenaActual) {
         Map<String, Object> response = new HashMap<>();
         try{

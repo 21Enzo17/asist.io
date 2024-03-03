@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import asist.io.dto.usuarioDtos.UsuarioLoginDto;
 import asist.io.dto.usuarioDtos.UsuarioLoginResDto;
 import asist.io.service.IAuthService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -42,4 +45,17 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(new HttpHeaders()).body(response);
         }
     }
+
+    @GetMapping("/verificar-token")
+    public ResponseEntity<?> verificarToken() {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            response.put("Mensaje", "Token verificado correctamente");
+            return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            response.put("Mensaje", "Error al verificar token");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+    
 }

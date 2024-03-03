@@ -6,6 +6,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
 import asist.io.entity.Usuario;
+import asist.io.exceptions.ModelException;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -67,11 +68,13 @@ public class JwtUtil {
             }
             return null;
         } catch (ExpiredJwtException ex) {
-            req.setAttribute("expired", ex.getMessage());
-            throw ex;
+            /*req.setAttribute("expired", ex.getMessage());
+            throw ex;*/
+            throw new ModelException("El token ha expirado");
         } catch (Exception ex) {
-            req.setAttribute("invalid", ex.getMessage());
-            throw ex;
+            /*req.setAttribute("invalid", ex.getMessage());
+            throw ex;*/
+            throw new ModelException("El token es invalido");
         }
     }
 
