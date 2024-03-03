@@ -26,4 +26,6 @@ public interface IUsuarioService {
     public String obtenerTokenPorCorreoTipo(String correo, String tipo);
 
     public void cambiarContrasena(String token, String password);
+
+    public void cambiarContrasenaLogueado(String correo, String contrasenaActual, String contrasenaNueva);
 } 

@@ -106,6 +106,19 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
+
+    @PatchMapping("/cambiar-contrasena")
+    public ResponseEntity<?> cambiarContrasena(@RequestParam String correo, @RequestParam String contrasenaNueva, @RequestParam String contrasenaActual) {
+        Map<String, Object> response = new HashMap<>();
+        try{
+            usuarioService.cambiarContrasenaLogueado(correo, contrasenaActual, contrasenaNueva);
+            response.put("Mensaje", "Contraseña cambiada correctamente");
+            return ResponseEntity.ok().body(response);
+        }catch(ModelException exception){
+            response.put("Mensaje", exception.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
     
     
     

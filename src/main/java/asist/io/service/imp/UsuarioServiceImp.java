@@ -166,6 +166,23 @@ public class UsuarioServiceImp implements IUsuarioService {
         tokenService.eliminarToken(token);
     }
 
+    /**
+     * Cambia la contraseña de un usuario
+     * @param correo
+     * @param password
+     */
+    @Override
+    public void cambiarContrasenaLogueado(String correo, String contrasenaActual, String contrasenaNueva) {
+        Usuario usuario = buscarUsuario(correo);
+        if(!passwordEncoder.matches(contrasenaActual, usuario.getContrasena())){
+            throw new ModelException("La contraseña actual no coincide con la contraseña ingresada");
+        }else if(passwordEncoder.matches(contrasenaNueva, usuario.getContrasena())){
+            throw new ModelException("La contraseña nueva no puede ser igual a la contraseña actual");
+        }
+        usuario.setContrasena(passwordEncoder.encode(contrasenaNueva));
+        usuarioRepository.save(usuario);
+    }
+
 
     @Override
     public String obtenerTokenPorCorreoTipo(String correo, String tipo) {
