@@ -1,4 +1,4 @@
-package asist.io.dto.usuarioDtos;
+package asist.io.dto.usuarioDTO;
 
 import java.io.Serializable;
 
@@ -9,7 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UsuarioLoginDto implements Serializable{
+public class UsuarioLoginDTO implements Serializable{
     private static final long serialVersionUID = 1L;
 
     private String correo;

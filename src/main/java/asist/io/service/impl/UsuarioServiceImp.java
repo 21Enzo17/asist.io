@@ -1,12 +1,15 @@
 package asist.io.service.impl;
 
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import asist.io.dto.usuarioDtos.UsuarioDto;
-import asist.io.dto.usuarioDtos.UsuarioRegDto;
+import asist.io.dto.passwordDTO.PasswordDTO;
+import asist.io.dto.usuarioDTO.UsuarioCambioContrasenaDTO;
+import asist.io.dto.usuarioDTO.UsuarioGetDTO;
+import asist.io.dto.usuarioDTO.UsuarioRegDTO;
 import asist.io.entity.Usuario;
 import asist.io.exception.ModelException;
 import asist.io.mapper.UsuarioMapper;
@@ -37,7 +40,7 @@ public class UsuarioServiceImp implements IUsuarioService {
      * @param usuario
      */
     @Override
-    public void guardarUsuario(UsuarioRegDto usuario) {
+    public void guardarUsuario(UsuarioRegDTO usuario) {
        Usuario usuarioRegistro = new Usuario();
         if(usuarioRepository.findByCorreo(usuario.getCorreo()) == null){
             logger.info("Guardando usuario con correo: " + usuario.getCorreo());
@@ -67,7 +70,7 @@ public class UsuarioServiceImp implements IUsuarioService {
      * @return
      */
     @Override
-    public void actualizarUsuario(UsuarioDto usuario) {
+    public void actualizarUsuario(UsuarioGetDTO usuario) {
         logger.info("Actualizando usuario con correo: " + usuario.getCorreo());
         buscarUsuario(usuario.getCorreo());
         Usuario usuarioActualizado = usuarioMapper.toEntity(usuario);
@@ -81,7 +84,7 @@ public class UsuarioServiceImp implements IUsuarioService {
      * @return UsuarioDto
      */
     @Override
-    public UsuarioDto buscarUsuarioDto(String correo) {
+    public UsuarioGetDTO buscarUsuarioDto(String correo) {
         logger.info("Buscando usuario con correo: " + correo);
         Usuario usuario = buscarUsuario(correo);
         return usuarioMapper.toDto(usuario);
@@ -148,29 +151,27 @@ public class UsuarioServiceImp implements IUsuarioService {
      * @param password Contraseña
      */
     @Override
-    public void cambiarContrasena(String token, String password) {
+    public void cambiarContrasena(String token, PasswordDTO password) {
         tokenService.validarToken(token);
         Usuario usuario = tokenService.obtenerUsuario(token);
-        usuario.setContrasena(passwordEncoder.encode(password));
+        usuario.setContrasena(passwordEncoder.encode(password.getPassword()));
         usuarioRepository.save(usuario);
         tokenService.eliminarToken(token);
     }
 
     /**
      * Metodo encargado de cambiar la contraseña de un usuario logueado.
-     * @param correo 
-     * @param contrasenaActual
-     * @param contrasenaNueva
+     * @param usuarioCambio UsuarioCambioContraDTO contiene el correo, la contraseña actual y la nueva contraseña.
      */
     @Override
-    public void cambiarContrasenaLogueado(String correo, String contrasenaActual, String contrasenaNueva) {
-        Usuario usuario = buscarUsuario(correo);
-        if(!passwordEncoder.matches(contrasenaActual, usuario.getContrasena())){
+    public void cambiarContrasenaLogueado(UsuarioCambioContrasenaDTO usuarioCambio) {
+        Usuario usuario = buscarUsuario(usuarioCambio.getCorreo());
+        if(!passwordEncoder.matches(usuarioCambio.getContrasenaActual(), usuario.getContrasena())){
             throw new ModelException("La contraseña actual no coincide con la contraseña ingresada");
-        }else if(passwordEncoder.matches(contrasenaNueva, usuario.getContrasena())){
+        }else if(passwordEncoder.matches(usuarioCambio.getContrasenaNueva().getPassword(), usuario.getContrasena())){
             throw new ModelException("La contraseña nueva no puede ser igual a la contraseña actual");
         }
-        usuario.setContrasena(passwordEncoder.encode(contrasenaNueva));
+        usuario.setContrasena(passwordEncoder.encode(usuarioCambio.getContrasenaNueva().getPassword()));
         usuarioRepository.save(usuario);
     }
 

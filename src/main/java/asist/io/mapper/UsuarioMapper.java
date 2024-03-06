@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import asist.io.dto.usuarioDtos.UsuarioDto;
-import asist.io.dto.usuarioDtos.UsuarioRegDto;
+import asist.io.dto.usuarioDTO.UsuarioGetDTO;
+import asist.io.dto.usuarioDTO.UsuarioRegDTO;
 import asist.io.entity.Usuario;
 
 @Component
@@ -20,7 +20,7 @@ public class UsuarioMapper {
      * @param usuario
      * @return
      */
-    public Usuario toEntity(UsuarioDto usuario) {
+    public Usuario toEntity(UsuarioGetDTO usuario) {
         Usuario usuarioDto = new Usuario();
         usuarioDto.setId(usuario.getId());
         usuarioDto.setNombre(usuario.getNombre());
@@ -35,11 +35,11 @@ public class UsuarioMapper {
      * @param usuarioReg
      * @return
      */
-    public Usuario toEntity(UsuarioRegDto usuarioReg) {
+    public Usuario toEntity(UsuarioRegDTO usuarioReg) {
         Usuario usuario = new Usuario();
         usuario.setCorreo(usuarioReg.getCorreo());
         usuario.setNombre(usuarioReg.getNombre());
-        usuario.setContrasena(passwordEncoder.encode(usuarioReg.getContrasena()));
+        usuario.setContrasena(passwordEncoder.encode(usuarioReg.getContrasena().getPassword()));
         return usuario;
     }
 
@@ -48,8 +48,8 @@ public class UsuarioMapper {
      * @param usuario
      * @return
      */
-    public UsuarioDto toDto(Usuario usuario) {
-        UsuarioDto usuarioDto = new UsuarioDto();
+    public UsuarioGetDTO toDto(Usuario usuario) {
+        UsuarioGetDTO usuarioDto = new UsuarioGetDTO();
         usuarioDto.setId(usuario.getId());
         usuarioDto.setNombre(usuario.getNombre());
         usuarioDto.setCorreo(usuario.getCorreo());

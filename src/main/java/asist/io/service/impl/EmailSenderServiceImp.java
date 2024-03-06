@@ -10,7 +10,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import asist.io.dto.usuarioDtos.UsuarioDto;
+import asist.io.dto.usuarioDTO.UsuarioGetDTO;
 import asist.io.exception.ModelException;
 import asist.io.service.IEmailSenderService;
 import asist.io.util.BodyGenerator;
@@ -72,13 +72,13 @@ public class EmailSenderServiceImp implements IEmailSenderService{
      * @param token token que se va a enviar para la validacion del correo
      */
     @Override
-    public void generarCorreoValidacion(UsuarioDto usuario, String token ){
+    public void generarCorreoValidacion(UsuarioGetDTO usuario, String token ){
         new Thread(new Runnable(){
             public void run(){
                 String cuerpo = bodyGenerator.generateBody(usuario.getNombre(), token);
                 String tema = "Asist.io - Validación de correo";
                 String para = usuario.getCorreo();
-                enviarCorreo("poo2023correo@gmail.com", para, tema, cuerpo, null);
+                enviarCorreo("poo2023correo@gmail.com", para, tema, cuerpo, Optional.empty());
             }
         }).start();
     }
@@ -90,13 +90,13 @@ public class EmailSenderServiceImp implements IEmailSenderService{
      * @param token token que se va a enviar para la recuperacion de contraseña
      */
     @Override
-    public void generarCorreoRecuperacion(UsuarioDto usuario, String token){
+    public void generarCorreoRecuperacion(UsuarioGetDTO usuario, String token){
         new Thread(new Runnable(){
             public void run(){
                 String cuerpo = bodyGenerator.generatePasswordResetBody(usuario.getNombre(), token);
                 String tema = "Asist.io - Recuperación de contraseña";
                 String para = usuario.getCorreo();
-                enviarCorreo("poo2023correo@gmail.com", para, tema, cuerpo, null);
+                enviarCorreo("poo2023correo@gmail.com", para, tema, cuerpo, Optional.empty());
             }
         }).start();
     }

@@ -9,8 +9,9 @@ import org.springframework.http.*;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
-import asist.io.dto.usuarioDtos.UsuarioLoginDto;
-import asist.io.dto.usuarioDtos.UsuarioLoginResDto;
+import asist.io.dto.usuarioDTO.UsuarioLoginDTO;
+import asist.io.dto.usuarioDTO.UsuarioLoginResDTO;
+import asist.io.exception.ModelException;
 import asist.io.service.IAuthService;
 
 
@@ -38,10 +39,10 @@ public class AuthController {
      * 5. Si ocurre cualquier otra excepción, devuelve una respuesta con estado 400 y un mensaje de error.
      */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UsuarioLoginDto loginReq) {
+    public ResponseEntity<?> login(@RequestBody UsuarioLoginDTO loginReq) {
         Map<String, Object> response = new HashMap<>();
         try {
-            UsuarioLoginResDto loginRes = authService.login(loginReq);
+            UsuarioLoginResDTO loginRes = authService.login(loginReq);
             HttpHeaders responseHeaders = new HttpHeaders();
             if(!loginRes.getUsuario().getVerificado()){
                 response.put("ErrorInicioSesion", "Usuario no verificado, revise su casilla de email para verificar su cuenta.");
@@ -50,7 +51,7 @@ public class AuthController {
             responseHeaders.set("Authorization", "Bearer " + loginRes.getToken());
             response.put("Usuario", loginRes.getUsuario());
             return ResponseEntity.ok().headers(responseHeaders).body(response);
-        } catch (BadCredentialsException e) {
+        } catch (ModelException e) {
             response.put("Mensaje", "Nombre de usuario o contraseña invalidos");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(new HttpHeaders()).body(response);
         } catch (Exception e) {

@@ -10,8 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import asist.io.dto.usuarioDtos.UsuarioLoginDto;
-import asist.io.dto.usuarioDtos.UsuarioRegDto;
+import asist.io.dto.passwordDTO.PasswordDTO;
+import asist.io.dto.usuarioDTO.UsuarioLoginDTO;
+import asist.io.dto.usuarioDTO.UsuarioRegDTO;
 import asist.io.exception.ModelException;
 import asist.io.service.IAuthService;
 import asist.io.service.IUsuarioService;
@@ -26,19 +27,23 @@ public class IAuthServiceTest {
     @Autowired
     private IUsuarioService usuarioService;
 
-    static UsuarioRegDto usuarioRegDto;
+    static UsuarioRegDTO usuarioRegDto;
 
-    static UsuarioLoginDto usuarioLoginDto;
+    static UsuarioLoginDTO usuarioLoginDto;
+
+    static PasswordDTO passwordDto;
 
     @BeforeEach
     public void setUp() {
-        usuarioRegDto = new UsuarioRegDto();
+        usuarioRegDto = new UsuarioRegDTO();
         usuarioRegDto.setCorreo("enzo.meneghini@hotmail.com");
         usuarioRegDto.setNombre("Enzo Meneghini");
-        usuarioRegDto.setContrasena("contrasena.1");
+        passwordDto = new PasswordDTO();
+        passwordDto.setPassword("contrasena.1");
+        usuarioRegDto.setContrasena(passwordDto);
         usuarioService.guardarUsuario(usuarioRegDto);
 
-        usuarioLoginDto = new UsuarioLoginDto();
+        usuarioLoginDto = new UsuarioLoginDTO();
         usuarioLoginDto.setCorreo("enzo.meneghini@hotmail.com");
         usuarioLoginDto.setContrasena("contrasena.1");
 

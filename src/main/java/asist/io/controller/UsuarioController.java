@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import asist.io.dto.usuarioDtos.UsuarioRegDto;
+import asist.io.dto.passwordDTO.PasswordDTO;
+import asist.io.dto.usuarioDTO.UsuarioCambioContrasenaDTO;
+import asist.io.dto.usuarioDTO.UsuarioRegDTO;
 import asist.io.exception.ModelException;
 import asist.io.service.IUsuarioService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,7 +51,7 @@ public class UsuarioController {
      * 4. Si ocurre cualquier otra excepción, devuelve una respuesta con estado 500 (Internal Server Error) y un mensaje de error.
      */
     @PostMapping("/registro")
-    public ResponseEntity<?> register(@Valid @RequestBody UsuarioRegDto usuario, HttpServletRequest request) {
+    public ResponseEntity<?> register(@Valid @RequestBody UsuarioRegDTO usuario, HttpServletRequest request) {
         Map<String, Object> response = new HashMap<>();
         try {
             usuarioService.guardarUsuario(usuario);
@@ -135,7 +137,7 @@ public class UsuarioController {
      * 3. Si el restablecimiento no es exitoso debido a una excepción ModelException (por ejemplo, si el token es inválido), devuelve una respuesta con estado 400 (Bad Request) y un mensaje de error.
      */
     @PatchMapping("/cambiar-contrasena/{token}")
-    public ResponseEntity<?> resetPassword(@PathVariable String token, @RequestParam String contrasena) {
+    public ResponseEntity<?> resetPassword(@PathVariable String token, @RequestBody @Valid PasswordDTO contrasena) {
         Map<String, Object> response = new HashMap<>();
         try{
             usuarioService.cambiarContrasena(token, contrasena);
@@ -173,22 +175,22 @@ public class UsuarioController {
     }
 
     /**
-     * Maneja las solicitudes para reenviar el correo de confirmación a un usuario.
+     * Maneja las solicitudes para cambiar la contraseña de un usuario que ya está autenticado.
      *
-     * @param correo El correo electrónico del usuario al que se le reenviará el correo de confirmación.
+     * @param usuarioCambio Un objeto UsuarioCambioContraDTO que contiene la información del usuario y las contraseñas actual y nueva.
      *
-     * @return Una respuesta HTTP que contiene un mensaje indicando si el reenvío del correo de confirmación fue exitoso o no.
+     * @return Una respuesta HTTP que contiene un mensaje indicando si el cambio de contraseña fue exitoso o no.
      *
      * El método funciona de la siguiente manera:
-     * 1. Intenta reenviar el correo de confirmación utilizando el servicio de usuarios y el correo electrónico proporcionado.
-     * 2. Si el reenvío es exitoso, devuelve una respuesta con estado 200 (OK) y un mensaje indicando que el correo de confirmación ha sido reenviado.
-     * 3. Si el reenvío no es exitoso debido a una excepción ModelException (por ejemplo, si el correo electrónico no está asociado a ningún usuario), devuelve una respuesta con estado 400 (Bad Request) y un mensaje de error.
+     * 1. Intenta cambiar la contraseña del usuario utilizando el servicio de usuarios y la información proporcionada en el objeto usuarioCambio.
+     * 2. Si el cambio es exitoso, devuelve una respuesta con estado 200 (OK) y un mensaje indicando que la contraseña fue cambiada correctamente.
+     * 3. Si el cambio no es exitoso debido a una excepción ModelException (por ejemplo, si la contraseña actual es incorrecta), devuelve una respuesta con estado 400 (Bad Request) y un mensaje de error.
      */
     @PatchMapping("/cambiar-contrasena-logueado")
-    public ResponseEntity<?> cambiarContrasena(@RequestParam String correo, @RequestParam String contrasenaNueva, @RequestParam String contrasenaActual) {
+    public ResponseEntity<?> cambiarContrasena(@RequestBody @Valid UsuarioCambioContrasenaDTO usuarioCambio) {
         Map<String, Object> response = new HashMap<>();
         try{
-            usuarioService.cambiarContrasenaLogueado(correo, contrasenaActual, contrasenaNueva);
+            usuarioService.cambiarContrasenaLogueado(usuarioCambio);
             response.put("Mensaje", "Contraseña cambiada correctamente");
             return ResponseEntity.ok().body(response);
         }catch(ModelException exception){

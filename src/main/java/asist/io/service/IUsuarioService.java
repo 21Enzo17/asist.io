@@ -1,7 +1,9 @@
 package asist.io.service;
 
-import asist.io.dto.usuarioDtos.UsuarioDto;
-import asist.io.dto.usuarioDtos.UsuarioRegDto;
+import asist.io.dto.passwordDTO.PasswordDTO;
+import asist.io.dto.usuarioDTO.UsuarioCambioContrasenaDTO;
+import asist.io.dto.usuarioDTO.UsuarioGetDTO;
+import asist.io.dto.usuarioDTO.UsuarioRegDTO;
 import asist.io.entity.Usuario;
 
 
@@ -11,7 +13,7 @@ public interface IUsuarioService {
      * Metodo encargado de guardar un usuario.
      * @param usuario
      */
-    public void guardarUsuario(UsuarioRegDto usuario);
+    public void guardarUsuario(UsuarioRegDTO usuario);
 
     /**
      * Metodo encargado de eliminar un usuario.
@@ -24,7 +26,7 @@ public interface IUsuarioService {
      * @param usuario 
      * @return
      */
-    public void actualizarUsuario(UsuarioDto usuario);
+    public void actualizarUsuario(UsuarioGetDTO usuario);
 
 
     /**
@@ -32,7 +34,7 @@ public interface IUsuarioService {
      * @param correo
      * @return
      */
-    public UsuarioDto buscarUsuarioDto(String correo);
+    public UsuarioGetDTO buscarUsuarioDto(String correo);
 
     /**
      * Metodo encargado de buscar un usuario por correo.
@@ -72,7 +74,7 @@ public interface IUsuarioService {
      * @param token Token
      * @param password Contraseña
      */
-    public void cambiarContrasena(String token, String password);
+    public void cambiarContrasena(String token, PasswordDTO password);
 
     /**
      * Metodo encargado de cambiar la contraseña de un usuario logueado.
@@ -80,5 +82,5 @@ public interface IUsuarioService {
      * @param contrasenaActual
      * @param contrasenaNueva
      */
-    public void cambiarContrasenaLogueado(String correo, String contrasenaActual, String contrasenaNueva);
+    public void cambiarContrasenaLogueado(UsuarioCambioContrasenaDTO usuario);
 } 
