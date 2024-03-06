@@ -1,5 +1,7 @@
 package asist.io.entity;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,6 +29,14 @@ public class Usuario {
 
     @Column(name = "contrasena", nullable = false)
     private String contrasena;
+
+
+    @Column(name = "verificado", nullable = false)
+    private boolean verificado;
+
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "token_id", nullable = true)
+    private Token token;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "usuario")
     private List<Curso> cursos;
