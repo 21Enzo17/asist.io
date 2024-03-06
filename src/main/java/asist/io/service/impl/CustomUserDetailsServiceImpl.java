@@ -10,7 +10,7 @@ import asist.io.repository.UsuarioRepository;
 import asist.io.service.ICustomUserDetailsService;
 
 @Service
-public class CustomUserDetailsServiceImp implements ICustomUserDetailsService{
+public class CustomUserDetailsServiceImpl implements ICustomUserDetailsService{
     @Autowired
     private UsuarioRepository userRepository;
 

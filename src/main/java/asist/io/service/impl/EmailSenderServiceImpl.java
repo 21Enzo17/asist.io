@@ -19,7 +19,7 @@ import jakarta.mail.internet.MimeMessage;
 
 
 @Service
-public class EmailSenderServiceImp implements IEmailSenderService{
+public class EmailSenderServiceImpl implements IEmailSenderService{
     static Logger logger = Logger.getLogger(IEmailSenderService.class);
     private final JavaMailSender mailSender;
 
@@ -27,7 +27,7 @@ public class EmailSenderServiceImp implements IEmailSenderService{
     private BodyGenerator bodyGenerator;
     
 
-    public EmailSenderServiceImp(JavaMailSender mailSender) {
+    public EmailSenderServiceImpl(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
 

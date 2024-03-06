@@ -17,7 +17,7 @@ import asist.io.exception.ModelException;
 import asist.io.service.IAuthService;
 
 @Service
-public class AuthServiceImp implements IAuthService {
+public class AuthServiceImpl implements IAuthService {
     private final Logger logger =  Logger.getLogger(this.getClass());
 
     @Autowired
@@ -27,7 +27,7 @@ public class AuthServiceImp implements IAuthService {
     private JwtUtil jwtUtil;
 
     @Autowired
-    private UsuarioServiceImp usuarioService;
+    private UsuarioServiceImpl usuarioService;
 
 
     /**

@@ -15,7 +15,7 @@ import asist.io.repository.TokenRepository;
 import asist.io.service.ITokenService;
 
 @Service
-public class TokenServiceImp implements ITokenService{
+public class TokenServiceImpl implements ITokenService{
     private final Logger logger =  Logger.getLogger(this.getClass());
 
     @Autowired

@@ -19,7 +19,7 @@ import asist.io.service.ITokenService;
 import asist.io.service.IUsuarioService;
 
 @Service
-public class UsuarioServiceImp implements IUsuarioService {
+public class UsuarioServiceImpl implements IUsuarioService {
     private final Logger logger =  Logger.getLogger(this.getClass());
 
 
