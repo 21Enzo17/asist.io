@@ -1,4 +1,4 @@
-package asist.io.service.imp;
+package asist.io.service.impl;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import asist.io.dto.usuarioDtos.UsuarioDto;
 import asist.io.dto.usuarioDtos.UsuarioRegDto;
 import asist.io.entity.Usuario;
-import asist.io.exceptions.ModelException;
+import asist.io.exception.ModelException;
 import asist.io.mapper.UsuarioMapper;
 import asist.io.repository.UsuarioRepository;
 import asist.io.service.IEmailSenderService;
@@ -33,10 +33,8 @@ public class UsuarioServiceImp implements IUsuarioService {
     private UsuarioMapper usuarioMapper;
 
     /**
-     * Guarda un usuario en la base de datos
+     * Metodo encargado de guardar un usuario.
      * @param usuario
-     * @throws ModelException
-     * @return void
      */
     @Override
     public void guardarUsuario(UsuarioRegDto usuario) {
@@ -53,10 +51,8 @@ public class UsuarioServiceImp implements IUsuarioService {
     }
 
     /**
-     * Elimina un usuario de la base de datos
-     * @param correo
-     * @throws ModelException
-     * @return void
+     * Metodo encargado de eliminar un usuario.
+     * @param correo Correo del usuario que se va a eliminar.
      */
     @Override
     public void eliminarUsuario(String correo) {
@@ -66,10 +62,9 @@ public class UsuarioServiceImp implements IUsuarioService {
     }
 
     /**
-     * Actualiza un usuario en la base de datos
-     * @param usuario
-     * @throws ModelException
-     * @return void
+     * Metodo encargado de actualizar un usuario.
+     * @param usuario 
+     * @return
      */
     @Override
     public void actualizarUsuario(UsuarioDto usuario) {
@@ -93,9 +88,9 @@ public class UsuarioServiceImp implements IUsuarioService {
     }
 
     /**
-     * Busca un usuario en la base de datos
+     * Metodo encargado de buscar un usuario por correo.
      * @param correo
-     * @return Usuario
+     * @return
      */
     @Override
     public Usuario buscarUsuario(String correo) {
@@ -107,10 +102,8 @@ public class UsuarioServiceImp implements IUsuarioService {
     }
 
     /**
-     * Valida un usuario
-     * @param token
-     * @return void
-     * @throws ModelException
+     * Metodo encargado de validar un usuario.
+     * @param token 
      */
     @Override
     public void validarUsuario(String token) {
@@ -123,10 +116,9 @@ public class UsuarioServiceImp implements IUsuarioService {
     }
 
     /**
-     * Envia un correo de recuperacion de contraseña a un usuario
+     * Metodo encargado de enviar el correo de Recuperacion de contraseña a un usuario
      * @param correo
-     * @return void
-     */
+    */
     public void enviarOlvideContrasena(String correo){
         logger.info(correo + " ha solicitado un cambio de contraseña");
         Usuario usuario = buscarUsuario(correo);
@@ -135,11 +127,9 @@ public class UsuarioServiceImp implements IUsuarioService {
     }
 
     /**
-     * Envia un correo de confirmacion a un usuario, esto en caso de que su token anterior
-     * se haya vencido
+     * Metodo encargado de enviar el correo de Validacion de mail a un usuario
      * @param correo
-     * @return void
-     */
+    */
     @Override
     public void enviarCorreoConfirmacion(String correo) {
         Usuario usuario = buscarUsuario(correo);
@@ -153,9 +143,9 @@ public class UsuarioServiceImp implements IUsuarioService {
     }
 
     /**
-     * Cambia la contraseña de un usuario, validando el token y lo elimina
-     * @param token
-     * @param password
+     * Metodo encargado de cambiar la contraseña de un usuario.
+     * @param token Token
+     * @param password Contraseña
      */
     @Override
     public void cambiarContrasena(String token, String password) {
@@ -167,9 +157,10 @@ public class UsuarioServiceImp implements IUsuarioService {
     }
 
     /**
-     * Cambia la contraseña de un usuario
-     * @param correo
-     * @param password
+     * Metodo encargado de cambiar la contraseña de un usuario logueado.
+     * @param correo 
+     * @param contrasenaActual
+     * @param contrasenaNueva
      */
     @Override
     public void cambiarContrasenaLogueado(String correo, String contrasenaActual, String contrasenaNueva) {
@@ -183,7 +174,12 @@ public class UsuarioServiceImp implements IUsuarioService {
         usuarioRepository.save(usuario);
     }
 
-
+    /**
+     * Metodo encargado de obtener un token por correo y tipo.
+     * @param correo 
+     * @param tipo (VERIFICACION, RECUPERACION).
+     * @return Token
+     */
     @Override
     public String obtenerTokenPorCorreoTipo(String correo, String tipo) {
         return tokenService.obtenerTokenPorUsuarioTipo(usuarioRepository.findByCorreo(correo),tipo);

@@ -32,13 +32,23 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Metodo para validar el token y refrescar el token actual
-     * @param request
-     * @param response
-     * @param filterChain
-     * @throws ServletException
-     * @throws IOException
-     * @return void
+     * Este método se encarga de validar y refrescar el token JWT en cada solicitud HTTP.
+     * 
+     * @param request La solicitud HTTP entrante. (Contiene el token JWT en la cabecera de autorización)
+     * @param response La respuesta HTTP que se enviará.
+     * @param filterChain El resto de los filtros en la cadena de filtros de Spring Security.
+     * 
+     * @throws ServletException Si ocurre un error al procesar la solicitud.
+     * @throws IOException Si ocurre un error de entrada/salida.
+     * 
+     * 
+     * El método funciona de la siguiente manera:
+     * 1. Resuelve el token JWT de la solicitud HTTP.
+     * 2. Si no hay token, permite que la solicitud pase a través del filtro sin más procesamiento.
+     * 3. Si hay un token, resuelve las reclamaciones del token.
+     * 4. Si las reclamaciones son válidas, autentica al usuario en el contexto de seguridad de Spring.
+     * 5. Si ocurre una excepción (por ejemplo, el token no es válido), se devuelve una respuesta HTTP con estado 403 (Prohibido) y detalles del error en formato JSON.
+     * 6. Finalmente, permite que la solicitud pase a través del filtro para ser procesada por el resto de la cadena de filtros.
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -58,13 +68,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(email,"",new ArrayList<>());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                /*
-                Usuario usuario = new Usuario();
-                usuario.setCorreo(email);
-                usuario.setNombre((String) claims.get("userName"));
-                String newAccessToken = jwtUtil.createToken(usuario);
-                response.addHeader("Authorization", "Bearer " + newAccessToken);
-                */
             }
 
         }catch (Exception e){

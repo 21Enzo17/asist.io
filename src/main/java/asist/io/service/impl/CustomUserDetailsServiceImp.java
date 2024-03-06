@@ -1,4 +1,4 @@
-package asist.io.service.imp;
+package asist.io.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,10 +16,10 @@ public class CustomUserDetailsServiceImp implements ICustomUserDetailsService{
 
 
     /**
-     * Metodo encargado de buscar un usuario por su correo y retornarlo como UserDetails, usado por AuthenticationManager
-     * @param email
-     * @return UserDetails
-     * @throws UsernameNotFoundException
+     * Metodo encargado de obtener los detalles de un usuario, este metodo es usado por
+     * spring security.
+     * @param username Nombre de usuario
+     * @return Detalles del usuario 
      */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

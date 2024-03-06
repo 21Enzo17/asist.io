@@ -15,6 +15,18 @@ public class TareasProgramadas {
     @Autowired
     private ITokenService tokenService;
 
+    /**
+     * Borra los tokens JWT vencidos de la base de datos.
+     *
+     * Este método se ejecuta automáticamente a las 3 AM todos los días, gracias a la anotación @Scheduled.
+     *
+     * El método funciona de la siguiente manera:
+     * 1. Registra un mensaje en el log indicando que el proceso de borrado de tokens vencidos ha comenzado.
+     * 2. Llama al método borrarTokensVencidos del servicio de tokens, que se encarga de borrar los tokens vencidos de la base de datos.
+     * 3. Registra un mensaje en el log indicando que el proceso de borrado de tokens vencidos ha terminado exitosamente.
+     * 
+     * Nota: Ademas se agrego la notacion @EnableScheduling en la clase Application.java para habilitar las tareas programadas
+     */
     @Scheduled(cron = "0 0 3 * * ?")
     public void borrarTokensVencidos() {
         logger.info("Borrando tokens vencidos...");

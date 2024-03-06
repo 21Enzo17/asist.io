@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import asist.io.dto.usuarioDtos.UsuarioLoginDto;
 import asist.io.dto.usuarioDtos.UsuarioRegDto;
-import asist.io.exceptions.ModelException;
+import asist.io.exception.ModelException;
 import asist.io.service.IAuthService;
 import asist.io.service.IUsuarioService;
 import jakarta.transaction.Transactional;

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import asist.io.dto.usuarioDtos.UsuarioRegDto;
-import asist.io.exceptions.ModelException;
+import asist.io.exception.ModelException;
 import asist.io.service.IUsuarioService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -33,6 +33,21 @@ public class UsuarioController {
     @Autowired
     private IUsuarioService usuarioService;
     
+
+    /**
+     * Maneja las solicitudes de registro de nuevos usuarios.
+     *
+     * @param usuario Un objeto UsuarioRegDto que contiene la información del usuario proporcionada en la solicitud.
+     * @param request La solicitud HTTP que se está manejando.
+     *
+     * @return Una respuesta HTTP que contiene un mensaje indicando si el registro fue exitoso o no.
+     *
+     * El método funciona de la siguiente manera:
+     * 1. Intenta guardar el nuevo usuario utilizando el servicio de usuarios.
+     * 2. Si el registro es exitoso, devuelve una respuesta con estado 200 (OK) y un mensaje indicando que el usuario fue registrado correctamente.
+     * 3. Si el registro no es exitoso debido a una excepción ModelException (por ejemplo, si el nombre de usuario ya está en uso), devuelve una respuesta con estado 400 (Bad Request) y un mensaje de error.
+     * 4. Si ocurre cualquier otra excepción, devuelve una respuesta con estado 500 (Internal Server Error) y un mensaje de error.
+     */
     @PostMapping("/registro")
     public ResponseEntity<?> register(@Valid @RequestBody UsuarioRegDto usuario, HttpServletRequest request) {
         Map<String, Object> response = new HashMap<>();
@@ -49,6 +64,19 @@ public class UsuarioController {
         }
     }
 
+    /**
+     * Maneja las solicitudes para validar un usuario a través de un token.
+     *
+     * @param token El token de validación que se utilizará para validar al usuario.
+     *
+     * @return Una respuesta HTTP que contiene un mensaje indicando si la validación fue exitosa o no.
+     *
+     * El método funciona de la siguiente manera:
+     * 1. Intenta validar al usuario utilizando el servicio de usuarios y el token proporcionado.
+     * 2. Si la validación es exitosa, devuelve una respuesta con estado 200 (OK) y un mensaje indicando que el usuario fue confirmado correctamente.
+     * 3. Si la validación no es exitosa debido a una excepción ModelException (por ejemplo, si el token es inválido), devuelve una respuesta con estado 400 (Bad Request) y un mensaje de error.
+     * 4. Si ocurre cualquier otra excepción, devuelve una respuesta con estado 500 (Internal Server Error) y un mensaje de error.
+     */
     @PatchMapping("/validar/{token}")
     public ResponseEntity<?> validarUsuario(@PathVariable String token) {
         Map<String, Object> response = new HashMap<>();
@@ -67,6 +95,18 @@ public class UsuarioController {
     }
 
 
+    /**
+     * Maneja las solicitudes para restablecer la contraseña de un usuario.
+     *
+     * @param correo El correo electrónico del usuario que desea restablecer su contraseña.
+     *
+     * @return Una respuesta HTTP que contiene un mensaje indicando si la solicitud de restablecimiento de contraseña fue exitosa o no.
+     *
+     * El método funciona de la siguiente manera:
+     * 1. Intenta enviar un correo de restablecimiento de contraseña utilizando el servicio de usuarios y el correo electrónico proporcionado.
+     * 2. Si la solicitud es exitosa, devuelve una respuesta con estado 200 (OK) y un mensaje indicando que se ha enviado un correo para restablecer la contraseña.
+     * 3. Si la solicitud no es exitosa debido a una excepción ModelException (por ejemplo, si el correo electrónico no está asociado a ningún usuario), devuelve una respuesta con estado 400 (Bad Request) y un mensaje de error.
+     */
     @PostMapping("/olvide-mi-contrasena")
     public ResponseEntity<?> forgotPassword(@RequestParam String correo) {
         Map<String, Object> response = new HashMap<>();
@@ -81,6 +121,19 @@ public class UsuarioController {
         
     }
 
+    /**
+     * Maneja las solicitudes para restablecer la contraseña de un usuario.
+     *
+     * @param token El token de restablecimiento de contraseña que se utilizará para identificar al usuario.
+     * @param contrasena La nueva contraseña que el usuario desea establecer.
+     *
+     * @return Una respuesta HTTP que contiene un mensaje indicando si el restablecimiento de la contraseña fue exitoso o no.
+     *
+     * El método funciona de la siguiente manera:
+     * 1. Intenta cambiar la contraseña del usuario utilizando el servicio de usuarios, el token y la nueva contraseña proporcionados.
+     * 2. Si el restablecimiento es exitoso, devuelve una respuesta con estado 200 (OK) y un mensaje indicando que la contraseña fue restablecida correctamente.
+     * 3. Si el restablecimiento no es exitoso debido a una excepción ModelException (por ejemplo, si el token es inválido), devuelve una respuesta con estado 400 (Bad Request) y un mensaje de error.
+     */
     @PatchMapping("/cambiar-contrasena/{token}")
     public ResponseEntity<?> resetPassword(@PathVariable String token, @RequestParam String contrasena) {
         Map<String, Object> response = new HashMap<>();
@@ -94,6 +147,18 @@ public class UsuarioController {
         }
     }
     
+    /**
+     * Maneja las solicitudes para reenviar el correo de confirmación a un usuario.
+     *
+     * @param correo El correo electrónico del usuario al que se le reenviará el correo de confirmación.
+     *
+     * @return Una respuesta HTTP que contiene un mensaje indicando si el reenvío del correo de confirmación fue exitoso o no.
+     *
+     * El método funciona de la siguiente manera:
+     * 1. Intenta reenviar el correo de confirmación utilizando el servicio de usuarios y el correo electrónico proporcionado.
+     * 2. Si el reenvío es exitoso, devuelve una respuesta con estado 200 (OK) y un mensaje indicando que el correo de confirmación ha sido reenviado.
+     * 3. Si el reenvío no es exitoso debido a una excepción ModelException (por ejemplo, si el correo electrónico no está asociado a ningún usuario), devuelve una respuesta con estado 400 (Bad Request) y un mensaje de error.
+     */
     @PostMapping("/reenviar-correo-confirmacion")
     public ResponseEntity<?> reenviarCorreoConfirmacion(@RequestParam String correo) {
         Map<String, Object> response = new HashMap<>();
@@ -107,6 +172,18 @@ public class UsuarioController {
         }
     }
 
+    /**
+     * Maneja las solicitudes para reenviar el correo de confirmación a un usuario.
+     *
+     * @param correo El correo electrónico del usuario al que se le reenviará el correo de confirmación.
+     *
+     * @return Una respuesta HTTP que contiene un mensaje indicando si el reenvío del correo de confirmación fue exitoso o no.
+     *
+     * El método funciona de la siguiente manera:
+     * 1. Intenta reenviar el correo de confirmación utilizando el servicio de usuarios y el correo electrónico proporcionado.
+     * 2. Si el reenvío es exitoso, devuelve una respuesta con estado 200 (OK) y un mensaje indicando que el correo de confirmación ha sido reenviado.
+     * 3. Si el reenvío no es exitoso debido a una excepción ModelException (por ejemplo, si el correo electrónico no está asociado a ningún usuario), devuelve una respuesta con estado 400 (Bad Request) y un mensaje de error.
+     */
     @PatchMapping("/cambiar-contrasena-logueado")
     public ResponseEntity<?> cambiarContrasena(@RequestParam String correo, @RequestParam String contrasenaNueva, @RequestParam String contrasenaActual) {
         Map<String, Object> response = new HashMap<>();

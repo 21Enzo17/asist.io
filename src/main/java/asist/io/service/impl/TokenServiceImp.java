@@ -1,4 +1,4 @@
-package asist.io.service.imp;
+package asist.io.service.impl;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import asist.io.entity.Token;
 import asist.io.entity.Usuario;
 import asist.io.enums.TipoToken;
-import asist.io.exceptions.ModelException;
+import asist.io.exception.ModelException;
 import asist.io.repository.TokenRepository;
 import asist.io.service.ITokenService;
 
@@ -23,11 +23,11 @@ public class TokenServiceImp implements ITokenService{
 
 
     /**
-     * Genera un token para un usuario, en caso de ya tener un token valido del mismo tipo, retorna el token existente
-     * @param correo
-     * @param tipo
-     * @param usuario
-     * @return String
+     * Metodo encargado de generar un token. O en caso de tener un token del mismo tipo no vencido retornar este mismo. 
+     * @param correo Correo del usuario al que se le va a generar el token.
+     * @param tipo Tipo de token que se va a generar (VERIFICACION, RECUPERACION).
+     * @param usuario Usuario al que se le va a generar el token.
+     * @return Token generado.
      */
     @Override
     public String generarToken(String correo, String tipo, Usuario usuario) {
@@ -45,8 +45,9 @@ public class TokenServiceImp implements ITokenService{
     }
 
     /**
-     * Valida un token, si el token no existe o ha expirado, lanza una excepcion
-     * @param token
+     * Metodo encargado de validar un token.
+     * Se valida que el token exista y que no este vencido.
+     * @param token 
      */
     @Override
     public void validarToken(String token) {
@@ -60,9 +61,9 @@ public class TokenServiceImp implements ITokenService{
     }
 
     /**
-     * Retorna el usuario asociado a un token
-     * @param token
-     * @return Usuario
+     * Metodo encargado de obtener un usuario a partir de un token.
+     * @param token 
+     * @return Usuario asociado al token.
      */
     @Override
     public Usuario obtenerUsuario(String token) {
@@ -75,7 +76,7 @@ public class TokenServiceImp implements ITokenService{
     }
 
     /**
-     * Elimina un token en caso de que exista
+     * Metodo encargado de eliminar un token.
      * @param token
      */
     @Override
@@ -90,7 +91,8 @@ public class TokenServiceImp implements ITokenService{
     }
 
     /**
-     * Borra los tokens vencidos
+     * Metodo encargado de borrar los tokens vencidos.
+     * Se ejecuta todos los dias a las 03:00 am. mediante un Scheduled.
      */
     @Override
     public void borrarTokensVencidos() {
@@ -99,9 +101,10 @@ public class TokenServiceImp implements ITokenService{
     }
     
     /**
-     * Retorna el token asociado a un usuario y de un tipo especifico
-     * @param usuario
-     * @param tipo
+     * Metodo encargado de obtener un token por usuario y tipo.
+     * @param usuario 
+     * @param tipo (VERIFICACION, RECUPERACION).
+     * @return Token
      */
     @Override
     public String obtenerTokenPorUsuarioTipo(Usuario usuario, String tipo) {

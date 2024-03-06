@@ -8,6 +8,8 @@ import org.hibernate.annotations.OnDeleteAction;
 import asist.io.enums.TipoToken;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -40,6 +42,7 @@ public class Token {
     private Usuario usuario;
 
     @Column(name = "tipo", nullable = false)
+    @Enumerated(EnumType.STRING)
     private TipoToken tipo;
 
     @Column(name = "fecha_expiracion", nullable = false)

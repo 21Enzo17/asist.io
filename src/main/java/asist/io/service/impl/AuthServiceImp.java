@@ -1,4 +1,4 @@
-package asist.io.service.imp;
+package asist.io.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,7 +13,7 @@ import asist.io.auth.JwtUtil;
 import asist.io.dto.usuarioDtos.UsuarioLoginDto;
 import asist.io.dto.usuarioDtos.UsuarioLoginResDto;
 import asist.io.entity.Usuario;
-import asist.io.exceptions.ModelException;
+import asist.io.exception.ModelException;
 import asist.io.service.IAuthService;
 
 @Service
@@ -31,11 +31,9 @@ public class AuthServiceImp implements IAuthService {
 
 
     /**
-     * Metodo para autenticar un usuario
-     * @param loginReq
-     * @return UsuarioLoginResDto
-     * @throws Exception
-     * @return UsuarioLoginResDto
+     * Metodo encargado del logueo de un usuario
+     * @param loginReq Datos del usuario para loguearse
+     * @return Datos del usuario logueado (Token y un objeto usuarioDto con sus datos)
      */
     @Override
     public UsuarioLoginResDto login(UsuarioLoginDto loginReq) {

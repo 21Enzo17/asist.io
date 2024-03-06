@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import asist.io.dto.usuarioDtos.UsuarioRegDto;
-import asist.io.exceptions.ModelException;
+import asist.io.exception.ModelException;
 import asist.io.service.ITokenService;
 import asist.io.service.IUsuarioService;
 import jakarta.transaction.Transactional;

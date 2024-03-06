@@ -1,4 +1,6 @@
-package asist.io.service.imp;
+package asist.io.service.impl;
+
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +11,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import asist.io.dto.usuarioDtos.UsuarioDto;
-import asist.io.exceptions.ModelException;
+import asist.io.exception.ModelException;
 import asist.io.service.IEmailSenderService;
 import asist.io.util.BodyGenerator;
 import jakarta.mail.MessagingException;
@@ -30,22 +32,15 @@ public class EmailSenderServiceImp implements IEmailSenderService{
     }
 
     /**
-     * Este metodo se encarga de setear y enviar el correo, seteando en true 
-     * la etiqueta de contenido html, ademas de enviando la imagen para que 
-     * el html pueda leerla en el correo. Envia una excepcion personalizada en caso
-     * de no poder enviar el correo.
-     * @param emisor
-     * @param para
-     * @param tema
-     * @param cuerpo
-     * @param imagen
-     * @throws MessagingException
-     * @catch MailException
-     * @catch MessagingException
-     * @catch IllegalArgumentException
+     * Metodo encargado de enviar un correo electronico.
+     * @param emisor 
+     * @param para 
+     * @param tema 
+     * @param cuerpo Tenemos dos Bodys distintos, uno para la validacion de correo y otro para la recuperacion de contraseña
+     * @param imagen Se deja la imagen para un futuro agregar logo a los correos, de momento se setea en null en los params
      */
     @Override
-    public void enviarCorreo(String emisor, String para, String tema, String cuerpo, InputStreamSource imagen) {
+    public void enviarCorreo(String emisor, String para, String tema, String cuerpo, Optional<InputStreamSource> imagen) {
         logger.info("Enviando correo a:" + para);
         try{
             MimeMessage message = mailSender.createMimeMessage();
@@ -54,9 +49,8 @@ public class EmailSenderServiceImp implements IEmailSenderService{
             helper.setTo(para);
             helper.setSubject(tema);
             helper.setText(cuerpo, true);
-            //helper.addInline("logo", imagen, "image/png");
-
-            
+            if(imagen.isPresent())
+                helper.addInline("logo", imagen.get(), "image/png");
             mailSender.send(message);
         } catch (MailException e) {
             logger.error("Error al enviar el correo: " + e.getMessage());
@@ -73,9 +67,9 @@ public class EmailSenderServiceImp implements IEmailSenderService{
 
 
     /**
-     * Este metodo se encarga de generar el cuerpo del correo de validacion y enviarlo de manera asicnronica, asi evitar largos tiempos de espera.
-     * @param usuario
-     * @param token
+     * Metodo encargado de generar el correo de validacion de correo electronico.
+     * @param usuario usuario al que se le va a enviar el correo
+     * @param token token que se va a enviar para la validacion del correo
      */
     @Override
     public void generarCorreoValidacion(UsuarioDto usuario, String token ){
@@ -91,9 +85,9 @@ public class EmailSenderServiceImp implements IEmailSenderService{
 
 
     /**
-     * Este metodo se encarga de generar el cuerpo del correo de recuperacion y enviarlo de manera asicnronica, asi evitar largos tiempos de espera.
-     * @param usuario
-     * @param token
+     * Metodo encargado de generar el correo de recuperacion de contraseña.
+     * @param usuario usuario al que se le va a enviar el correo
+     * @param token token que se va a enviar para la recuperacion de contraseña
      */
     @Override
     public void generarCorreoRecuperacion(UsuarioDto usuario, String token){
