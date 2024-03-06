@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -28,15 +30,15 @@ public class Usuario {
     @Column(name = "contrasena", nullable = false)
     private String contrasena;
 
+
     @Column(name = "verificado", nullable = false)
     private boolean verificado;
-
-    /* Se agrego la relacion de Usuario con curso (Unidireccional) */
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "curso_id", nullable = false)
-    private List<Curso> cursos;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "token_id", nullable = true)
     private Token token;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "usuario")
+    private List<Curso> cursos;
 }   
+

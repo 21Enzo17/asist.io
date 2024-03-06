@@ -1,15 +1,13 @@
 package asist.io.handler;
 
-import java.io.Serializable;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
-public class ValidationError implements Serializable {
+@NoArgsConstructor
+@ToString
+public class ValidationError {
     private String field;
     private String message;
 }
