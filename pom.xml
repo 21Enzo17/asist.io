@@ -71,9 +71,14 @@
 
 		<!-- Jakarta Validation -->
 		<dependency>
+			<groupId>jakarta.validation</groupId>
+			<artifactId>jakarta.validation-api</artifactId>
+			<version>3.0.2</version>
+		</dependency>
+		<dependency>
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>7.0.1.Final</version>
+			<version>7.0.2.Final</version>
 		</dependency>
 
 		<!--LOG4J-->
@@ -119,7 +124,6 @@
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
 
-	</dependencies>
 
 	<build>
 		<plugins>
