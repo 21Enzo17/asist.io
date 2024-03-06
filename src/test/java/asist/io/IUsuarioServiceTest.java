@@ -13,10 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import asist.io.dto.usuarioDtos.UsuarioDto;
-import asist.io.dto.usuarioDtos.UsuarioLoginDto;
-import asist.io.dto.usuarioDtos.UsuarioLoginResDto;
-import asist.io.dto.usuarioDtos.UsuarioRegDto;
+import asist.io.dto.passwordDTO.PasswordDTO;
+import asist.io.dto.usuarioDTO.UsuarioGetDTO;
+import asist.io.dto.usuarioDTO.UsuarioLoginDTO;
+import asist.io.dto.usuarioDTO.UsuarioLoginResDTO;
+import asist.io.dto.usuarioDTO.UsuarioRegDTO;
 import asist.io.exception.ModelException;
 import asist.io.service.IUsuarioService;
 import jakarta.transaction.Transactional;
@@ -31,20 +32,23 @@ public class IUsuarioServiceTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    static UsuarioRegDto usuarioRegDto;
-    static UsuarioLoginDto usuarioLoginDto;
-    static UsuarioLoginResDto usuarioLoginResDto;
-    static UsuarioDto usuarioDto;
+    static UsuarioRegDTO usuarioRegDto;
+    static UsuarioLoginDTO usuarioLoginDto;
+    static UsuarioLoginResDTO usuarioLoginResDto;
+    static UsuarioGetDTO usuarioGetDto;
+    static PasswordDTO passwordDto;
      
 
     @BeforeEach
     public void setUp() {
-        usuarioRegDto = new UsuarioRegDto();
+        usuarioRegDto = new UsuarioRegDTO();
         usuarioRegDto.setCorreo("enzo.meneghini@hotmail.com");
         usuarioRegDto.setNombre("Enzo Meneghini");
-        usuarioRegDto.setContrasena("contrasena.1");
+        passwordDto = new PasswordDTO();
+        passwordDto.setPassword("contrasena.1");
+        usuarioRegDto.setContrasena(passwordDto);
 
-        usuarioLoginDto = new UsuarioLoginDto();
+        usuarioLoginDto = new UsuarioLoginDTO();
         usuarioLoginDto.setCorreo("enzo.meneghini@hotmail.com");
         usuarioLoginDto.setContrasena("contrasena.1");
 
@@ -84,10 +88,10 @@ public class IUsuarioServiceTest {
         logger.info("Iniciando test de actualizacion de usuario");
         target.guardarUsuario(usuarioRegDto);
         assertEquals(target.buscarUsuarioDto(usuarioRegDto.getCorreo()).getCorreo(), usuarioRegDto.getCorreo());
-        usuarioDto = target.buscarUsuarioDto(usuarioRegDto.getCorreo());
-        usuarioDto.setNombre("Enzo Meneghini");
-        target.actualizarUsuario(usuarioDto);
-        assertEquals(target.buscarUsuarioDto(usuarioRegDto.getCorreo()).getNombre(), usuarioDto.getNombre());
+        usuarioGetDto = target.buscarUsuarioDto(usuarioRegDto.getCorreo());
+        usuarioGetDto.setNombre("Enzo Meneghini");
+        target.actualizarUsuario(usuarioGetDto);
+        assertEquals(target.buscarUsuarioDto(usuarioRegDto.getCorreo()).getNombre(), usuarioGetDto.getNombre());
         target.eliminarUsuario(usuarioRegDto.getCorreo());
     }
 
@@ -125,7 +129,9 @@ public class IUsuarioServiceTest {
         logger.info("Iniciando test de cambio de contraseña");
         target.guardarUsuario(usuarioRegDto);
         target.enviarOlvideContrasena(usuarioRegDto.getCorreo());
-        target.cambiarContrasena(target.obtenerTokenPorCorreoTipo(usuarioRegDto.getCorreo(),"RECUPERACION"), "contrasena.2");
+        PasswordDTO passwordDto = new PasswordDTO();
+        passwordDto.setPassword("contrasena.2");
+        target.cambiarContrasena(target.obtenerTokenPorCorreoTipo(usuarioRegDto.getCorreo(),"RECUPERACION"), passwordDto);
         assertTrue(passwordEncoder.matches("contrasena.2", target.buscarUsuario(usuarioRegDto.getCorreo()).getContrasena()));
         target.eliminarUsuario(usuarioRegDto.getCorreo());
     }

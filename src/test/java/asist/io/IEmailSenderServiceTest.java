@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import asist.io.dto.usuarioDtos.UsuarioDto;
+import asist.io.dto.usuarioDTO.UsuarioGetDTO;
 import asist.io.service.IEmailSenderService;
 
 @SpringBootTest
@@ -15,11 +15,11 @@ public class IEmailSenderServiceTest {
     @Autowired
     private IEmailSenderService target;
 
-    static UsuarioDto usuarioDto;
+    static UsuarioGetDTO usuarioDto;
 
     @BeforeEach
     public void setUp() {
-        usuarioDto = new UsuarioDto();
+        usuarioDto = new UsuarioGetDTO();
         usuarioDto.setCorreo("enzo.meneghini@hotmail.com");
         usuarioDto.setNombre("Usuario de prueba");
 
