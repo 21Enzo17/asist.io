@@ -9,6 +9,7 @@ import asist.io.mapper.CursoMapper;
 import asist.io.repository.CursoRepository;
 import asist.io.repository.UsuarioRepository;
 import asist.io.service.ICursoService;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Service
 public class CursoServiceImpl implements ICursoService {
+    private static final Logger logger = Logger.getLogger(CursoServiceImpl.class);
     @Autowired
     private CursoRepository cursoRepository;
     @Autowired
@@ -30,14 +32,26 @@ public class CursoServiceImpl implements ICursoService {
      */
     @Override
     public CursoGetDTO registrarCurso(CursoPostDTO curso) throws ModelException {
-        if (curso == null) throw new ModelException("El curso no puede ser nulo");
+        if (curso == null) {
+            logger.error("Error al registrar el curso: El curso no puede ser nulo");
+            throw new ModelException("El curso no puede ser nulo");
+        }
 
-        if (curso.getCodigoAsistencia() != null && cursoRepository.existsByCodigoAsistencia(curso.getCodigoAsistencia())) throw new ModelException("El código de asistencia " + curso.getCodigoAsistencia() + " ya esta en uso");
+        logger.info("Registrando curso: " + curso.getNombre());
 
-        if (!usuarioRepository.existsById(curso.getIdUsuario())) throw new ModelException("El usuario con id " + curso.getIdUsuario() + " no existe");
+        if (curso.getCodigoAsistencia() != null && cursoRepository.existsByCodigoAsistencia(curso.getCodigoAsistencia())) {
+            logger.error("Error al registrar el curso: El código de asistencia, " + curso.getCodigoAsistencia() + ", ya esta en uso");
+            throw new ModelException("El código de asistencia " + curso.getCodigoAsistencia() + " ya esta en uso");
+        }
+
+        if (!usuarioRepository.existsById(curso.getIdUsuario())) {
+            logger.error("Error al registrar el curso: El usuario con id " + curso.getIdUsuario() + " no existe");
+            throw new ModelException("El usuario con id " + curso.getIdUsuario() + " no existe");
+        }
 
         Usuario usuario = usuarioRepository.findById(curso.getIdUsuario()).get();
         CursoGetDTO cursoRegistrado = CursoMapper.toGetDTO(cursoRepository.save(CursoMapper.toEntity(curso, usuario)));
+        logger.info("Curso registrado con éxito, id: " + cursoRegistrado.getId());
         return cursoRegistrado;
     }
 
@@ -49,11 +63,20 @@ public class CursoServiceImpl implements ICursoService {
      */
     @Override
     public boolean eliminarCurso(String id) throws ModelException {
-        if (id == null || id.isBlank() || id.isEmpty()) throw new ModelException("El id no puede ser nulo ni vacío");
+        if (id == null || id.isBlank() || id.isEmpty()) {
+            logger.error("Error al eliminar el curso: El id no puede ser nulo ni vacío");
+            throw new ModelException("El id no puede ser nulo ni vacío");
+        }
 
-        if (!cursoRepository.existsById(id)) return false;
+        logger.info("Intentando eliminar el curso con id: " + id);
+
+        if (!cursoRepository.existsById(id)) {
+            logger.error("Error al eliminar el curso: El curso con id " + id + " no existe");
+            return false;
+        }
 
         cursoRepository.deleteById(id);
+        logger.info("Curso eliminado con éxito, id: " + id);
         return true;
     }
 
@@ -65,15 +88,30 @@ public class CursoServiceImpl implements ICursoService {
      */
     @Override
     public CursoGetDTO actualizarCurso(CursoPatchDTO curso) throws ModelException {
-        if (curso == null) throw new ModelException("El curso no puede ser nulo");
+        if (curso == null) {
+            logger.error("Error al actualizar el curso: El curso no puede ser nulo");
+            throw new ModelException("El curso no puede ser nulo");
+        }
 
-        if (curso.getId() == null || curso.getId().isBlank() || curso.getId().isEmpty()) throw new ModelException("El id no puede ser nulo ni vacío");
+        if (curso.getId() == null || curso.getId().isBlank() || curso.getId().isEmpty()) {
+            logger.error("Error al actualizar el curso: El id no puede ser nulo ni vacío");
+            throw new ModelException("El id no puede ser nulo ni vacío");
+        }
 
-        if (curso.getId() != null && !cursoRepository.existsById(curso.getId())) throw new ModelException("El curso con id " + curso.getId() + " no existe");
+        logger.info("Actualizando curso con id: " + curso.getId());
 
-        if (curso.getCodigoAsistencia() != null && (obtenerCursoPorCodigoAsistencia(curso.getCodigoAsistencia()) != null && !obtenerCursoPorCodigoAsistencia(curso.getCodigoAsistencia()).getId().equals(curso.getId())) ) throw new ModelException("El código de asistencia, " + curso.getCodigoAsistencia() + ",ya esta en uso");
+        if (curso.getId() != null && !cursoRepository.existsById(curso.getId())) {
+            logger.error("Error al actualizar el curso: El curso con id " + curso.getId() + " no existe");
+            throw new ModelException("El curso con id " + curso.getId() + " no existe");
+        }
+
+        if (curso.getCodigoAsistencia() != null && (obtenerCursoPorCodigoAsistencia(curso.getCodigoAsistencia()) != null && !obtenerCursoPorCodigoAsistencia(curso.getCodigoAsistencia()).getId().equals(curso.getId())) ) {
+            logger.error("Error al actualizar el curso: El código de asistencia, " + curso.getCodigoAsistencia() + ", ya esta en uso");
+            throw new ModelException("El código de asistencia " + curso.getCodigoAsistencia() + " ya esta en uso");
+        }
 
         CursoGetDTO cursoActualizado = CursoMapper.toGetDTO(cursoRepository.save(CursoMapper.toEntity(curso)));
+        logger.info("Curso actualizado con éxito, id: " + cursoActualizado.getId());
         return cursoActualizado;
     }
 
@@ -85,11 +123,20 @@ public class CursoServiceImpl implements ICursoService {
      */
     @Override
     public CursoGetDTO obtenerCursoPorId(String id) throws ModelException {
-        if (id == null || id.isBlank() || id.isEmpty()) throw new ModelException("El id no puede ser nulo ni vacío");
+        if (id == null || id.isBlank() || id.isEmpty()) {
+            logger.error("Error al buscar el curso: El id no puede ser nulo ni vacío");
+            throw new ModelException("El id no puede ser nulo ni vacío");
+        }
 
-        if (!cursoRepository.existsById(id)) return null;
+        logger.info("Buscando curso con id: " + id);
+
+        if (!cursoRepository.existsById(id)) {
+            logger.error("Error al buscar el curso: El curso con id " + id + " no existe");
+            return null;
+        }
 
         CursoGetDTO cursoEncontrado = CursoMapper.toGetDTO(cursoRepository.findById(id).get());
+        logger.info("Curso encontrado con éxito, id: " + cursoEncontrado.getId());
         return cursoEncontrado;
     }
 
@@ -101,11 +148,20 @@ public class CursoServiceImpl implements ICursoService {
      */
     @Override
     public CursoGetDTO obtenerCursoPorCodigoAsistencia(String codigoAsistencia) throws ModelException {
-        if (codigoAsistencia == null || codigoAsistencia.isBlank() || codigoAsistencia.isEmpty()) throw new ModelException("El código de asistencia no puede ser nulo ni vacío");
+        if (codigoAsistencia == null || codigoAsistencia.isBlank() || codigoAsistencia.isEmpty()) {
+            logger.error("Error al buscar el curso por código de asistencia: El código de asistencia no puede ser nulo ni vacío");
+            throw new ModelException("El código de asistencia no puede ser nulo ni vacío");
+        }
 
-        if (!cursoRepository.existsByCodigoAsistencia(codigoAsistencia)) return null;
+        logger.info("Buscando curso con código de asistencia: " + codigoAsistencia);
+
+        if (!cursoRepository.existsByCodigoAsistencia(codigoAsistencia)) {
+            logger.error("Error al buscar el curso por código de asistencia: El curso con código de asistencia " + codigoAsistencia + " no existe");
+            throw new ModelException("El curso con código de asistencia " + codigoAsistencia + " no existe");
+        }
 
         CursoGetDTO cursoEncontrado = CursoMapper.toGetDTO(cursoRepository.findByCodigoAsistencia(codigoAsistencia));
+        logger.info("Curso con el código de asistencia " + codigoAsistencia + " encontrado con éxito, id: " + cursoEncontrado.getId());
         return cursoEncontrado;
     }
 
@@ -117,12 +173,24 @@ public class CursoServiceImpl implements ICursoService {
      */
     @Override
     public List<CursoGetDTO> obtenerCursosPorIdUsuario(String id) throws ModelException {
-        if (id == null || id.isBlank() || id.isEmpty()) throw new ModelException("El id no puede ser nulo ni vacío");
+        if (id == null || id.isBlank() || id.isEmpty()) {
+            logger.error("Error al buscar los cursos: El id del usuario no puede ser nulo ni vacío");
+            throw new ModelException("El id del usuario no puede ser nulo ni vacío");
+        }
 
-        if (cursoRepository.findByUsuarioId(id).isEmpty()) return null;
+        if (cursoRepository.findByUsuarioId(id).isEmpty()) {
+            logger.error("Error al buscar los cursos: El usuario con id " + id + " no tiene cursos registrados");
+            throw new ModelException("El usuario con id " + id + " no tiene cursos registrados");
+        }
 
         List<CursoGetDTO> cursosEncontrados = CursoMapper.toGetDTO(cursoRepository.findByUsuarioId(id));
-        if (cursosEncontrados.isEmpty()) throw new ModelException("El usuario con id " + id + " no tiene cursos registrados");
+
+        if (cursosEncontrados.isEmpty()) {
+            logger.error("Error al buscar los cursos: El usuario con id " + id + " no tiene cursos registrados");
+            throw new ModelException("El usuario con id " + id + " no tiene cursos registrados");
+        }
+
+        logger.info("Cursos encontrados con éxito para el usuario con id: " + id);
         return cursosEncontrados;
     }
 
@@ -132,10 +200,20 @@ public class CursoServiceImpl implements ICursoService {
      * @return Lista de cursos que contienen la palabra clave
      */
     public List<CursoGetDTO> obtenerCursosPorTermino(String termino) throws ModelException {
-        if (termino == null || termino.isBlank() || termino.isEmpty()) return List.of();
+        logger.info("Buscando cursos con el término: " + termino);
+
+        if (termino == null || termino.isBlank() || termino.isEmpty()) {
+            logger.error("Error al buscar los cursos: El término no puede ser nulo ni vacío");
+            return List.of();
+        }
 
         List<CursoGetDTO> cursosObtenidos = CursoMapper.toGetDTO(cursoRepository.findByNombreContaining(termino));
-        if (cursosObtenidos.isEmpty()) throw new ModelException("No se encontraron cursos con el término " + termino);
+        if (cursosObtenidos.isEmpty()) {
+            logger.error("Error al buscar los cursos: No se encontraron cursos con el término " + termino);
+            throw new ModelException("No se encontraron cursos con el término " + termino);
+        }
+
+        logger.info("Cursos encontrados con éxito con el término: " + termino);
         return cursosObtenidos;
     }
 }
