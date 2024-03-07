@@ -1,5 +1,7 @@
 package asist.io.entity;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,4 +20,8 @@ public class Estudiante {
     private String nombre;
     @Column(name = "lu", nullable = false, unique = true)
     private String lu;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE)
+    private List<Asistencia> asistencias;
+    
 }
