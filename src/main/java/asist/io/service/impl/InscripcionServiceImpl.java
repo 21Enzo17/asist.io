@@ -9,11 +9,13 @@ import asist.io.repository.CursoRepository;
 import asist.io.repository.EstudianteRepository;
 import asist.io.repository.InscripcionRepository;
 import asist.io.service.IInscripcionService;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class InscripcionServiceImpl implements IInscripcionService {
+    private final static Logger logger = Logger.getLogger(InscripcionServiceImpl.class);
     @Autowired
     private InscripcionRepository inscripcionRepository;
     @Autowired
@@ -29,15 +31,31 @@ public class InscripcionServiceImpl implements IInscripcionService {
      */
     @Override
     public InscripcionGetDTO registrarInscripcion(InscripcionPostDTO inscripcion) throws ModelException {
-        if (inscripcion == null) throw new ModelException("La inscripción no puede ser nula");
-        if (inscripcion.getIdEstudiante() == null) throw new ModelException("El estudiante de la inscripción no puede ser nulo");
-        if (inscripcion.getIdCurso() == null) throw new ModelException("El curso de la inscripción no puede ser nulo");
+        if (inscripcion == null) {
+            logger.error("Error al registrar la inscripción: La inscripción no puede ser nula");
+            throw new ModelException("La inscripción no puede ser nula");
+        }
+        if (inscripcion.getIdEstudiante() == null) {
+            logger.error("Error al registrar la inscripción: El id del estudiante no puede ser nulo");
+            throw new ModelException("El id del estudiante no puede ser nulo");
+        }
+        if (inscripcion.getIdCurso() == null) {
+            logger.error("Error al registrar la inscripción: El id del curso no puede ser nulo");
+            throw new ModelException("El id del curso no puede ser nulo");
+        }
 
-        if (cursoRepository.findById(inscripcion.getIdCurso()).orElse(null) == null) throw new ModelException("El curso con el id " + inscripcion.getIdCurso() + " no existe");
-        if (estudianteRepository.findById(inscripcion.getIdEstudiante()).orElse(null) == null) throw new ModelException("El estudiante con el id " + inscripcion.getIdEstudiante() + " no existe");
+        if (cursoRepository.findById(inscripcion.getIdCurso()).orElse(null) == null) {
+            logger.error("Error al registrar la inscripción: El curso con el id " + inscripcion.getIdCurso() + " no existe");
+            throw new ModelException("El curso con el id " + inscripcion.getIdCurso() + " no existe");
+        }
+        if (estudianteRepository.findById(inscripcion.getIdEstudiante()).orElse(null) == null) {
+            logger.error("Error al registrar la inscripción: El estudiante con el id " + inscripcion.getIdEstudiante() + " no existe");
+            throw new ModelException("El estudiante con el id " + inscripcion.getIdEstudiante() + " no existe");
+        }
 
 
         InscripcionGetDTO inscripcionRegistrada = InscripcionMapper.toGetDTO(inscripcionRepository.save(InscripcionMapper.toEntity(inscripcion, cursoRepository.findById(inscripcion.getIdCurso()).get(), estudianteRepository.findById(inscripcion.getIdEstudiante()).get())));
+        logger.info("Inscripción registrada con éxito, id: " + inscripcionRegistrada.getId());
         return inscripcionRegistrada;
     }
 
@@ -49,10 +67,14 @@ public class InscripcionServiceImpl implements IInscripcionService {
      */
     @Override
     public InscripcionGetDTO obtenerInscripcionPorId(String id) throws ModelException {
-        if (id == null || id.isEmpty() || id.isBlank()) throw new ModelException("El id del curso no puede ser nulo, vacío o en blanco");
+        if (id == null || id.isEmpty() || id.isBlank()) {
+            logger.error("Error al obtener la inscripción: El id no puede ser nulo, vacío o en blanco");
+            throw new ModelException("El id no puede ser nulo, vacío o en blanco");
+        }
 
         Inscripcion inscripcion = inscripcionRepository.findById(id).get();
         InscripcionGetDTO inscripcionEncontrada = InscripcionMapper.toGetDTO(inscripcion);
+        logger.info("Inscripción encontrada con éxito, id: " + inscripcionEncontrada.getId());
         return inscripcionEncontrada;
     }
 
@@ -60,15 +82,22 @@ public class InscripcionServiceImpl implements IInscripcionService {
      * Elimina una inscripción por su id
      * @param id Id de la inscripción a eliminar
      * @return true si se eliminó la inscripción, false si no existe la inscripción
-     * @throws ModelException
+     * @throws ModelException Si el id es nulo o vacío
      */
     @Override
     public boolean eliminarInscripcionPorId(String id) throws ModelException {
-        if (id == null || id.isEmpty() || id.isBlank()) throw new ModelException("El id del curso no puede ser nulo, vacío o en blanco");
+        if (id == null || id.isEmpty() || id.isBlank()) {
+            logger.error("Error al eliminar la inscripción: El id no puede ser nulo, vacío o en blanco");
+            throw new ModelException("El id no puede ser nulo, vacío o en blanco");
+        }
 
-        if (!inscripcionRepository.existsById(id)) return false;
+        if (!inscripcionRepository.existsById(id)) {
+            logger.error("Error al eliminar la inscripción: La inscripción con id " + id + " no existe");
+            return false;
+        }
 
         inscripcionRepository.deleteById(id);
+        logger.info("Inscripción eliminada con éxito, id: " + id);
         return true;
     }
 }
