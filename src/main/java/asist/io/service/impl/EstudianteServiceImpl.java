@@ -2,11 +2,14 @@ package asist.io.service.impl;
 
 import asist.io.dto.estudianteDTO.EstudianteGetDTO;
 import asist.io.dto.estudianteDTO.EstudiantePostDTO;
+import asist.io.entity.Estudiante;
 import asist.io.exception.ModelException;
 import asist.io.mapper.EstudianteMapper;
 import asist.io.repository.CursoRepository;
 import asist.io.repository.EstudianteRepository;
 import asist.io.service.IEstudianteService;
+
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,8 @@ import java.util.List;
 
 @Service
 public class EstudianteServiceImpl implements IEstudianteService {
+    private final Logger logger =  Logger.getLogger(this.getClass());
+
     @Autowired
     private EstudianteRepository estudianteRepository;
     @Autowired
@@ -127,5 +132,21 @@ public class EstudianteServiceImpl implements IEstudianteService {
 
         List<EstudianteGetDTO> estudiantesEncontrados = EstudianteMapper.toGetDTO(estudianteRepository.obtenerEstudiantesPorIdCurso(id));
         return estudiantesEncontrados;
+    }
+
+    /**
+     * Obtiene un estudiante por su lu
+     * @param lu Lu del estudiante
+     * @return Estudiante Entity 
+     * @throws ModelException Si el estudiante no existe
+     */
+    @Override
+    public Estudiante obtenerEstudianteEntityPorLu(String lu) {
+        Estudiante estudiante = estudianteRepository.findByLu(lu);
+        if(estudiante == null){
+            logger.error("El estudiante con el lu " + lu + " no existe");
+            throw new ModelException("El estudiante con el lu " + lu + " no existe");
+        }
+        return estudiante;
     }
 }

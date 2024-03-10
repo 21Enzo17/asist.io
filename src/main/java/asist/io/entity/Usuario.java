@@ -30,7 +30,6 @@ public class Usuario {
     @Column(name = "contrasena", nullable = false)
     private String contrasena;
 
-
     @Column(name = "verificado", nullable = false)
     private boolean verificado;
 

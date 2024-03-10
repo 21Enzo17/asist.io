@@ -3,6 +3,7 @@ package asist.io.service;
 import asist.io.dto.cursoDTO.CursoGetDTO;
 import asist.io.dto.cursoDTO.CursoPatchDTO;
 import asist.io.dto.cursoDTO.CursoPostDTO;
+import asist.io.entity.Curso;
 import asist.io.exception.ModelException;
 
 import java.util.List;
@@ -43,10 +44,11 @@ public interface ICursoService {
     /**
      * Obtiene un curso por su código de asistencia
      * @param codigoAsistencia Código de asistencia del curso
-     * @return Curso si existe
+     * @return Curso si existe en formato CursoGetDTO
      * @throws ModelException Si el código de asistencia es nulo o vacío, o el curso no existe
      */
     public CursoGetDTO obtenerCursoPorCodigoAsistencia(String codigoAsistencia) throws ModelException;
+
 
     /**
      * Obtiene los cursos que pertenecen a un usuario
@@ -62,4 +64,20 @@ public interface ICursoService {
      * @return Lista de cursos que contienen la palabra clave
      */
     public List<CursoGetDTO> obtenerCursosPorTermino(String termino) throws ModelException;
+
+    /**
+     * Encuentra un curso por su código de asistencia
+     * @param codigoAsistencia Código de asistencia del curso
+     * @return Entidad Curso si existe
+     * @throws ModelException Si el código de asistencia es nulo o vacío
+     */
+    public Curso obtenerCursoEntityPorCodigoAsistencia(String codigoAsistencia);
+
+
+    /**
+     * Determina si un curso existe por su id
+     * @param id Id del curso
+     * No hace nada en caso de existir, en caso de no hacerlo lanza una excepcion ModelException
+     */
+    public void existePorId(String id);
 }

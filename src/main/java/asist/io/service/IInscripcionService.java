@@ -28,4 +28,12 @@ public interface IInscripcionService {
      * @throws ModelException
      */
     public boolean eliminarInscripcionPorId(String id) throws ModelException;
+
+    /**
+     * Determina si una inscripcion existe por codigo de asistencia y lu
+     * @param codigoAsistencia Codigo de asistencia
+     * @param lu Lu del estudiante
+     * No hace nada en caso de existir, en caso de no hacerlo lanza una excepcion ModelException
+     */
+    public void existePorCodigoAsistenciaYLu(String codigoAsistencia, String lu);
 }

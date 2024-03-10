@@ -13,6 +13,7 @@ import lombok.*;
 @Entity
 @Table(name = "estudiantes")
 public class Estudiante {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -21,7 +22,7 @@ public class Estudiante {
     @Column(name = "lu", nullable = false, unique = true)
     private String lu;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "estudiante", cascade = CascadeType.REMOVE)
     private List<Asistencia> asistencias;
     
 }

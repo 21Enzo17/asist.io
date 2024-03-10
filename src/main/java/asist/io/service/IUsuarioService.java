@@ -3,7 +3,7 @@ package asist.io.service;
 import asist.io.dto.passwordDTO.PasswordDTO;
 import asist.io.dto.usuarioDTO.UsuarioCambioContrasenaDTO;
 import asist.io.dto.usuarioDTO.UsuarioGetDTO;
-import asist.io.dto.usuarioDTO.UsuarioRegDTO;
+import asist.io.dto.usuarioDTO.UsuarioPostDTO;
 import asist.io.entity.Usuario;
 
 
@@ -13,7 +13,7 @@ public interface IUsuarioService {
      * Metodo encargado de guardar un usuario.
      * @param usuario
      */
-    public void guardarUsuario(UsuarioRegDTO usuario);
+    public void guardarUsuario(UsuarioPostDTO usuario);
 
     /**
      * Metodo encargado de eliminar un usuario.

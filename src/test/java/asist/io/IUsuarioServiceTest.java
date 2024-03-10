@@ -17,7 +17,7 @@ import asist.io.dto.passwordDTO.PasswordDTO;
 import asist.io.dto.usuarioDTO.UsuarioGetDTO;
 import asist.io.dto.usuarioDTO.UsuarioLoginDTO;
 import asist.io.dto.usuarioDTO.UsuarioLoginResDTO;
-import asist.io.dto.usuarioDTO.UsuarioRegDTO;
+import asist.io.dto.usuarioDTO.UsuarioPostDTO;
 import asist.io.exception.ModelException;
 import asist.io.service.IUsuarioService;
 import jakarta.transaction.Transactional;
@@ -32,7 +32,7 @@ public class IUsuarioServiceTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    static UsuarioRegDTO usuarioRegDto;
+    static UsuarioPostDTO usuarioRegDto;
     static UsuarioLoginDTO usuarioLoginDto;
     static UsuarioLoginResDTO usuarioLoginResDto;
     static UsuarioGetDTO usuarioGetDto;
@@ -41,12 +41,10 @@ public class IUsuarioServiceTest {
 
     @BeforeEach
     public void setUp() {
-        usuarioRegDto = new UsuarioRegDTO();
+        usuarioRegDto = new UsuarioPostDTO();
         usuarioRegDto.setCorreo("enzo.meneghini@hotmail.com");
         usuarioRegDto.setNombre("Enzo Meneghini");
-        passwordDto = new PasswordDTO();
-        passwordDto.setPassword("contrasena.1");
-        usuarioRegDto.setContrasena(passwordDto);
+        usuarioRegDto.setContrasena(new PasswordDTO("contrasena.1"));
 
         usuarioLoginDto = new UsuarioLoginDTO();
         usuarioLoginDto.setCorreo("enzo.meneghini@hotmail.com");
@@ -129,9 +127,7 @@ public class IUsuarioServiceTest {
         logger.info("Iniciando test de cambio de contraseña");
         target.guardarUsuario(usuarioRegDto);
         target.enviarOlvideContrasena(usuarioRegDto.getCorreo());
-        PasswordDTO passwordDto = new PasswordDTO();
-        passwordDto.setPassword("contrasena.2");
-        target.cambiarContrasena(target.obtenerTokenPorCorreoTipo(usuarioRegDto.getCorreo(),"RECUPERACION"), passwordDto);
+        target.cambiarContrasena(target.obtenerTokenPorCorreoTipo(usuarioRegDto.getCorreo(),"RECUPERACION"), new PasswordDTO("contrasena.2"));
         assertTrue(passwordEncoder.matches("contrasena.2", target.buscarUsuario(usuarioRegDto.getCorreo()).getContrasena()));
         target.eliminarUsuario(usuarioRegDto.getCorreo());
     }

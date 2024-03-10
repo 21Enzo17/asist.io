@@ -1,7 +1,6 @@
 package asist.io.dto.usuarioDTO;
 
 import java.io.Serializable;
-import asist.io.dto.usuarioDTO.UsuarioGetDTO;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -9,11 +9,15 @@ import asist.io.repository.CursoRepository;
 import asist.io.repository.EstudianteRepository;
 import asist.io.repository.InscripcionRepository;
 import asist.io.service.IInscripcionService;
+
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class InscripcionServiceImpl implements IInscripcionService {
+    private final Logger logger =  Logger.getLogger(this.getClass());
+
     @Autowired
     private InscripcionRepository inscripcionRepository;
     @Autowired
@@ -70,5 +74,21 @@ public class InscripcionServiceImpl implements IInscripcionService {
 
         inscripcionRepository.deleteById(id);
         return true;
+    }
+
+    /**
+     * Determina si una inscripcion existe por codigo de asistencia y lu
+     * @param codigoAsistencia Codigo de asistencia
+     * @param lu Lu del estudiante
+     * No hace nada en caso de existir, en caso de no hacerlo lanza una excepcion ModelException
+     */
+    @Override
+    public void existePorCodigoAsistenciaYLu(String codigoAsistencia, String lu) {
+        if (!inscripcionRepository.existsByEstudianteLuAndCursoCodigoAsistencia(lu, codigoAsistencia)){
+            logger.error("El alumno con LU " + lu + " no está inscripto en el curso con código de asistencia " + codigoAsistencia);
+            throw new ModelException("El alumno con LU " + lu + " no está inscripto en el curso con código de asistencia " + codigoAsistencia);
+
+        }
+            
     }
 }

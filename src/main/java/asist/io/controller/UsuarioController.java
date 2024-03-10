@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import asist.io.dto.passwordDTO.PasswordDTO;
 import asist.io.dto.usuarioDTO.UsuarioCambioContrasenaDTO;
-import asist.io.dto.usuarioDTO.UsuarioRegDTO;
+import asist.io.dto.usuarioDTO.UsuarioPostDTO;
 import asist.io.exception.ModelException;
 import asist.io.service.IUsuarioService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,7 +51,7 @@ public class UsuarioController {
      * 4. Si ocurre cualquier otra excepción, devuelve una respuesta con estado 500 (Internal Server Error) y un mensaje de error.
      */
     @PostMapping("/registro")
-    public ResponseEntity<?> register(@Valid @RequestBody UsuarioRegDTO usuario, HttpServletRequest request) {
+    public ResponseEntity<?> register(@Valid @RequestBody UsuarioPostDTO usuario, HttpServletRequest request) {
         Map<String, Object> response = new HashMap<>();
         try {
             usuarioService.guardarUsuario(usuario);

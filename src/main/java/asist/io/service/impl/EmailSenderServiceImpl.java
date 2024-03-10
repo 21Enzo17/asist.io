@@ -40,6 +40,7 @@ public class EmailSenderServiceImpl implements IEmailSenderService{
      * @param imagen Se deja la imagen para un futuro agregar logo a los correos, de momento se setea en null en los params
      */
     @Override
+    @SuppressWarnings("null")
     public void enviarCorreo(String emisor, String para, String tema, String cuerpo, Optional<InputStreamSource> imagen) {
         logger.info("Enviando correo a:" + para);
         try{

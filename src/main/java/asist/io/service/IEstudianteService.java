@@ -2,6 +2,7 @@ package asist.io.service;
 
 import asist.io.dto.estudianteDTO.EstudianteGetDTO;
 import asist.io.dto.estudianteDTO.EstudiantePostDTO;
+import asist.io.entity.Estudiante;
 import asist.io.exception.ModelException;
 
 import java.util.List;
@@ -61,4 +62,12 @@ public interface IEstudianteService {
      * @throws ModelException Si el id del curso es nulo o vacío
      */
     public List<EstudianteGetDTO> obtenerEstudiantesPorIdCurso(String id) throws ModelException;
+
+    /**
+     * Obtiene un estudiante por su lu
+     * @param lu Lu del estudiante
+     * @return Estudiante Entity 
+     * @throws ModelException Si el estudiante no existe
+     */
+    public Estudiante obtenerEstudianteEntityPorLu(String lu);
 }

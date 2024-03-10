@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import asist.io.dto.passwordDTO.PasswordDTO;
-import asist.io.dto.usuarioDTO.UsuarioRegDTO;
+import asist.io.dto.usuarioDTO.UsuarioPostDTO;
 import asist.io.exception.ModelException;
 import asist.io.service.ITokenService;
 import asist.io.service.IUsuarioService;
@@ -27,17 +27,15 @@ public class ITokenServiceTest {
     @Autowired
     private IUsuarioService usuarioService;
 
-    static UsuarioRegDTO usuarioRegDto;
+    static UsuarioPostDTO usuarioRegDto;
     
     
     @BeforeEach
     public void setUp() {
-        usuarioRegDto = new UsuarioRegDTO();
-        PasswordDTO passwordDto = new PasswordDTO();
-        passwordDto.setPassword("contrasena.1");
+        usuarioRegDto = new UsuarioPostDTO();
         usuarioRegDto.setCorreo("enzo.meneghini@hotmail.com");
         usuarioRegDto.setNombre("Enzo Meneghini");
-        usuarioRegDto.setContrasena(passwordDto);
+        usuarioRegDto.setContrasena(new PasswordDTO("contrasena.1"));
         usuarioService.guardarUsuario(usuarioRegDto);
     }
 

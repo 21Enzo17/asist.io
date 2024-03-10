@@ -80,6 +80,7 @@ public class TokenServiceImpl implements ITokenService{
      * @param token
      */
     @Override
+    @SuppressWarnings("null")
     public void eliminarToken(String token) {    
         if(tokenRepository.existsByToken(token)){
             logger.info("Eliminando token: "+token);
