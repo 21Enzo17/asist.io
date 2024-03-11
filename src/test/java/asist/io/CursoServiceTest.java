@@ -230,8 +230,18 @@ public class CursoServiceTest {
 
     @Test()
     @DisplayName("Obtener cursos por id de usuario")
-    @Disabled
     public void obtenerCursosPorIdUsuario() throws ModelException {
         throw new ModelException("Not tested");
+    }
+
+    @Test()
+    @DisplayName("Generar código de asistencia de curso")
+    public void generarCodigoAsistencia() {
+        String codigo = cursoService.generarCodigoAsistencia();
+        assertNotNull(codigo);
+        assertEquals(6, codigo.length());
+        assertThrows(ModelException.class, () -> {
+            cursoService.obtenerCursoPorCodigoAsistencia(codigo);
+        });
     }
 }

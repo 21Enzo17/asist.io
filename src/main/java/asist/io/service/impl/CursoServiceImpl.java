@@ -216,4 +216,41 @@ public class CursoServiceImpl implements ICursoService {
         logger.info("Cursos encontrados con éxito con el término: " + termino);
         return cursosObtenidos;
     }
+
+    /**
+     * Genera un código de asistencia único para un curso
+     */
+    public String generarCodigoAsistencia() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        int longitud = 6;
+        String codigo;
+        int intentosGeneracionRestantes = 99;
+
+        do {
+            codigo = generarCodigo(longitud, chars);
+            intentosGeneracionRestantes -= 1;
+
+            if (intentosGeneracionRestantes == 0) {
+                logger.error("Error al generar el código de asistencia: Multiples intentos de generación");
+                throw new ModelException("No se pudo generar el código de asistencia");
+            }
+        } while (cursoRepository.existsByCodigoAsistencia(codigo));
+
+        return codigo;
+    }
+
+    /**
+     * Genera un código aleatorio
+     * @param longitud longitud del código
+     * @param chars set de carácteres que se usaran en el código
+     * @return código generado
+     */
+    private String generarCodigo(int longitud, String chars) {
+        String codigo = "";
+        for (int i = 0; i < longitud; i+=1) {
+            int index = (int) (Math.random() * chars.length());
+            codigo += chars.charAt(index);
+        }
+        return codigo;
+    }
 }
