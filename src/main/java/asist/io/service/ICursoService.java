@@ -62,4 +62,11 @@ public interface ICursoService {
      * @return Lista de cursos que contienen la palabra clave
      */
     public List<CursoGetDTO> obtenerCursosPorTermino(String termino) throws ModelException;
+
+    /**
+     * Genera un código de asistencia único para un curso
+     * @throws ModelException Si no se pudo generar el código de asistencia
+     * debido a multiples intentos fallidos
+     */
+    public String generarCodigoAsistencia() throws ModelException;
 }
