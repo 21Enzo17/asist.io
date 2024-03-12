@@ -187,4 +187,25 @@ public class CursoController {
             return new ResponseEntity(response, HttpStatus.NOT_FOUND);
         }
     }
+
+    /**
+     * Genera un código de asistencia único
+     * @return ResponseEntity con el código de asistencia generado si la operación fue exitosa,
+     * de lo contrario la ResponseEntity contendrá un mensaje de error
+     */
+    @GetMapping("/codigo-asistencia")
+    public ResponseEntity generarCodigoAsistencia() {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            response.put("codigoAsistencia", cursoService.generarCodigoAsistencia());
+            response.put("success", true);
+            return new ResponseEntity(response, HttpStatus.OK);
+        }
+        catch (ModelException e) {
+            response.put("error", e.getMessage());
+            response.put("success", false);
+            return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
