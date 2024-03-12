@@ -65,6 +65,8 @@ public interface ICursoService {
 
     /**
      * Genera un código de asistencia único para un curso
+     * @throws ModelException Si no se pudo generar el código de asistencia
+     * debido a multiples intentos fallidos
      */
-    public String generarCodigoAsistencia();
+    public String generarCodigoAsistencia() throws ModelException;
 }

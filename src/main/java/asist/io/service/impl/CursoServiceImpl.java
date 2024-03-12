@@ -199,6 +199,7 @@ public class CursoServiceImpl implements ICursoService {
      * @param termino Palabra clave para buscar cursos
      * @return Lista de cursos que contienen la palabra clave
      */
+    @Override
     public List<CursoGetDTO> obtenerCursosPorTermino(String termino) throws ModelException {
         logger.info("Buscando cursos con el término: " + termino);
 
@@ -220,7 +221,8 @@ public class CursoServiceImpl implements ICursoService {
     /**
      * Genera un código de asistencia único para un curso
      */
-    public String generarCodigoAsistencia() {
+    @Override
+    public String generarCodigoAsistencia() throws ModelException {
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         int longitud = 6;
         String codigo;
