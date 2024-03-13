@@ -7,6 +7,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +24,7 @@ import java.util.Map;
 
 @Component
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
+    private final Logger logger =  Logger.getLogger(this.getClass());
 
     private final JwtUtil jwtUtil;
     private final ObjectMapper mapper;
@@ -69,8 +72,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
             }
+            filterChain.doFilter(request, response);
 
         }catch (Exception e){
+            logger.error("Error al autenticar el token JWT: " + e.getMessage());
             errorDetails.put("message", "Authentication Error");
             errorDetails.put("details",e.getMessage());
             response.setStatus(HttpStatus.FORBIDDEN.value());
@@ -79,6 +84,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             mapper.writeValue(response.getWriter(), errorDetails);
 
         }
-        filterChain.doFilter(request, response);
+        
     }
 }

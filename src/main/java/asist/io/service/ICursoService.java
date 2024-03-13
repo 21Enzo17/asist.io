@@ -81,6 +81,7 @@ public interface ICursoService {
      */
     public void existePorId(String id);
 
+    /**
      * Genera un código de asistencia único para un curso
      * @throws ModelException Si no se pudo generar el código de asistencia
      * debido a multiples intentos fallidos

@@ -19,7 +19,6 @@ import java.util.List;
 
 @Service
 public class CursoServiceImpl implements ICursoService {
-    private final Logger logger =  Logger.getLogger(this.getClass());
 
 
     private static final Logger logger = Logger.getLogger(CursoServiceImpl.class);
@@ -253,7 +252,8 @@ public class CursoServiceImpl implements ICursoService {
             logger.error("El curso con id " + id + " no existe");
             throw new ModelException("El curso con id " + id + " no existe");
        }
-
+    }
+    
     /**
      * Genera un código de asistencia único para un curso
      */
