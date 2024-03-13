@@ -44,17 +44,17 @@ public class AuthController {
             UsuarioLoginResDTO loginRes = authService.login(loginReq);
             HttpHeaders responseHeaders = new HttpHeaders();
             if(!loginRes.getUsuario().getVerificado()){
-                response.put("ErrorInicioSesion", "Usuario no verificado, revise su casilla de email para verificar su cuenta.");
+                response.put("errorInicioSesion", "Usuario no verificado, revise su casilla de email para verificar su cuenta.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(new HttpHeaders()).body(response);
             }
             responseHeaders.set("Authorization", "Bearer " + loginRes.getToken());
-            response.put("Usuario", loginRes.getUsuario());
+            response.put("usuario", loginRes.getUsuario());
             return ResponseEntity.ok().headers(responseHeaders).body(response);
         } catch (ModelException e) {
-            response.put("Mensaje", "Nombre de usuario o contraseña invalidos");
+            response.put("mensaje", "Nombre de usuario o contraseña invalidos");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(new HttpHeaders()).body(response);
         } catch (Exception e) {
-            response.put("Mensaje", "Error al iniciar sesion");
+            response.put("mensaje", "Error al iniciar sesion");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(new HttpHeaders()).body(response);
         }
     }
@@ -76,10 +76,10 @@ public class AuthController {
     public ResponseEntity<?> verificarToken() {
         Map<String, Object> response = new HashMap<>();
         try {
-            response.put("Mensaje", "Token verificado correctamente");
+            response.put("mensaje", "Token verificado correctamente");
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
-            response.put("Mensaje", "Error al verificar token");
+            response.put("mensaje", "Error al verificar token");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }

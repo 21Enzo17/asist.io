@@ -55,7 +55,7 @@ public class UsuarioController {
         Map<String, Object> response = new HashMap<>();
         try {
             usuarioService.guardarUsuario(usuario);
-            response.put("Mensaje", "Usuario registrado correctamente");
+            response.put("mensaje", "Usuario registrado correctamente");
             return ResponseEntity.ok().body(response);
         } catch (ModelException e) {
             response.put("error", e.getMessage());
