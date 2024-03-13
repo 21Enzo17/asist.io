@@ -2,7 +2,6 @@ package asist.io.dto.usuarioDTO;
 
 import java.io.Serializable;
 
-import org.apache.xpath.operations.Bool;
 
 import lombok.Getter;
 import lombok.Setter;

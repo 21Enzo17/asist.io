@@ -14,7 +14,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UsuarioRegDTO implements Serializable{
+public class UsuarioPostDTO implements Serializable{
 
     @NotEmpty(message = "El correo no puede ser nulo ni vacío")
     @Email(message = "El correo no es valido")

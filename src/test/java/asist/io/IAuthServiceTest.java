@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import asist.io.dto.passwordDTO.PasswordDTO;
 import asist.io.dto.usuarioDTO.UsuarioLoginDTO;
-import asist.io.dto.usuarioDTO.UsuarioRegDTO;
+import asist.io.dto.usuarioDTO.UsuarioPostDTO;
 import asist.io.exception.ModelException;
 import asist.io.service.IAuthService;
 import asist.io.service.IUsuarioService;
@@ -27,7 +27,7 @@ public class IAuthServiceTest {
     @Autowired
     private IUsuarioService usuarioService;
 
-    static UsuarioRegDTO usuarioRegDto;
+    static UsuarioPostDTO usuarioRegDto;
 
     static UsuarioLoginDTO usuarioLoginDto;
 
@@ -35,12 +35,10 @@ public class IAuthServiceTest {
 
     @BeforeEach
     public void setUp() {
-        usuarioRegDto = new UsuarioRegDTO();
+        usuarioRegDto = new UsuarioPostDTO();
         usuarioRegDto.setCorreo("enzo.meneghini@hotmail.com");
         usuarioRegDto.setNombre("Enzo Meneghini");
-        passwordDto = new PasswordDTO();
-        passwordDto.setPassword("contrasena.1");
-        usuarioRegDto.setContrasena(passwordDto);
+        usuarioRegDto.setContrasena(new PasswordDTO("contrasena.1"));
         usuarioService.guardarUsuario(usuarioRegDto);
 
         usuarioLoginDto = new UsuarioLoginDTO();

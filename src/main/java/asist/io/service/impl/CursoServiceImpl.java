@@ -3,12 +3,14 @@ package asist.io.service.impl;
 import asist.io.dto.cursoDTO.CursoGetDTO;
 import asist.io.dto.cursoDTO.CursoPatchDTO;
 import asist.io.dto.cursoDTO.CursoPostDTO;
+import asist.io.entity.Curso;
 import asist.io.entity.Usuario;
 import asist.io.exception.ModelException;
 import asist.io.mapper.CursoMapper;
 import asist.io.repository.CursoRepository;
 import asist.io.repository.UsuarioRepository;
 import asist.io.service.ICursoService;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +19,11 @@ import java.util.List;
 
 @Service
 public class CursoServiceImpl implements ICursoService {
+    private final Logger logger =  Logger.getLogger(this.getClass());
+
+
     private static final Logger logger = Logger.getLogger(CursoServiceImpl.class);
+
     @Autowired
     private CursoRepository cursoRepository;
     @Autowired
@@ -218,6 +224,36 @@ public class CursoServiceImpl implements ICursoService {
         return cursosObtenidos;
     }
 
+
+
+    /**
+     * Encuentra un curso por su código de asistencia
+     * @param codigoAsistencia Código de asistencia del curso
+     * @return Entidad Curso si existe
+     * @throws ModelException Si el código de asistencia es nulo o vacío
+     */
+    @Override
+    public Curso obtenerCursoEntityPorCodigoAsistencia(String codigoAsistencia) {
+        Curso curso = cursoRepository.findByCodigoAsistencia(codigoAsistencia);
+        if(curso == null) {
+            logger.error("El curso con código de asistencia " + codigoAsistencia + " no existe");
+            throw new ModelException("El curso con código de asistencia " + codigoAsistencia + " no existe");
+        }
+        return cursoRepository.findByCodigoAsistencia(codigoAsistencia);
+    }
+
+    /**
+     * Determina si un curso existe por su id
+     * @param id Id del curso
+     * No hace nada en caso de existir, en caso de no hacerlo lanza una excepcion ModelException
+     */
+    @Override
+    public void existePorId(String id) {
+        if(!cursoRepository .existsById(id)) {
+            logger.error("El curso con id " + id + " no existe");
+            throw new ModelException("El curso con id " + id + " no existe");
+       }
+
     /**
      * Genera un código de asistencia único para un curso
      */
@@ -254,5 +290,6 @@ public class CursoServiceImpl implements ICursoService {
             codigo += chars.charAt(index);
         }
         return codigo;
+
     }
 }

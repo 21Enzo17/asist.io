@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import asist.io.dto.passwordDTO.PasswordDTO;
 import asist.io.dto.usuarioDTO.UsuarioCambioContrasenaDTO;
 import asist.io.dto.usuarioDTO.UsuarioGetDTO;
-import asist.io.dto.usuarioDTO.UsuarioRegDTO;
+import asist.io.dto.usuarioDTO.UsuarioPostDTO;
 import asist.io.entity.Usuario;
 import asist.io.exception.ModelException;
 import asist.io.mapper.UsuarioMapper;
@@ -32,22 +32,21 @@ public class UsuarioServiceImpl implements IUsuarioService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private UsuarioMapper usuarioMapper;
 
     /**
      * Metodo encargado de guardar un usuario.
      * @param usuario
      */
     @Override
-    public void guardarUsuario(UsuarioRegDTO usuario) {
+    public void guardarUsuario(UsuarioPostDTO usuario) {
        Usuario usuarioRegistro = new Usuario();
         if(usuarioRepository.findByCorreo(usuario.getCorreo()) == null){
             logger.info("Guardando usuario con correo: " + usuario.getCorreo());
-            usuarioRegistro = usuarioMapper.toEntity(usuario);
+            usuario.getContrasena().setPassword(passwordEncoder.encode(usuario.getContrasena().getPassword()));
+            usuarioRegistro = UsuarioMapper.toEntity(usuario);
             usuarioRegistro.setVerificado(false);
             usuarioRepository.save(usuarioRegistro);
-            emailSenderService.generarCorreoValidacion(usuarioMapper.toDto(usuarioRegistro), tokenService.generarToken(usuarioRegistro.getCorreo(), "VERIFICACION",usuarioRegistro));
+            emailSenderService.generarCorreoValidacion(UsuarioMapper.toDto(usuarioRegistro), tokenService.generarToken(usuarioRegistro.getCorreo(), "VERIFICACION",usuarioRegistro));
         }else{
             throw new ModelException("Ya existe un usuario con este correo");
         }
@@ -73,7 +72,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
     public void actualizarUsuario(UsuarioGetDTO usuario) {
         logger.info("Actualizando usuario con correo: " + usuario.getCorreo());
         buscarUsuario(usuario.getCorreo());
-        Usuario usuarioActualizado = usuarioMapper.toEntity(usuario);
+        Usuario usuarioActualizado = UsuarioMapper.toEntity(usuario);
         usuarioActualizado.setContrasena(usuarioRepository.findByCorreo(usuario.getCorreo()).getContrasena());
         usuarioRepository.save(usuarioActualizado);
     }
@@ -87,7 +86,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
     public UsuarioGetDTO buscarUsuarioDto(String correo) {
         logger.info("Buscando usuario con correo: " + correo);
         Usuario usuario = buscarUsuario(correo);
-        return usuarioMapper.toDto(usuario);
+        return UsuarioMapper.toDto(usuario);
     }
 
     /**
@@ -125,7 +124,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
     public void enviarOlvideContrasena(String correo){
         logger.info(correo + " ha solicitado un cambio de contraseña");
         Usuario usuario = buscarUsuario(correo);
-            emailSenderService.generarCorreoRecuperacion(usuarioMapper.toDto(usuario),
+            emailSenderService.generarCorreoRecuperacion(UsuarioMapper.toDto(usuario),
         tokenService.generarToken(usuario.getCorreo(), "RECUPERACION", usuario));
     }
 
@@ -137,7 +136,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
     public void enviarCorreoConfirmacion(String correo) {
         Usuario usuario = buscarUsuario(correo);
         if(!usuario.isVerificado()){
-            emailSenderService.generarCorreoValidacion(usuarioMapper.toDto(usuario), 
+            emailSenderService.generarCorreoValidacion(UsuarioMapper.toDto(usuario), 
             tokenService.generarToken(usuario.getCorreo(), "VERIFICACION",usuario));
         }else{
             logger.error("El usuario ya ha sido verificado "+ correo);
