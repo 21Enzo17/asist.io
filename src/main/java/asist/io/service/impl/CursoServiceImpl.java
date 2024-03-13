@@ -292,4 +292,9 @@ public class CursoServiceImpl implements ICursoService {
         return codigo;
 
     }
+
+    @Override
+    public Curso obtenerCursoEntityPorId(String id) {
+        return cursoRepository.findById(id).get();
+    }
 }

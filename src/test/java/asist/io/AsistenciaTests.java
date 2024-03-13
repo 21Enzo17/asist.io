@@ -36,7 +36,6 @@ import jakarta.transaction.Transactional;
 @SpringBootTest
 @Transactional
 public class AsistenciaTests {
-    private final Logger logger =  Logger.getLogger(this.getClass());
 
     @Autowired
     private IAsistenciaService target;

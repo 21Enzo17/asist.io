@@ -42,6 +42,14 @@ public interface ICursoService {
     public CursoGetDTO obtenerCursoPorId(String id) throws ModelException;
 
     /**
+     * Obtiene un curso ENTITY por su id
+     * @param id Id del curso 
+     * @return Curso si existe, null si no existe
+     * @throws ModelException
+     */
+    public Curso obtenerCursoEntityPorId(String id);
+
+    /**
      * Obtiene un curso por su código de asistencia
      * @param codigoAsistencia Código de asistencia del curso
      * @return Curso si existe en formato CursoGetDTO

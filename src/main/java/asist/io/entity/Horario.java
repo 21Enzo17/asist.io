@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,6 +26,13 @@ public class Horario {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "horario", nullable = false)
-    private LocalTime horario;
+    @Column(name = "entrada", nullable = false)
+    private LocalTime entrada;
+
+    @Column(name = "salida", nullable = false)
+    private LocalTime salida;
+
+    @ManyToOne()
+    @JoinColumn(name = "curso_id", nullable = false)
+    private Curso curso;
 }
