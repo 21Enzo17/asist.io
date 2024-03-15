@@ -6,10 +6,13 @@ import asist.io.dto.estudianteDTO.EstudianteGetDTO;
 import asist.io.dto.estudianteDTO.EstudiantePostDTO;
 import asist.io.dto.inscripcionDTO.InscripcionGetDTO;
 import asist.io.dto.inscripcionDTO.InscripcionPostDTO;
+import asist.io.dto.usuarioDTO.UsuarioPostDTO;
 import asist.io.exception.ModelException;
 import asist.io.service.ICursoService;
 import asist.io.service.IEstudianteService;
 import asist.io.service.IInscripcionService;
+import asist.io.service.IUsuarioService;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Transactional
 public class InscripcionServiceTest {
     @Autowired
     private IInscripcionService inscripcionService;
@@ -24,6 +28,10 @@ public class InscripcionServiceTest {
     private ICursoService cursoService;
     @Autowired
     private IEstudianteService estudianteService;
+    @Autowired
+    private IUsuarioService usuarioService;
+
+    UsuarioPostDTO usuario;
 
     InscripcionPostDTO inscJuanInformatica;
     InscripcionPostDTO inscRocioInformatica;
@@ -49,17 +57,26 @@ public class InscripcionServiceTest {
 
     @BeforeEach
     public void setUp() throws ModelException {
+        /* --- Usuario --- */
+        usuario = new UsuarioPostDTO();
+        usuario.setNombre("Usuario");
+        usuario.setCorreo("prueba@prueba.com");
+        usuario.setContrasena("1234");
+        usuarioService.guardarUsuario(usuario);
+
         /* --- Cursos --- */
         informatica = new CursoPostDTO();
         informatica.setNombre("Informática");
         informatica.setDescripcion("Curso sobre Informática");
         informatica.setCarrera("Ingeniería Informática");
+        informatica.setIdUsuario(usuarioService.buscarUsuarioDto(usuario.getCorreo()).getId());
         informaticaRegistrada = cursoService.registrarCurso(informatica);
 
         matematicas = new CursoPostDTO();
         matematicas.setNombre("Matemáticas");
         matematicas.setDescripcion("Curso sobre Matemáticas");
         matematicas.setCarrera("Licenciatura Superior en Matemáticas");
+        matematicas.setIdUsuario(usuarioService.buscarUsuarioDto(usuario.getCorreo()).getId());
         matematicasRegistrada = cursoService.registrarCurso(matematicas);
 
         /* --- Estudiantes --- */
@@ -113,6 +130,8 @@ public class InscripcionServiceTest {
         estudianteService.eliminarEstudiante(santiagoMatRegistrado.getId());
         estudianteService.eliminarEstudiante(santiagoInfRegistrado.getId());
 
+        usuarioService.eliminarUsuario(usuario.getCorreo());
+
         juan = null;
         rocio = null;
         santiagoMat = null;
@@ -154,7 +173,6 @@ public class InscripcionServiceTest {
      */
     @Test
     @DisplayName("Registrar inscripción - argumento inválido")
-    @Disabled
     public void registrarInscripcionArgumentoInvalido() {
         assertThrows(ModelException.class, () -> inscripcionService.registrarInscripcion(null));
     }
@@ -165,7 +183,6 @@ public class InscripcionServiceTest {
      */
     @Test
     @DisplayName("Eliminar inscripción por id")
-    @Disabled
     public void eliminarInscripcionPorId() throws ModelException {
         InscripcionGetDTO inscripcionGuardada = inscripcionService.registrarInscripcion(inscJuanInformatica);
 
