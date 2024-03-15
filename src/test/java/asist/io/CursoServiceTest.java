@@ -3,7 +3,6 @@ package asist.io;
 import asist.io.dto.cursoDTO.CursoGetDTO;
 import asist.io.dto.cursoDTO.CursoPatchDTO;
 import asist.io.dto.cursoDTO.CursoPostDTO;
-import asist.io.dto.passwordDTO.PasswordDTO;
 import asist.io.dto.usuarioDTO.UsuarioPostDTO;
 import asist.io.exception.ModelException;
 import asist.io.mapper.CursoMapper;
@@ -34,7 +33,7 @@ public class CursoServiceTest {
         usuario = new UsuarioPostDTO();
         usuario.setNombre("Usuario de prueba");
         usuario.setCorreo("usuario@prueba.com");
-        usuario.setContrasena(new PasswordDTO("dadas12345678.1"));
+        usuario.setContrasena("dadas12345678.1");
 
         usuarioService.guardarUsuario(usuario);
         String idUsuario = usuarioService.buscarUsuarioDto(usuario.getCorreo()).getId();

@@ -1,5 +1,7 @@
 package asist.io;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,7 +36,7 @@ public class IEmailSenderServiceTest {
     @Test
     @DisplayName("Test de envio de correo")
     public void testEnviarCorreo(){
-        target.enviarCorreo("poo2023@gmail.com", usuarioDto.getCorreo(), "Correo de Prueba", "Test", null);
+        target.enviarCorreo("poo2023@gmail.com", usuarioDto.getCorreo(), "Correo de Prueba", "Test", Optional.empty());
     }
 
 }
