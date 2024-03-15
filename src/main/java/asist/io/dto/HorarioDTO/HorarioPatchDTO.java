@@ -18,8 +18,9 @@ import lombok.ToString;
 public class HorarioPatchDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    
-    private String cursoId;
+    @NotNull(message = "El id del horario no puede ser nulo")
+    private String horarioId;
+
     @NotNull(message = "La hora de entrada no puede ser nula")
     private LocalTime entrada;
     @NotNull(message = "La hora de salida no puede ser nula")

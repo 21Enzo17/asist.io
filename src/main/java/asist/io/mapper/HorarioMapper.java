@@ -3,7 +3,6 @@ package asist.io.mapper;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 
 import asist.io.dto.HorarioDTO.HorarioGetDTO;
 import asist.io.dto.HorarioDTO.HorarioPostDTO;
@@ -11,7 +10,6 @@ import asist.io.entity.Curso;
 import asist.io.entity.Horario;
 
 public class HorarioMapper {
-    private final static Logger logger =  Logger.getLogger(HorarioMapper.class);
 
     public static Horario toEntity(HorarioPostDTO horarioDTO, Curso curso) {
 

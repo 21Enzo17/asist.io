@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.apache.log4j.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import asist.io.dto.HorarioDTO.HorarioGetDTO;
+import asist.io.dto.HorarioDTO.HorarioPatchDTO;
 import asist.io.dto.HorarioDTO.HorarioPostDTO;
 import asist.io.dto.cursoDTO.CursoGetDTO;
 import asist.io.dto.cursoDTO.CursoPostDTO;
@@ -49,6 +49,8 @@ public class HorarioTest {
     static HorarioPostDTO horarioPostDTO2;
     static HorarioGetDTO horarioGetDTO2;
 
+    static HorarioPatchDTO horarioPatchDTO;
+
     @BeforeEach
     public void setUp() {
         usuarioPostDTO = new UsuarioPostDTO();
@@ -70,6 +72,11 @@ public class HorarioTest {
         horarioPostDTO1.setEntrada(LocalTime.now());
         horarioPostDTO1.setSalida(LocalTime.now().plusHours(2));
         horarioPostDTO1.setCursoId(cursoGetDTO.getId());
+
+        horarioPatchDTO = new HorarioPatchDTO();
+        horarioPatchDTO.setEntrada(horarioPostDTO1.getEntrada().plusHours(1));
+        horarioPatchDTO.setSalida(horarioPostDTO1.getSalida().plusHours(2));
+        horarioPatchDTO.setDia(horarioPostDTO1.getDia());
         
         horarioPostDTO2 = new HorarioPostDTO();
         horarioPostDTO2.setDia(LocalDate.now().getDayOfWeek().plus(1));
@@ -133,6 +140,33 @@ public class HorarioTest {
         assertNotNull(target.registrarHorario(horarioPostDTO1));
         assertNotNull(target.obtenerHorarioPorLocalDateTime(cursoGetDTO.getCodigoAsistencia(), LocalDateTime.now()));
         assertThrows(ModelException.class, () -> target.obtenerHorarioPorLocalDateTime(cursoGetDTO.getId(), LocalDateTime.now().plusDays(2)));
+    }
+    
+    @Test
+    @DisplayName("Eliminar Horario")
+    public void eliminarHorario() {
+        horarioGetDTO1 = target.registrarHorario(horarioPostDTO1);
+        assertNotNull(target.obtenerHorarioPorId(horarioGetDTO1.getHorarioId()));
+        target.eliminarHorario(horarioGetDTO1.getHorarioId());
+        assertThrows(ModelException.class, () -> target.obtenerHorarioPorId(horarioGetDTO1.getHorarioId()));
+    }
+    
+    @Test
+    @DisplayName("Actualizar Horario")
+    public void actualizarHorario() {
+        HorarioGetDTO horarioGetDTO = target.registrarHorario(horarioPostDTO1);
+        target.registrarHorario(horarioPostDTO2);
+        // Le asignamos valores no validos
+        horarioPatchDTO.setHorarioId(horarioGetDTO.getHorarioId());
+        horarioPatchDTO.setEntrada(horarioPostDTO2.getEntrada());
+        horarioPatchDTO.setSalida(horarioPostDTO2.getSalida());
+        horarioPatchDTO.setDia(horarioPostDTO2.getDia());
+        assertThrows(ModelException.class, () -> target.actualizarHorario(horarioPatchDTO));
+        // Le asignamos valores validos
+        horarioPatchDTO.setEntrada(horarioPostDTO1.getEntrada().plusHours(1));
+        horarioPatchDTO.setSalida(horarioPostDTO1.getSalida().plusHours(1));
+        horarioPatchDTO.setDia(horarioPostDTO2.getDia().plus(1));
+        assertNotNull(target.actualizarHorario(horarioPatchDTO));
     }
 
     

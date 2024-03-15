@@ -52,11 +52,11 @@ public class HorarioServiceImpl implements IHorarioService {
      */
     @Override
     public HorarioGetDTO actualizarHorario(HorarioPatchDTO horarioDTO) {
-        Horario horario = obtenerHorarioEntityPorId(horarioDTO.getCursoId());
-        logger.info("Actualizando horario con id " + horarioDTO.getCursoId());
-        if(horario.getDia() != null )horario.setDia(horarioDTO.getDia());
-        if(horario.getEntrada() != null )horario.setEntrada(horarioDTO.getEntrada());
-        if(horario.getSalida() != null )horario.setSalida(horarioDTO.getSalida());
+        Horario horario = obtenerHorarioEntityPorId(horarioDTO.getHorarioId());
+        logger.info("Actualizando horario con id " + horarioDTO.getHorarioId());
+        if(horarioDTO.getDia() != null )horario.setDia(horarioDTO.getDia());
+        if(horarioDTO.getEntrada() != null )horario.setEntrada(horarioDTO.getEntrada());
+        if(horarioDTO.getSalida() != null )horario.setSalida(horarioDTO.getSalida());
         validarHorario(horario);
         return HorarioMapper.toDTO(horarioRepository.save(horario));
     }
@@ -185,19 +185,20 @@ public class HorarioServiceImpl implements IHorarioService {
         
         List<Horario> horarios = horarioRepository.findOverlappingHorarios(horario.getCurso().getId(), horario.getDia(), horario.getEntrada(), horario.getSalida());
         if(horarios.size() != 0){
-            if(horario.getId() == null && horarios.size() != 0){
+            if(horarios.size() == 1 && horarios.get(0).getId().equals(horario.getId())){
+                logger.info("El horario se superpone con otro horario, pero es el mismo horario");
+                return;
+            } else if(horarios.size() > 0 ){
                 logger.error("El horario se superpone con otro horario");
                 throw new ModelException("El horario se superpone con otro horario");
             }
-            if(horario != null && horarios.size() > 1){
-                logger.error("El horario se superpone con otro horario");
-                throw new ModelException("El horario se superpone con otro horario");
-            }
+            
         }
-        
     }
-    
-
-
-    
 }
+
+    
+
+
+    
+
