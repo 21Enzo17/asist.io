@@ -3,9 +3,13 @@ package asist.io;
 import asist.io.dto.cursoDTO.CursoGetDTO;
 import asist.io.dto.cursoDTO.CursoPatchDTO;
 import asist.io.dto.cursoDTO.CursoPostDTO;
+import asist.io.dto.passwordDTO.PasswordDTO;
+import asist.io.dto.usuarioDTO.UsuarioPostDTO;
 import asist.io.exception.ModelException;
 import asist.io.mapper.CursoMapper;
 import asist.io.service.ICursoService;
+import asist.io.service.IUsuarioService;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,19 +17,33 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Transactional
 public class CursoServiceTest {
     @Autowired
     private ICursoService cursoService;
+    @Autowired
+    private IUsuarioService usuarioService;
     CursoPostDTO cursoPostDTO;
     CursoPatchDTO cursoPatchDTO;
     CursoGetDTO cursoGetDTO;
 
+    UsuarioPostDTO usuario;
+
     @BeforeEach
     public void setup() {
+        usuario = new UsuarioPostDTO();
+        usuario.setNombre("Usuario de prueba");
+        usuario.setCorreo("usuario@prueba.com");
+        usuario.setContrasena(new PasswordDTO("dadas12345678.1"));
+
+        usuarioService.guardarUsuario(usuario);
+        String idUsuario = usuarioService.buscarUsuarioDto(usuario.getCorreo()).getId();
+
         cursoPostDTO = new CursoPostDTO();
         cursoPostDTO.setNombre("Curso de prueba");
         cursoPostDTO.setDescripcion("Curso de prueba");
         cursoPostDTO.setCarrera("Ingeniería en Sistemas");
+        cursoPostDTO.setIdUsuario(idUsuario);
 
         cursoPatchDTO = new CursoPatchDTO();
 
@@ -37,6 +55,9 @@ public class CursoServiceTest {
         cursoPostDTO = null;
         cursoPatchDTO = null;
         cursoGetDTO = null;
+        usuarioService.eliminarUsuario(usuario.getCorreo());
+        usuario = null;
+
     }
 
     /**

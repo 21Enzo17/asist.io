@@ -33,7 +33,7 @@ public class CursoMapper {
      * @param curso CursoPatchDTO a convertir
      * @return Curso convertido
      */
-    public static Curso toEntity(CursoPatchDTO curso) {
+    public static Curso toEntity(CursoPatchDTO curso, Usuario usuario) {
         if (curso == null) return null;
 
         Curso entity = new Curso();
@@ -42,6 +42,7 @@ public class CursoMapper {
         entity.setDescripcion(curso.getDescripcion());
         entity.setCarrera(curso.getCarrera());
         entity.setCodigoAsistencia(curso.getCodigoAsistencia());
+        entity.setUsuario(usuario);
         return entity;
     }
 
@@ -109,6 +110,7 @@ public class CursoMapper {
         dto.setDescripcion(curso.getDescripcion());
         dto.setCarrera(curso.getCarrera());
         dto.setCodigoAsistencia(curso.getCodigoAsistencia());
+        dto.setIdUsuario(curso.getIdUsuario());
         return dto;
     }
 
@@ -126,6 +128,7 @@ public class CursoMapper {
         dto.setDescripcion(curso.getDescripcion());
         dto.setCarrera(curso.getCarrera());
         dto.setCodigoAsistencia(curso.getCodigoAsistencia());
+        dto.setIdUsuario(curso.getUsuario().getId());
         return dto;
     }
 
