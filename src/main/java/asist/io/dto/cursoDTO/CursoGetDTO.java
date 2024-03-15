@@ -17,4 +17,5 @@ public class CursoGetDTO implements Serializable {
     private String descripcion;
     private String carrera;
     private String codigoAsistencia;
+    private String idUsuario;
 }

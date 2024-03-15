@@ -110,12 +110,18 @@ public class CursoServiceImpl implements ICursoService {
             throw new ModelException("El curso con id " + curso.getId() + " no existe");
         }
 
-        if (curso.getCodigoAsistencia() != null && (obtenerCursoPorCodigoAsistencia(curso.getCodigoAsistencia()) != null && !obtenerCursoPorCodigoAsistencia(curso.getCodigoAsistencia()).getId().equals(curso.getId())) ) {
+        if (curso.getCodigoAsistencia() != null && ( cursoRepository.findByCodigoAsistencia(curso.getCodigoAsistencia()) != null && !obtenerCursoPorCodigoAsistencia(curso.getCodigoAsistencia()).getId().equals(curso.getId())) ) {
             logger.error("Error al actualizar el curso: El código de asistencia, " + curso.getCodigoAsistencia() + ", ya esta en uso");
             throw new ModelException("El código de asistencia " + curso.getCodigoAsistencia() + " ya esta en uso");
         }
 
-        CursoGetDTO cursoActualizado = CursoMapper.toGetDTO(cursoRepository.save(CursoMapper.toEntity(curso)));
+        if (!usuarioRepository.existsById(curso.getIdUsuario())) {
+            logger.error("Error al actualizar el curso: El usuario con id " + curso.getId() + " no existe");
+            throw new ModelException("El usuario con id " + curso.getId() + " no existe");
+        }
+
+        Usuario usuario = usuarioRepository.findById(curso.getIdUsuario()).get();
+        CursoGetDTO cursoActualizado = CursoMapper.toGetDTO(cursoRepository.save(CursoMapper.toEntity(curso, usuario)));
         logger.info("Curso actualizado con éxito, id: " + cursoActualizado.getId());
         return cursoActualizado;
     }
@@ -181,6 +187,11 @@ public class CursoServiceImpl implements ICursoService {
         if (id == null || id.isBlank() || id.isEmpty()) {
             logger.error("Error al buscar los cursos: El id del usuario no puede ser nulo ni vacío");
             throw new ModelException("El id del usuario no puede ser nulo ni vacío");
+        }
+
+        if (!usuarioRepository.existsById(id)) {
+            logger.error("Error al buscar los cursos: El usuario con id " + id + " no existe");
+            throw new ModelException("El usuario con id " + id + " no existe");
         }
 
         if (cursoRepository.findByUsuarioId(id).isEmpty()) {
