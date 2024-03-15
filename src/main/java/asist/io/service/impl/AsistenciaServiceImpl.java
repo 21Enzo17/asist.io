@@ -155,6 +155,7 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
             logger.error("El alumno con LU " + asistenciaPostDTO.getLu() + " ya tiene registrada una asistencia para la fecha " + asistenciaPostDTO.getFecha());
             throw new ModelException("El alumno con LU " + asistenciaPostDTO.getLu() + " ya tiene registrada una asistencia para la fecha " + asistenciaPostDTO.getFecha());
         }
+        logger.info ("Asistencia validada con exito");
     }
     
 }

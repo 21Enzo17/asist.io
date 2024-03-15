@@ -43,7 +43,7 @@ public class EmailSenderServiceImpl implements IEmailSenderService{
     @Override
     @SuppressWarnings("null")
     public void enviarCorreo(String emisor, String para, String tema, String cuerpo, Optional<InputStreamSource> imagen) {
-        logger.info("Enviando correo a:" + para);
+        logger.info("Enviando correo a: " + para);
         try{
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);

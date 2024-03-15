@@ -53,11 +53,11 @@ public class HorarioServiceImpl implements IHorarioService {
     @Override
     public HorarioGetDTO actualizarHorario(HorarioPatchDTO horarioDTO) {
         Horario horario = obtenerHorarioEntityPorId(horarioDTO.getHorarioId());
-        logger.info("Actualizando horario con id " + horarioDTO.getHorarioId());
         if(horarioDTO.getDia() != null )horario.setDia(horarioDTO.getDia());
         if(horarioDTO.getEntrada() != null )horario.setEntrada(horarioDTO.getEntrada());
         if(horarioDTO.getSalida() != null )horario.setSalida(horarioDTO.getSalida());
         validarHorario(horario);
+        logger.info("Horario: " + horario.getId() + " actualizado con exito");
         return HorarioMapper.toDTO(horarioRepository.save(horario));
     }
 
@@ -86,6 +86,7 @@ public class HorarioServiceImpl implements IHorarioService {
             logger.error("No se encontro el horario con id: " + id);
             throw new ModelException("No se encontro el horario con id: " + id);
         }
+        logger.info ("Horario con id " + id + " encontrado con exito");
         return HorarioMapper.toDTO(horario);
     }
 
@@ -102,6 +103,7 @@ public class HorarioServiceImpl implements IHorarioService {
             logger.error("No se encontro el horario con id: " + id);
             throw new ModelException("No se encontro el horario con id: " + id);
         }
+        logger.info ("Horario con id " + id + " encontrado con exito");
         return horario;
     }
 
@@ -120,6 +122,7 @@ public class HorarioServiceImpl implements IHorarioService {
             logger.error("No se encontraron horarios para el curso con id " + cursoId);
             throw new ModelException("No se encontraron horarios para el curso con id " + cursoId);
         }
+        logger.info ("Se encontraron " + lista.size() + " horarios para el curso con id " + cursoId + " con exito");
         return lista;
     }
 
@@ -141,7 +144,8 @@ public class HorarioServiceImpl implements IHorarioService {
         if(horario == null){
             logger.error("No se encontro un horario para la fecha " + fecha);
             throw new ModelException("No se encontro un horario para la fecha " + fecha);
-        }   
+        }
+        logger.info("Horario encontrado para la fecha " + fecha + " con exito");   
         return horario;
     }
     
@@ -159,7 +163,6 @@ public class HorarioServiceImpl implements IHorarioService {
      * @throws ModelException si los datos no son validos
      */
     private void validarHorario(Horario horario) {
-        logger.info("Validando horario");
         if (horario.getEntrada() == null) {
             logger.error("La hora de entrada no puede ser nula");
             throw new ModelException("La hora de entrada no puede ser nula");
@@ -194,6 +197,7 @@ public class HorarioServiceImpl implements IHorarioService {
             }
             
         }
+        logger.info("Horario validado con exito");
     }
 }
 
