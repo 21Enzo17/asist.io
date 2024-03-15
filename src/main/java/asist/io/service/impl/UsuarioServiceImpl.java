@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import asist.io.dto.passwordDTO.PasswordDTO;
+import asist.io.dto.ContrasenaDTO.ContrasenaDTO;
 import asist.io.dto.usuarioDTO.UsuarioCambioContrasenaDTO;
 import asist.io.dto.usuarioDTO.UsuarioGetDTO;
 import asist.io.dto.usuarioDTO.UsuarioPostDTO;
@@ -42,11 +42,12 @@ public class UsuarioServiceImpl implements IUsuarioService {
        Usuario usuarioRegistro = new Usuario();
         if(usuarioRepository.findByCorreo(usuario.getCorreo()) == null){
             logger.info("Guardando usuario con correo: " + usuario.getCorreo());
-            usuario.getContrasena().setPassword(passwordEncoder.encode(usuario.getContrasena().getPassword()));
+            usuario.setContrasena((passwordEncoder.encode(usuario.getContrasena())));
             usuarioRegistro = UsuarioMapper.toEntity(usuario);
             usuarioRegistro.setVerificado(false);
             usuarioRepository.save(usuarioRegistro);
             emailSenderService.generarCorreoValidacion(UsuarioMapper.toDto(usuarioRegistro), tokenService.generarToken(usuarioRegistro.getCorreo(), "VERIFICACION",usuarioRegistro));
+            logger.info ("Usuario registrado con exito, " + usuario.getCorreo());
         }else{
             throw new ModelException("Ya existe un usuario con este correo");
         }
@@ -58,9 +59,9 @@ public class UsuarioServiceImpl implements IUsuarioService {
      */
     @Override
     public void eliminarUsuario(String correo) {
-        logger.info("Eliminando usuario con correo: " + correo);
         buscarUsuario(correo);
         usuarioRepository.deleteByCorreo(correo);
+        logger.info ("Usuario eliminado con exito, " + correo);
     }
 
     /**
@@ -70,11 +71,11 @@ public class UsuarioServiceImpl implements IUsuarioService {
      */
     @Override
     public void actualizarUsuario(UsuarioGetDTO usuario) {
-        logger.info("Actualizando usuario con correo: " + usuario.getCorreo());
         buscarUsuario(usuario.getCorreo());
         Usuario usuarioActualizado = UsuarioMapper.toEntity(usuario);
         usuarioActualizado.setContrasena(usuarioRepository.findByCorreo(usuario.getCorreo()).getContrasena());
         usuarioRepository.save(usuarioActualizado);
+        logger.info("Usuario actualizado con exito, " + usuario.getCorreo());
     }
 
     /**
@@ -84,8 +85,8 @@ public class UsuarioServiceImpl implements IUsuarioService {
      */
     @Override
     public UsuarioGetDTO buscarUsuarioDto(String correo) {
-        logger.info("Buscando usuario con correo: " + correo);
         Usuario usuario = buscarUsuario(correo);
+        logger.info ("Usuario encontrado con exito, " + correo);
         return UsuarioMapper.toDto(usuario);
     }
 
@@ -100,6 +101,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
         if(usuario == null){
             throw new ModelException("No existe un usuario con este correo");
         }
+        logger.info ("Usuario encontrado con exito, " + correo);
         return usuario;
     }
 
@@ -122,10 +124,10 @@ public class UsuarioServiceImpl implements IUsuarioService {
      * @param correo
     */
     public void enviarOlvideContrasena(String correo){
-        logger.info(correo + " ha solicitado un cambio de contraseña");
         Usuario usuario = buscarUsuario(correo);
             emailSenderService.generarCorreoRecuperacion(UsuarioMapper.toDto(usuario),
         tokenService.generarToken(usuario.getCorreo(), "RECUPERACION", usuario));
+        logger.info ("Correo de recuperacion enviado con exito a " + correo);
     }
 
     /**
@@ -142,6 +144,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
             logger.error("El usuario ya ha sido verificado "+ correo);
             throw new ModelException("El usuario ya ha sido verificado");
         }
+        logger.info ("Correo de validacion enviado con exito a " + correo);
     }
 
     /**
@@ -150,12 +153,13 @@ public class UsuarioServiceImpl implements IUsuarioService {
      * @param password Contraseña
      */
     @Override
-    public void cambiarContrasena(String token, PasswordDTO password) {
+    public void cambiarContrasena(String token, ContrasenaDTO password) {
         tokenService.validarToken(token);
         Usuario usuario = tokenService.obtenerUsuario(token);
-        usuario.setContrasena(passwordEncoder.encode(password.getPassword()));
+        usuario.setContrasena(passwordEncoder.encode(password.getContrasena()));
         usuarioRepository.save(usuario);
         tokenService.eliminarToken(token);
+        logger.info ("Contraseña cambiada con exito para " + usuario.getCorreo());
     }
 
     /**
@@ -167,11 +171,12 @@ public class UsuarioServiceImpl implements IUsuarioService {
         Usuario usuario = buscarUsuario(usuarioCambio.getCorreo());
         if(!passwordEncoder.matches(usuarioCambio.getContrasenaActual(), usuario.getContrasena())){
             throw new ModelException("La contraseña actual no coincide con la contraseña ingresada");
-        }else if(passwordEncoder.matches(usuarioCambio.getContrasenaNueva().getPassword(), usuario.getContrasena())){
+        }else if(passwordEncoder.matches(usuarioCambio.getContrasenaNueva(), usuario.getContrasena())){
             throw new ModelException("La contraseña nueva no puede ser igual a la contraseña actual");
         }
-        usuario.setContrasena(passwordEncoder.encode(usuarioCambio.getContrasenaNueva().getPassword()));
+        usuario.setContrasena(passwordEncoder.encode(usuarioCambio.getContrasenaNueva()));
         usuarioRepository.save(usuario);
+        logger.info ("Contraseña cambiada con exito para " + usuario.getCorreo());
     }
 
     /**

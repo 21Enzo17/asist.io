@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import asist.io.dto.passwordDTO.PasswordDTO;
+import asist.io.dto.ContrasenaDTO.ContrasenaDTO;
 import asist.io.dto.usuarioDTO.UsuarioCambioContrasenaDTO;
 import asist.io.dto.usuarioDTO.UsuarioPostDTO;
 import asist.io.exception.ModelException;
@@ -137,8 +137,9 @@ public class UsuarioController {
      * 3. Si el restablecimiento no es exitoso debido a una excepción ModelException (por ejemplo, si el token es inválido), devuelve una respuesta con estado 400 (Bad Request) y un mensaje de error.
      */
     @PatchMapping("/cambiar-contrasena/{token}")
-    public ResponseEntity<?> resetPassword(@PathVariable String token, @RequestBody @Valid PasswordDTO contrasena) {
+    public ResponseEntity<?> resetPassword(@PathVariable String token, @RequestBody @Valid ContrasenaDTO contrasena) {
         Map<String, Object> response = new HashMap<>();
+
         try{
             usuarioService.cambiarContrasena(token, contrasena);
             response.put("success", "Contraseña restablecida correctamente");

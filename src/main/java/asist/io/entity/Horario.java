@@ -1,12 +1,17 @@
 package asist.io.entity;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,6 +29,17 @@ public class Horario {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "horario", nullable = false)
-    private LocalTime horario;
+    @Column(name = "entrada", nullable = false)
+    private LocalTime entrada;
+
+    @Column(name = "salida", nullable = false)
+    private LocalTime salida;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "dia", nullable = false)
+    private DayOfWeek dia;
+
+    @ManyToOne()
+    @JoinColumn(name = "curso_id", nullable = false)
+    private Curso curso;
 }

@@ -194,6 +194,7 @@ public class EstudianteServiceImpl implements IEstudianteService {
             logger.error("El estudiante con el lu " + lu + " no existe");
             throw new ModelException("El estudiante con el lu " + lu + " no existe");
         }
+        logger.info("Estudiante encontrado con éxito, lu: " + lu);
         return estudiante;
     }
 }

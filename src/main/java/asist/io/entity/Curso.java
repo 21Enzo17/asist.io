@@ -1,5 +1,7 @@
 package asist.io.entity;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,4 +27,7 @@ public class Curso {
     @ManyToOne()
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "horario_id")
+    private List<Horario> horario;
 }

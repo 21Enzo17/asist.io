@@ -1,6 +1,6 @@
 package asist.io.entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,7 +13,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
@@ -27,7 +26,7 @@ public class Asistencia {
     private String id;
 
     @Column(name = "fecha", nullable = false)
-    private LocalDate fecha;
+    private LocalDateTime fecha;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "curso_id", nullable = false)
@@ -37,7 +36,11 @@ public class Asistencia {
     @JoinColumn(name = "estudiante_id", nullable = false)
     private Estudiante estudiante;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "horario_id", nullable = false)
+    private Horario horario;
+
     public Asistencia(){
-        this.fecha = LocalDate.now();
+        this.fecha = LocalDateTime.now();
     }
 }

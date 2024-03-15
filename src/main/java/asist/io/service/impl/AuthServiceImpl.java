@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.apache.log4j.Logger;
 import asist.io.auth.JwtUtil;
 import asist.io.dto.usuarioDTO.UsuarioLoginDTO;
-import asist.io.dto.usuarioDTO.UsuarioLoginResDTO;
+import asist.io.dto.usuarioDTO.UsuarioGetLoginDTO;
 import asist.io.entity.Usuario;
 import asist.io.exception.ModelException;
 import asist.io.service.IAuthService;
@@ -36,7 +36,7 @@ public class AuthServiceImpl implements IAuthService {
      * @return Datos del usuario logueado (Token y un objeto usuarioDto con sus datos)
      */
     @Override
-    public UsuarioLoginResDTO login(UsuarioLoginDTO loginReq) {
+    public UsuarioGetLoginDTO login(UsuarioLoginDTO loginReq) {
         Authentication authentication;
         try{
            authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginReq.getCorreo(), loginReq.getContrasena()));
@@ -49,7 +49,7 @@ public class AuthServiceImpl implements IAuthService {
         Usuario user = new Usuario();
         user.setCorreo(email);
         String token = jwtUtil.createToken(user);
-        UsuarioLoginResDTO loginRes = new UsuarioLoginResDTO();
+        UsuarioGetLoginDTO loginRes = new UsuarioGetLoginDTO();
         loginRes.setUsuario(usuarioService.buscarUsuarioDto(email));
         loginRes.setToken(token);
         logger.info("Usuario autenticado correctamente, " + loginRes.getUsuario().getCorreo());

@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import asist.io.dto.passwordDTO.PasswordDTO;
 import asist.io.dto.usuarioDTO.UsuarioPostDTO;
 import asist.io.exception.ModelException;
 import asist.io.service.ITokenService;
@@ -35,7 +34,7 @@ public class ITokenServiceTest {
         usuarioRegDto = new UsuarioPostDTO();
         usuarioRegDto.setCorreo("enzo.meneghini@hotmail.com");
         usuarioRegDto.setNombre("Enzo Meneghini");
-        usuarioRegDto.setContrasena(new PasswordDTO("contrasena.1"));
+        usuarioRegDto.setContrasena("contrasena.1");
         usuarioService.guardarUsuario(usuarioRegDto);
     }
 

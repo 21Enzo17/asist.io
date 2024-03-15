@@ -1,5 +1,7 @@
 package asist.io.service.impl;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -14,6 +16,7 @@ import asist.io.repository.AsistenciaRepository;
 import asist.io.service.IAsistenciaService;
 import asist.io.service.ICursoService;
 import asist.io.service.IEstudianteService;
+import asist.io.service.IHorarioService;
 import asist.io.service.IInscripcionService;
 import asist.io.util.DateFormatter;
 
@@ -29,6 +32,8 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
     private IEstudianteService estudianteService;
     @Autowired
     private IInscripcionService inscripcionService;
+    @Autowired
+    private IHorarioService horarioService;
 
     /**
      * Registra una asistencia en la base de datos
@@ -41,6 +46,7 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
     @Override
     public AsistenciaGetDTO registrarAsistencia(AsistenciaPostDTO asistenciaPostDTO) {
 
+        asistenciaPostDTO.setHorarioId(horarioService.obtenerHorarioPorLocalDateTime(asistenciaPostDTO.getCodigoAsistencia(),LocalDateTime.now()).getId());
         validarAsistencia(asistenciaPostDTO);
         
         logger.info("Registrando asistencia para el alumno, " + asistenciaPostDTO.getLu() + " en el curso " + asistenciaPostDTO.getCodigoAsistencia());
@@ -48,7 +54,7 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
         return AsistenciaMapper.toDTO(asistenciaRepository.save(
             AsistenciaMapper.toEntity(asistenciaPostDTO,
             cursoService.obtenerCursoEntityPorCodigoAsistencia(asistenciaPostDTO.getCodigoAsistencia()),
-            estudianteService.obtenerEstudianteEntityPorLu(asistenciaPostDTO.getLu()))));
+            estudianteService.obtenerEstudianteEntityPorLu(asistenciaPostDTO.getLu()),horarioService.obtenerHorarioEntityPorId(asistenciaPostDTO.getHorarioId()))));
     }
 
 
@@ -87,27 +93,55 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
             throw new ModelException("Las fechas no pueden estar vacias");
         }
         logger.info("Obteniendo asistencia para el curso con id " + cursoId + " en el periodo " + fechaInicio + " - " + fechaFin);
-        return AsistenciaMapper.toDTO(asistenciaRepository.findyByPeriodoAndCursoId(DateFormatter.stringToLocalDate(fechaInicio),DateFormatter.stringToLocalDate(fechaFin), cursoId));
+        return AsistenciaMapper.toDTO(asistenciaRepository.findyByPeriodoAndCursoId(DateFormatter.stringToLocalDate(fechaInicio).atStartOfDay(),DateFormatter.stringToLocalDate(fechaFin).plusDays(1).atStartOfDay(), cursoId));
     }
 
     /**
      * Obtiene todas las asistencias de un alumno
      * @param lu Lu del alumno
+     * @param cursoId Id del curso
      * @return Lista de asistencias en formato AsistenciaGetDTO
      * @throws ModelException Si el alumno no existe
      */
     @Override
     public List<AsistenciaGetDTO> obtenerAsistenciaPorLuYCurso(String lu, String cursoId) {
         cursoService.existePorId(cursoId);
-        estudianteService.obtenerEstudiantePorLu(lu);
+        estudianteService.obtenerEstudianteEntityPorLu(lu);
         logger.info("Obteniendo asistencia para el alumno con LU " + lu + " en el curso con id " + cursoId);
         return AsistenciaMapper.toDTO(asistenciaRepository.findByEstudianteLuAndCursoId(lu, cursoId));
     }
 
+    /**
+     * Obtiene todas las asistencias de un alumno en una fecha y horario especifico
+     * @param lu Lu del alumno
+     * @param fecha Fecha de la asistencia
+     * @param horarioId Id del horario
+     * @return Lista de asistencias en formato AsistenciaGetDTO
+     */
+    @Override
+    public AsistenciaGetDTO obtenerAsistenciaPorFechaLuYHorario(LocalDate fecha, String lu, String horarioId) {
+        if (fecha == null ) {
+            logger.error("La fecha no puede ser nula");
+            throw new ModelException("La fecha no puede ser nula");
+        }
+        LocalDateTime inicioDelDia = fecha.atStartOfDay();
+        LocalDateTime finDelDia = fecha.plusDays(1).atStartOfDay();
+        logger.info("Obteniendo asistencia para el alumno con LU " + lu + " en el horario con id " + horarioId + " en la fecha " + fecha);
+        AsistenciaGetDTO asistenciaGetDTO = AsistenciaMapper.toDTO(asistenciaRepository.findByFechaAndEstudianteLuAndHorarioId(inicioDelDia, finDelDia, lu, horarioId));
+        
+        if(asistenciaGetDTO != null) return asistenciaGetDTO;
+        
+        return null;
+    }
 
     /**
      * Metodo Interno
-     * Valida que todos los campos de asistencia sean validos
+     * Valida que todos los campos de asistencia sean validos, se valida:
+     * - Que la asistencia no sea nula
+     * - Que el curso exista
+     * - Que el alumno exista
+     * - Que la inscripcion exista
+     * - Que el alumno no tenga registrada una asistencia para la fecha y horario especifico
      * @param asistenciaPostDTO Asistencia a validar
      * @throws ModelException Si la asistencia es nula, si el curso o el alumno no existen, o si el alumno ya tiene registrada una asistencia para la fecha
      */
@@ -116,8 +150,12 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
         cursoService.obtenerCursoPorCodigoAsistencia(asistenciaPostDTO.getCodigoAsistencia());
         estudianteService.obtenerEstudiantePorLu(asistenciaPostDTO.getLu());
         inscripcionService.existePorCodigoAsistenciaYLu(asistenciaPostDTO.getCodigoAsistencia(), asistenciaPostDTO.getLu());
-        if(asistenciaRepository.existsByFechaAndEstudiante(asistenciaPostDTO.getFecha(), estudianteService.obtenerEstudianteEntityPorLu(asistenciaPostDTO.getLu())))
+        
+        if(obtenerAsistenciaPorFechaLuYHorario(LocalDate.now(),asistenciaPostDTO.getLu(), asistenciaPostDTO.getHorarioId()) != null){
+            logger.error("El alumno con LU " + asistenciaPostDTO.getLu() + " ya tiene registrada una asistencia para la fecha " + asistenciaPostDTO.getFecha());
             throw new ModelException("El alumno con LU " + asistenciaPostDTO.getLu() + " ya tiene registrada una asistencia para la fecha " + asistenciaPostDTO.getFecha());
+        }
+        logger.info ("Asistencia validada con exito");
     }
     
 }

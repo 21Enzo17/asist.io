@@ -151,6 +151,29 @@ public class CursoServiceImpl implements ICursoService {
         return cursoEncontrado;
     }
 
+     /**
+     * Obtiene un curso por su id
+     * @param id Id del curso
+     * @return Entidad Curso si existe
+     * @throws ModelException Si el id es nulo o vacío
+     */
+    @Override
+    public Curso obtenerCursoEntityPorId(String id) {
+        logger.info ("Buscando curso con id: " + id);
+        if (id == null || id.isBlank() || id.isEmpty()) {
+            logger.error("Error al buscar el curso: El id no puede ser nulo ni vacío");
+            throw new ModelException("El id no puede ser nulo ni vacío");
+        }
+        try {
+            Curso curso = cursoRepository.findById(id).get();
+            logger.info("Curso encontrado con éxito, id: " + curso.getId());
+            return curso;
+        } catch (Exception e) {
+            logger.error("Error al buscar el curso: El curso con id " + id + " no existe");
+            throw new ModelException("El curso con id " + id + " no existe");
+        }
+    }
+
     /**
      * Obtiene un curso por su código de asistencia
      * @param codigoAsistencia Código de asistencia del curso
@@ -303,4 +326,6 @@ public class CursoServiceImpl implements ICursoService {
         return codigo;
 
     }
+
+   
 }
