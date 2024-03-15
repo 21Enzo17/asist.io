@@ -6,10 +6,12 @@ import asist.io.dto.estudianteDTO.EstudianteGetDTO;
 import asist.io.dto.estudianteDTO.EstudiantePostDTO;
 import asist.io.dto.inscripcionDTO.InscripcionGetDTO;
 import asist.io.dto.inscripcionDTO.InscripcionPostDTO;
+import asist.io.dto.usuarioDTO.UsuarioPostDTO;
 import asist.io.exception.ModelException;
 import asist.io.service.ICursoService;
 import asist.io.service.IEstudianteService;
 import asist.io.service.IInscripcionService;
+import asist.io.service.IUsuarioService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,10 +28,13 @@ public class EstudianteServiceTest {
     private ICursoService cursoService;
     @Autowired
     private IInscripcionService inscripcionService;
+    @Autowired
+    private IUsuarioService usuarioService;
 
     EstudiantePostDTO estudiante;
     CursoPostDTO curso;
     InscripcionPostDTO inscripcion;
+    UsuarioPostDTO usuario;
 
     @BeforeEach
     public void setup() {
@@ -118,10 +123,17 @@ public class EstudianteServiceTest {
     @DisplayName("Obtener estudiantes por id de curso")
     public void obtenerEstudiantesPorIdCurso() throws ModelException {
 
+        usuario = new UsuarioPostDTO();
+        usuario.setNombre("Juan Perez");
+        usuario.setContrasena("1234");
+        usuario.setCorreo("prueba@prueba.com");
+        usuarioService.guardarUsuario(usuario);
+
         curso = new CursoPostDTO();
         curso.setNombre("Algoritmos");
         curso.setDescripcion("Curso de algoritmos");
         curso.setCarrera("Ingeniería en Sistemas");
+        curso.setIdUsuario(usuarioService.buscarUsuarioDto(usuario.getCorreo()).getId());
 
         CursoGetDTO cursoRegistrado = cursoService.registrarCurso(curso);
         EstudianteGetDTO estudianteRegistrado = estudianteService.registrarEstudiante(estudiante);
@@ -137,6 +149,7 @@ public class EstudianteServiceTest {
         inscripcionService.eliminarInscripcionPorId(inscripcionRegistrada.getId());
         cursoService.eliminarCurso(cursoRegistrado.getId());
         estudianteService.eliminarEstudiante(estudianteRegistrado.getId());
+        usuarioService.eliminarUsuario(usuario.getCorreo());
     }
 
     @Test
