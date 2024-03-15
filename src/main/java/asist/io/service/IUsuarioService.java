@@ -1,6 +1,6 @@
 package asist.io.service;
 
-import asist.io.dto.passwordDTO.PasswordDTO;
+import asist.io.dto.ContrasenaDTO.ContrasenaDTO;
 import asist.io.dto.usuarioDTO.UsuarioCambioContrasenaDTO;
 import asist.io.dto.usuarioDTO.UsuarioGetDTO;
 import asist.io.dto.usuarioDTO.UsuarioPostDTO;
@@ -74,7 +74,7 @@ public interface IUsuarioService {
      * @param token Token
      * @param password Contraseña
      */
-    public void cambiarContrasena(String token, PasswordDTO password);
+    public void cambiarContrasena(String token, ContrasenaDTO password);
 
     /**
      * Metodo encargado de cambiar la contraseña de un usuario logueado.

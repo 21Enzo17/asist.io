@@ -1,17 +1,25 @@
 package asist.io.mapper;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+
 import asist.io.dto.HorarioDTO.HorarioGetDTO;
 import asist.io.dto.HorarioDTO.HorarioPostDTO;
 import asist.io.entity.Curso;
 import asist.io.entity.Horario;
 
 public class HorarioMapper {
+    private final static Logger logger =  Logger.getLogger(HorarioMapper.class);
+
     public static Horario toEntity(HorarioPostDTO horarioDTO, Curso curso) {
+
         Horario horario = new Horario();
         horario.setCurso(curso);
         horario.setEntrada(horarioDTO.getEntrada());
         horario.setSalida(horarioDTO.getSalida());
-        
+        horario.setDia(horarioDTO.getDia());
         return horario;
     }
 
@@ -19,9 +27,18 @@ public class HorarioMapper {
         HorarioGetDTO horarioDTO = new HorarioGetDTO();
         horarioDTO.setEntrada(horario.getEntrada());
         horarioDTO.setSalida(horario.getSalida());
-        
+        horarioDTO.setHorarioId(horario.getId());
+        horarioDTO.setDia(horario.getDia());
         return horarioDTO;
     }
 
+
+    public static List<HorarioGetDTO> toDTO(List<Horario> lista){
+        List<HorarioGetDTO> listaDTO = new ArrayList<>();
+        for (Horario horario : lista) {
+            listaDTO.add(toDTO(horario));
+        }
+        return listaDTO;
+    }
  
 }

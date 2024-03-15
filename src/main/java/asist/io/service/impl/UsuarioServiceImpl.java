@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import asist.io.dto.passwordDTO.PasswordDTO;
+import asist.io.dto.ContrasenaDTO.ContrasenaDTO;
 import asist.io.dto.usuarioDTO.UsuarioCambioContrasenaDTO;
 import asist.io.dto.usuarioDTO.UsuarioGetDTO;
 import asist.io.dto.usuarioDTO.UsuarioPostDTO;
@@ -42,7 +42,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
        Usuario usuarioRegistro = new Usuario();
         if(usuarioRepository.findByCorreo(usuario.getCorreo()) == null){
             logger.info("Guardando usuario con correo: " + usuario.getCorreo());
-            usuario.getContrasena().setPassword(passwordEncoder.encode(usuario.getContrasena().getPassword()));
+            usuario.setContrasena((passwordEncoder.encode(usuario.getContrasena())));
             usuarioRegistro = UsuarioMapper.toEntity(usuario);
             usuarioRegistro.setVerificado(false);
             usuarioRepository.save(usuarioRegistro);
@@ -150,10 +150,10 @@ public class UsuarioServiceImpl implements IUsuarioService {
      * @param password Contraseña
      */
     @Override
-    public void cambiarContrasena(String token, PasswordDTO password) {
+    public void cambiarContrasena(String token, ContrasenaDTO password) {
         tokenService.validarToken(token);
         Usuario usuario = tokenService.obtenerUsuario(token);
-        usuario.setContrasena(passwordEncoder.encode(password.getPassword()));
+        usuario.setContrasena(passwordEncoder.encode(password.getContrasena()));
         usuarioRepository.save(usuario);
         tokenService.eliminarToken(token);
     }
@@ -167,10 +167,10 @@ public class UsuarioServiceImpl implements IUsuarioService {
         Usuario usuario = buscarUsuario(usuarioCambio.getCorreo());
         if(!passwordEncoder.matches(usuarioCambio.getContrasenaActual(), usuario.getContrasena())){
             throw new ModelException("La contraseña actual no coincide con la contraseña ingresada");
-        }else if(passwordEncoder.matches(usuarioCambio.getContrasenaNueva().getPassword(), usuario.getContrasena())){
+        }else if(passwordEncoder.matches(usuarioCambio.getContrasenaNueva(), usuario.getContrasena())){
             throw new ModelException("La contraseña nueva no puede ser igual a la contraseña actual");
         }
-        usuario.setContrasena(passwordEncoder.encode(usuarioCambio.getContrasenaNueva().getPassword()));
+        usuario.setContrasena(passwordEncoder.encode(usuarioCambio.getContrasenaNueva()));
         usuarioRepository.save(usuario);
     }
 

@@ -9,7 +9,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import asist.io.dto.usuarioDTO.UsuarioLoginDTO;
-import asist.io.dto.usuarioDTO.UsuarioLoginResDTO;
+import asist.io.dto.usuarioDTO.UsuarioGetLoginDTO;
 import asist.io.exception.ModelException;
 import asist.io.service.IAuthService;
 
@@ -41,7 +41,7 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody UsuarioLoginDTO loginReq) {
         Map<String, Object> response = new HashMap<>();
         try {
-            UsuarioLoginResDTO loginRes = authService.login(loginReq);
+            UsuarioGetLoginDTO loginRes = authService.login(loginReq);
             HttpHeaders responseHeaders = new HttpHeaders();
             if(!loginRes.getUsuario().getVerificado()){
                 response.put("errorInicioSesion", "Usuario no verificado, revise su casilla de email para verificar su cuenta.");

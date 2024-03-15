@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
-import org.apache.log4j.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import asist.io.dto.HorarioDTO.HorarioPostDTO;
 import asist.io.dto.asistenciaDTO.AsistenciaGetDTO;
 import asist.io.dto.asistenciaDTO.AsistenciaPostDTO;
 import asist.io.dto.cursoDTO.CursoGetDTO;
@@ -21,13 +22,13 @@ import asist.io.dto.cursoDTO.CursoPostDTO;
 import asist.io.dto.estudianteDTO.EstudianteGetDTO;
 import asist.io.dto.estudianteDTO.EstudiantePostDTO;
 import asist.io.dto.inscripcionDTO.InscripcionPostDTO;
-import asist.io.dto.passwordDTO.PasswordDTO;
 import asist.io.dto.usuarioDTO.UsuarioGetDTO;
 import asist.io.dto.usuarioDTO.UsuarioPostDTO;
 import asist.io.exception.ModelException;
 import asist.io.service.IAsistenciaService;
 import asist.io.service.ICursoService;
 import asist.io.service.IEstudianteService;
+import asist.io.service.IHorarioService;
 import asist.io.service.IInscripcionService;
 import asist.io.service.IUsuarioService;
 import asist.io.util.DateFormatter;
@@ -35,7 +36,7 @@ import jakarta.transaction.Transactional;
 
 @SpringBootTest
 @Transactional
-public class AsistenciaTests {
+public class AsistenciaTest {
 
     @Autowired
     private IAsistenciaService target;
@@ -47,6 +48,8 @@ public class AsistenciaTests {
     private IEstudianteService estudianteService;
     @Autowired
     private IInscripcionService inscripcionService;
+    @Autowired
+    private IHorarioService horarioService;
     
     static UsuarioPostDTO usuarioPostDTO;
     static UsuarioGetDTO usuarioGetDTO;
@@ -60,6 +63,8 @@ public class AsistenciaTests {
     static EstudianteGetDTO estudianteGetDTO2;
     static InscripcionPostDTO inscripcionPostDTO1;
     static InscripcionPostDTO inscripcionPostDTO2;
+    static HorarioPostDTO horarioPostDTO;
+
 
 
     @BeforeEach
@@ -67,7 +72,7 @@ public class AsistenciaTests {
         usuarioPostDTO = new UsuarioPostDTO();
         usuarioPostDTO.setNombre("Usuario de prueba");
         usuarioPostDTO.setCorreo("enzo.meneghini@hotmail.com");
-        usuarioPostDTO.setContrasena(new PasswordDTO("contraseña.1"));
+        usuarioPostDTO.setContrasena("contraseña.1");
         usuarioService.guardarUsuario(usuarioPostDTO);
 
         cursoPostDTO = new CursoPostDTO();
@@ -97,9 +102,19 @@ public class AsistenciaTests {
         inscripcionPostDTO2.setIdCurso(cursoGetDTO.getId());
         inscripcionPostDTO2.setIdEstudiante(estudianteGetDTO2.getId());
 
+
+        horarioPostDTO = new HorarioPostDTO();
+        horarioPostDTO.setCursoId(cursoGetDTO.getId());
+        horarioPostDTO.setDia(LocalDate.now().getDayOfWeek());
+        horarioPostDTO.setEntrada(LocalTime.now());
+        horarioPostDTO.setSalida(LocalTime.now().plusHours(2));
+        horarioService.registrarHorario(horarioPostDTO);
+
         asistenciaPostDTO = new AsistenciaPostDTO();
         asistenciaPostDTO.setCodigoAsistencia("1234");
         asistenciaPostDTO.setLu("1234");
+
+        
 
         
     }
@@ -107,9 +122,9 @@ public class AsistenciaTests {
     @AfterEach
     public void tearDown(){
         usuarioService.eliminarUsuario(usuarioPostDTO.getCorreo());
-        cursoService.eliminarCurso(cursoGetDTO.getId());
+        /*cursoService.eliminarCurso(cursoGetDTO.getId());
         estudianteService.eliminarEstudiante(estudiante1.getLu());
-        estudianteService.eliminarEstudiante(estudiante2.getLu());
+        estudianteService.eliminarEstudiante(estudiante2.getLu());*/
         
 
         usuarioPostDTO = null;

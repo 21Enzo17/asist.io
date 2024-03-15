@@ -13,10 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import asist.io.dto.passwordDTO.PasswordDTO;
+import asist.io.dto.ContrasenaDTO.ContrasenaDTO;
 import asist.io.dto.usuarioDTO.UsuarioGetDTO;
 import asist.io.dto.usuarioDTO.UsuarioLoginDTO;
-import asist.io.dto.usuarioDTO.UsuarioLoginResDTO;
+import asist.io.dto.usuarioDTO.UsuarioGetLoginDTO;
 import asist.io.dto.usuarioDTO.UsuarioPostDTO;
 import asist.io.exception.ModelException;
 import asist.io.service.IUsuarioService;
@@ -34,9 +34,9 @@ public class IUsuarioServiceTest {
 
     static UsuarioPostDTO usuarioRegDto;
     static UsuarioLoginDTO usuarioLoginDto;
-    static UsuarioLoginResDTO usuarioLoginResDto;
+    static UsuarioGetLoginDTO usuarioLoginResDto;
     static UsuarioGetDTO usuarioGetDto;
-    static PasswordDTO passwordDto;
+
      
 
     @BeforeEach
@@ -44,7 +44,7 @@ public class IUsuarioServiceTest {
         usuarioRegDto = new UsuarioPostDTO();
         usuarioRegDto.setCorreo("enzo.meneghini@hotmail.com");
         usuarioRegDto.setNombre("Enzo Meneghini");
-        usuarioRegDto.setContrasena(new PasswordDTO("contrasena.1"));
+        usuarioRegDto.setContrasena("contrasena.1");
 
         usuarioLoginDto = new UsuarioLoginDTO();
         usuarioLoginDto.setCorreo("enzo.meneghini@hotmail.com");
@@ -127,7 +127,7 @@ public class IUsuarioServiceTest {
         logger.info("Iniciando test de cambio de contraseña");
         target.guardarUsuario(usuarioRegDto);
         target.enviarOlvideContrasena(usuarioRegDto.getCorreo());
-        target.cambiarContrasena(target.obtenerTokenPorCorreoTipo(usuarioRegDto.getCorreo(),"RECUPERACION"), new PasswordDTO("contrasena.2"));
+        target.cambiarContrasena(target.obtenerTokenPorCorreoTipo(usuarioRegDto.getCorreo(),"RECUPERACION"), new ContrasenaDTO("contrasena.2"));
         assertTrue(passwordEncoder.matches("contrasena.2", target.buscarUsuario(usuarioRegDto.getCorreo()).getContrasena()));
         target.eliminarUsuario(usuarioRegDto.getCorreo());
     }

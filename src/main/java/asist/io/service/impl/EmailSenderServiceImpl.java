@@ -14,6 +14,7 @@ import asist.io.dto.usuarioDTO.UsuarioGetDTO;
 import asist.io.exception.ModelException;
 import asist.io.service.IEmailSenderService;
 import asist.io.util.BodyGenerator;
+import asist.io.util.Constantes;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
@@ -79,7 +80,7 @@ public class EmailSenderServiceImpl implements IEmailSenderService{
                 String cuerpo = bodyGenerator.generateBody(usuario.getNombre(), token);
                 String tema = "Asist.io - Validación de correo";
                 String para = usuario.getCorreo();
-                enviarCorreo("poo2023correo@gmail.com", para, tema, cuerpo, Optional.empty());
+                enviarCorreo(Constantes.CORREO_SETEADO, para, tema, cuerpo, Optional.empty());
             }
         }).start();
     }
@@ -97,7 +98,7 @@ public class EmailSenderServiceImpl implements IEmailSenderService{
                 String cuerpo = bodyGenerator.generatePasswordResetBody(usuario.getNombre(), token);
                 String tema = "Asist.io - Recuperación de contraseña";
                 String para = usuario.getCorreo();
-                enviarCorreo("poo2023correo@gmail.com", para, tema, cuerpo, Optional.empty());
+                enviarCorreo(Constantes.CORREO_SETEADO, para, tema, cuerpo, Optional.empty());
             }
         }).start();
     }

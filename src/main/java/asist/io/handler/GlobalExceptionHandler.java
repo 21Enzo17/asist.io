@@ -66,4 +66,5 @@ public class GlobalExceptionHandler {
         response.put("error", "Recurso no encontrado: " + ex.getMessage());
         return new ResponseEntity(response, HttpStatus.NOT_FOUND);
     }
+
 }

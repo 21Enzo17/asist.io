@@ -34,7 +34,7 @@ public class UsuarioMapper {
         Usuario usuario = new Usuario();
         usuario.setCorreo(usuarioReg.getCorreo());
         usuario.setNombre(usuarioReg.getNombre());
-        usuario.setContrasena(usuarioReg.getContrasena().getPassword());
+        usuario.setContrasena(usuarioReg.getContrasena());
         return usuario;
     }
 

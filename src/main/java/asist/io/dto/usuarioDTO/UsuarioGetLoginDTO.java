@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UsuarioLoginResDTO implements Serializable{
+public class UsuarioGetLoginDTO implements Serializable{
     private static final long serialVersionUID = 1L;
 
     private UsuarioGetDTO usuario;

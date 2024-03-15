@@ -1,5 +1,4 @@
 package asist.io.dto.HorarioDTO;
-
 import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -16,7 +15,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class HorarioPostDTO implements Serializable {
+public class HorarioPatchDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     

@@ -1,9 +1,12 @@
 package asist.io.entity;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,6 +34,10 @@ public class Horario {
 
     @Column(name = "salida", nullable = false)
     private LocalTime salida;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "dia", nullable = false)
+    private DayOfWeek dia;
 
     @ManyToOne()
     @JoinColumn(name = "curso_id", nullable = false)

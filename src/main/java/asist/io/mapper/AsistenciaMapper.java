@@ -9,16 +9,18 @@ import asist.io.dto.asistenciaDTO.AsistenciaPostDTO;
 import asist.io.entity.Asistencia;
 import asist.io.entity.Curso;
 import asist.io.entity.Estudiante;
+import asist.io.entity.Horario;
 
 public class AsistenciaMapper {
 
 
-    public static Asistencia toEntity(AsistenciaPostDTO asistenciaPostDTO, Curso curso, Estudiante estudiante) {
+    public static Asistencia toEntity(AsistenciaPostDTO asistenciaPostDTO, Curso curso, Estudiante estudiante, Horario horario) {
         if(asistenciaPostDTO == null) return null;
         
         Asistencia asistencia = new Asistencia();
         asistencia.setCurso(curso);
         asistencia.setEstudiante(estudiante);
+        asistencia.setHorario(horario);
 
         return asistencia;
     }
