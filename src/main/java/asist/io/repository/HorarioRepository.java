@@ -40,4 +40,12 @@ public interface HorarioRepository extends JpaRepository<Horario, String>{
      */
     @Query("SELECT h FROM Horario h WHERE h.curso.codigoAsistencia = :codigoAsistencia AND h.dia = :dia AND h.entrada <= :hora AND h.salida > :hora")
     public Horario findHorarioContainingTime(String codigoAsistencia, DayOfWeek dia, LocalTime hora);
+
+    /**
+     * Busca los horarios de un curso en un dia especifico
+     * @param cursoId Id del curso
+     * @param dia Dia de la semana
+     * @return Lista de horarios
+     */
+    public List<Horario> findByCursoIdAndDia(String cursoId, DayOfWeek dia);
 }

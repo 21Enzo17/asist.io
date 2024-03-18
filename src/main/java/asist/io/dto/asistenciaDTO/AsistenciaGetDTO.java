@@ -1,7 +1,6 @@
 package asist.io.dto.asistenciaDTO;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -20,6 +19,8 @@ public class AsistenciaGetDTO implements Serializable{
     private LocalDateTime fecha;
 
     private String cursoId;
+
+    private String horarioId;
 
     private EstudianteGetDTO estudiante;
 

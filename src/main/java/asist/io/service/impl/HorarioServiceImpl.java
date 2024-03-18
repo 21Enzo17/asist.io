@@ -1,7 +1,11 @@
 package asist.io.service.impl;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,7 +112,7 @@ public class HorarioServiceImpl implements IHorarioService {
     }
 
     /**
-     * Obtiene los horarios de un curso
+     * Obtiene todos los horarios de un curso
      * @param cursoId id del curso
      * @return Lista de HorarioGetDTO con la informacion de los horarios
      * @throws ModelException si no se encuentran horarios para el curso
@@ -149,6 +153,31 @@ public class HorarioServiceImpl implements IHorarioService {
         return horario;
     }
     
+    /**
+     * Obtiene los encabezados de los horarios de un curso entre dos fechas
+     * Con el formato: dd/MM/yyyy HH:mm - HH:mm
+     * @param fechaInicio fecha de inicio
+     * @param fechaFin fecha de fin
+     * @param cursoId id del curso
+     * @return Lista de encabezados
+     */
+    @Override
+    public Map<String, Horario> obtenerEncabezadosYHorariosEntreDosFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin, String cursoId) {
+        Map<String, Horario> horarioPorEncabezado = new TreeMap<>();
+        logger.info ("Obteniendo horarios para el curso con id " + cursoId + " entre las fechas " + fechaInicio + " y " + fechaFin);
+        for (LocalDateTime fecha = fechaInicio; fecha.isBefore(fechaFin); fecha = fecha.plusDays(1)) {
+            List<Horario> horarios = horarioRepository.findByCursoIdAndDia(cursoId, fecha.getDayOfWeek());
+            horarios.sort(Comparator.comparing(Horario::getEntrada));
+            for (Horario horario : horarios) {
+                String horarioStr = fecha.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " " +
+                                horario.getEntrada().format(DateTimeFormatter.ofPattern("HH:mm")) + " - " +
+                                horario.getSalida().format(DateTimeFormatter.ofPattern("HH:mm"));
+                horarioPorEncabezado.put(horarioStr, horario);
+            }
+        }
+        return horarioPorEncabezado;
+    }
+
     /**
      * METODO INTERNO
      * Valida los datos de un horario
@@ -199,6 +228,8 @@ public class HorarioServiceImpl implements IHorarioService {
         }
         logger.info("Horario validado con exito");
     }
+
+    
 }
 
     

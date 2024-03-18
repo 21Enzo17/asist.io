@@ -1,9 +1,6 @@
 package asist.io.dto.asistenciaDTO;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -17,10 +14,6 @@ public class AsistenciaPostDTO implements Serializable {
 
 
 
-    @NotNull(message = "La fecha no puede ser nula")
-    @NotEmpty(message = "La fecha no puede estar vacía")
-    @JsonFormat(pattern = "dd/MM/yyyy - HH:mm")
-    private LocalDateTime fecha;
 
     @NotNull(message = "El codigo de asistencia no puede ser nulo")
     @NotEmpty(message = "El codigo de asistencia no puede estar vacio")

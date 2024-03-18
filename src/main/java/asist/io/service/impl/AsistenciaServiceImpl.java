@@ -2,7 +2,11 @@ package asist.io.service.impl;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import asist.io.dto.asistenciaDTO.AsistenciaGetDTO;
 import asist.io.dto.asistenciaDTO.AsistenciaPostDTO;
+import asist.io.dto.estudianteDTO.EstudianteGetDTO;
+import asist.io.entity.Horario;
 import asist.io.exception.ModelException;
 import asist.io.mapper.AsistenciaMapper;
 import asist.io.repository.AsistenciaRepository;
@@ -40,7 +46,6 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
      * @param asistenciaPostDTO Asistencia a registrar
      * @return Asistencia registrada en formato AsistenciaGetDTO
      * @throws ModelException Si la asistencia es nula, si el curso o el alumno no existen, o si el alumno ya tiene registrada una asistencia para la fecha
-     * @SuppressWarnings("null") Para evitar advertencias de null en el metodo validarAsistencia
      */
     @SuppressWarnings("null")
     @Override
@@ -59,79 +64,80 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
 
 
     /**
-     * Obtiene todas las asistencias de un curso
-     * @param cursoId Id del curso
-     * @return Lista de asistencias en formato AsistenciaGetDTO
-     * @throws ModelException Si el curso no existe
-     */
-    @Override
-    public List<AsistenciaGetDTO> obtenerAsistenciaPorCurso(String cursoId) {
-        cursoService.existePorId(cursoId);
-        logger.info("Obteniendo asistencia para el curso con id " + cursoId);
-        return AsistenciaMapper.toDTO(asistenciaRepository.findByCursoId(cursoId));
-    }
-
-    /**
      * Obtiene todas las asistencias de un curso en un periodo
+     * @param cursoId Id del curso
      * @param fechaInicio Fecha de inicio del periodo
      * @param fechaFin Fecha de fin del periodo
-     * @param cursoId Id del curso
-     * @return Lista de asistencias en formato AsistenciaGetDTO
+     * @return Tabla con formato:
+     * [
+     *     ["19/09/2022 - 10:00 - 11:00", "19/09/2022 - 11:00 - 12:00"]
+     *    ["estudiante1", true, false]
+     * ]
      * @throws ModelException Si el curso no existe
-     * @throws ModelException Si la fecha de inicio es posterior a la fecha de fin
-     * @throws ModelException Si las fechas estan vacias o nulas
      */
     @Override
-    public List<AsistenciaGetDTO> obtenerAsistenciaPorPeriodoYCurso(String fechaInicio, String fechaFin, String cursoId) {
+    public List<List<Object>> obtenerAsistenciaPorCursoYPeriodo(String cursoId,String fechaInicio, String fechaFin){
         cursoService.existePorId(cursoId);
-        if(DateFormatter.stringToLocalDate(fechaInicio).isAfter(DateFormatter.stringToLocalDate(fechaFin))){
+        if( DateFormatter.stringToLocalDate(fechaInicio).isAfter(DateFormatter.stringToLocalDate(fechaFin))) {
             logger.error("La fecha de inicio no puede ser posterior a la fecha de fin");
             throw new ModelException("La fecha de inicio no puede ser posterior a la fecha de fin");
         }
-        if(fechaInicio.isBlank() || fechaFin.isBlank() || fechaInicio.isEmpty() || fechaFin.isEmpty() || fechaInicio == null || fechaFin == null){
-            logger.error("Las fechas no pueden estar vacias");
-            throw new ModelException("Las fechas no pueden estar vacias");
-        }
-        logger.info("Obteniendo asistencia para el curso con id " + cursoId + " en el periodo " + fechaInicio + " - " + fechaFin);
-        return AsistenciaMapper.toDTO(asistenciaRepository.findyByPeriodoAndCursoId(DateFormatter.stringToLocalDate(fechaInicio).atStartOfDay(),DateFormatter.stringToLocalDate(fechaFin).plusDays(1).atStartOfDay(), cursoId));
+        logger.info("Obteniendo asistencia para el curso con id " + cursoId);
+        return generarTablaAsistencias(agruparAsistenciasPorFechaYHorario(
+            AsistenciaMapper.toDTO(asistenciaRepository.findByCursoId(cursoId))), 
+            estudianteService.obtenerEstudiantesPorIdCurso(cursoId), 
+            horarioService.obtenerEncabezadosYHorariosEntreDosFechas(DateFormatter.stringToLocalDate(fechaInicio).atStartOfDay(), DateFormatter.stringToLocalDate(fechaFin).plusDays(1).atStartOfDay(), cursoId));
     }
 
+ 
+
     /**
-     * Obtiene todas las asistencias de un alumno
+     * Obtiene todas las asistencias de un alumno en un Periodo
      * @param lu Lu del alumno
      * @param cursoId Id del curso
-     * @return Lista de asistencias en formato AsistenciaGetDTO
+     * @param fechaInicio Fecha de inicio del periodo
+     * @param fechaFin Fecha de fin del periodo
+     * @return Tabla con formato:
+     * [
+     *     ["19/09/2022 - 10:00 - 11:00", "19/09/2022 - 11:00 - 12:00"]
+     *    ["estudiante1", true, false]
+     * ]
      * @throws ModelException Si el alumno no existe
      */
     @Override
-    public List<AsistenciaGetDTO> obtenerAsistenciaPorLuYCurso(String lu, String cursoId) {
+    public List<List<Object>> obtenerAsistenciaPorLuCursoYPeriodo(String lu, String cursoId, String fechaInicio, String fechaFin) {
         cursoService.existePorId(cursoId);
         estudianteService.obtenerEstudianteEntityPorLu(lu);
         logger.info("Obteniendo asistencia para el alumno con LU " + lu + " en el curso con id " + cursoId);
-        return AsistenciaMapper.toDTO(asistenciaRepository.findByEstudianteLuAndCursoId(lu, cursoId));
+        Map<LocalDate, List<AsistenciaGetDTO>> asistenciasAgrupadas = agruparAsistenciasPorFechaYHorario(AsistenciaMapper.toDTO(asistenciaRepository.findByEstudianteLuAndCursoId(lu, cursoId)));
+        List<EstudianteGetDTO> estudiantes = new ArrayList<>();
+        estudiantes.add(estudianteService.obtenerEstudiantePorLu(lu));
+        Map<String,Horario> horarios = horarioService.obtenerEncabezadosYHorariosEntreDosFechas(DateFormatter.stringToLocalDate(fechaInicio).atStartOfDay(), DateFormatter.stringToLocalDate(fechaFin).plusDays(1).atStartOfDay(), cursoId);
+        
+        return generarTablaAsistencias(asistenciasAgrupadas, estudiantes, horarios);
     }
 
     /**
-     * Obtiene todas las asistencias de un alumno en una fecha y horario especifico
+     * Obtiene una asistencia de un alumno en una fecha y horario especifico
      * @param lu Lu del alumno
      * @param fecha Fecha de la asistencia
      * @param horarioId Id del horario
-     * @return Lista de asistencias en formato AsistenciaGetDTO
+     * @return asistencia en formato AsistenciaGetDTO
      */
     @Override
-    public AsistenciaGetDTO obtenerAsistenciaPorFechaLuYHorario(LocalDate fecha, String lu, String horarioId) {
+    public AsistenciaGetDTO obtenerAsistenciaPorFechaLuYHorario(String fecha, String lu, String horarioId) {
         if (fecha == null ) {
             logger.error("La fecha no puede ser nula");
             throw new ModelException("La fecha no puede ser nula");
         }
-        LocalDateTime inicioDelDia = fecha.atStartOfDay();
-        LocalDateTime finDelDia = fecha.plusDays(1).atStartOfDay();
+        LocalDateTime inicioDelDia = DateFormatter.stringToLocalDate(fecha).atStartOfDay();
+        LocalDateTime finDelDia = DateFormatter.stringToLocalDate(fecha).plusDays(1).atStartOfDay();
         logger.info("Obteniendo asistencia para el alumno con LU " + lu + " en el horario con id " + horarioId + " en la fecha " + fecha);
         AsistenciaGetDTO asistenciaGetDTO = AsistenciaMapper.toDTO(asistenciaRepository.findByFechaAndEstudianteLuAndHorarioId(inicioDelDia, finDelDia, lu, horarioId));
         
         if(asistenciaGetDTO != null) return asistenciaGetDTO;
         
-        return null;
+        throw new ModelException("No se encontro asistencia para el alumno con LU " + lu + " en el horario con id " + horarioId + " en la fecha " + fecha);
     }
 
     /**
@@ -151,11 +157,60 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
         estudianteService.obtenerEstudiantePorLu(asistenciaPostDTO.getLu());
         inscripcionService.existePorCodigoAsistenciaYLu(asistenciaPostDTO.getCodigoAsistencia(), asistenciaPostDTO.getLu());
         
-        if(obtenerAsistenciaPorFechaLuYHorario(LocalDate.now(),asistenciaPostDTO.getLu(), asistenciaPostDTO.getHorarioId()) != null){
-            logger.error("El alumno con LU " + asistenciaPostDTO.getLu() + " ya tiene registrada una asistencia para la fecha " + asistenciaPostDTO.getFecha());
-            throw new ModelException("El alumno con LU " + asistenciaPostDTO.getLu() + " ya tiene registrada una asistencia para la fecha " + asistenciaPostDTO.getFecha());
+        if(obtenerAsistenciaPorFechaLuYHorario(DateFormatter.localDateToString(LocalDate.now()),asistenciaPostDTO.getLu(), asistenciaPostDTO.getHorarioId()) != null){
+            logger.error("El alumno con LU " + asistenciaPostDTO.getLu() + " ya tiene registrada una asistencia para la fecha " + DateFormatter.localDateTimeToString(LocalDateTime.now()));
+            throw new ModelException("El alumno con LU " + asistenciaPostDTO.getLu() + " ya tiene registrada una asistencia para la fecha " + DateFormatter.localDateTimeToString(LocalDateTime.now()));
         }
         logger.info ("Asistencia validada con exito");
     }
     
+
+    /** 
+     * Metodo Intgerno 
+     * Agrupa las asistencias por fecha y horario con formato:
+     * Map<Fecha, List<AsistenciaGetDTO>>
+     * "2021-06-01" -> List<AsistenciaGetDTO> con fecha "2021-06-01"
+     * @param asistencias Lista de asistencias a agrupar
+     * @return Mapa con las asistencias agrupadas
+    */
+    private Map<LocalDate, List<AsistenciaGetDTO>> agruparAsistenciasPorFechaYHorario(List<AsistenciaGetDTO> asistencias) {
+        return asistencias.stream().collect(Collectors.groupingBy(a -> a.getFecha().toLocalDate()));
+    }
+
+    /**
+     * Metodo Interno
+     * Genera una tabla de asistencias con formato
+     * [
+     *      ["19/09/2022 - 10:00 - 11:00", "19/09/2022 - 11:00 - 12:00"]
+     *      ["estudiante1", true, false]
+     * ]
+     * @param asistencias Mapa con las asistencias agrupadas por fecha
+     * @param estudiantes Lista de estudiantes a incluir en la tabla ordenados alfabeticamente
+     * @param horarios TreeMap con los horarios a incluir en la tabla
+     * @return Tabla de asistencias
+     * 
+     */
+    private List<List<Object>> generarTablaAsistencias(Map<LocalDate, List<AsistenciaGetDTO>> asistencias, List<EstudianteGetDTO> estudiantes, Map<String,Horario> horarios) {
+        List<List<Object>> tabla = new ArrayList<>();
+
+        // Añade los encabezados de horarios a la tabla
+        List<Object> encabezados = new ArrayList<>();
+        encabezados.addAll(horarios.keySet());
+        tabla.add(encabezados);
+
+        // Añade las asistencias de cada estudiante a la tabla
+        for (EstudianteGetDTO estudiante : estudiantes) {
+            List<Object> fila = new ArrayList<>();
+            fila.add(estudiante.getNombre());
+            for (String encabezado : horarios.keySet()) {
+                LocalDate fecha = LocalDate.parse(encabezado.split(" ")[0], DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                List<AsistenciaGetDTO> asistenciasDelDia = asistencias.get(fecha);
+                boolean asistio = asistenciasDelDia != null && asistenciasDelDia.stream().anyMatch(a -> a.getEstudiante().getNombre().equals(estudiante.getNombre()) && a.getHorarioId().equals(horarios.get(encabezado).getId()));
+                fila.add(asistio);
+            }
+            tabla.add(fila);
+        }
+        return tabla;
+    }
+           
 }
