@@ -32,6 +32,7 @@ public class AsistenciaMapper {
         asistenciaGetDTO.setCursoId(asistencia.getCurso().getId());
         asistenciaGetDTO.setEstudiante(EstudianteMapper.toGetDTO(asistencia.getEstudiante()));
         asistenciaGetDTO.setFecha(asistencia.getFecha());
+        asistenciaGetDTO.setHorarioId(asistencia.getHorario().getId());
 
         return asistenciaGetDTO;
     }

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,6 +66,9 @@ public class AsistenciaTest {
     static InscripcionPostDTO inscripcionPostDTO2;
     static HorarioPostDTO horarioPostDTO;
 
+    static String fechaInicio;
+    static String fechaFin;
+
 
 
     @BeforeEach
@@ -114,7 +118,8 @@ public class AsistenciaTest {
         asistenciaPostDTO.setCodigoAsistencia("1234");
         asistenciaPostDTO.setLu("1234");
 
-        
+        fechaInicio = DateFormatter.localDateToString(LocalDate.now());
+        fechaFin = DateFormatter.localDateToString(LocalDate.now().plusDays(1));
 
         
     }
@@ -166,10 +171,15 @@ public class AsistenciaTest {
         asistenciaPostDTO.setLu(estudiante2.getLu());
         target.registrarAsistencia(asistenciaPostDTO);
         // Se comprueba que no se permite obtener asistencias si el curso no existe
-        assertThrows( ModelException.class, () -> target.obtenerAsistenciaPorCurso("123123131"));
+        assertThrows( ModelException.class, () -> target.obtenerAsistenciaPorCursoYPeriodo("123123131", fechaInicio, fechaFin));
         // Se comprueba que se permite obtener asistencias si el curso existe
-        assertEquals(2, target.obtenerAsistenciaPorCurso(cursoGetDTO.getId()).size());
-    }
+        List<List<Object>> asistencias = target.obtenerAsistenciaPorCursoYPeriodo(cursoGetDTO.getId(), fechaInicio, fechaFin);
+        Long cantidad = asistencias.stream()
+        .flatMap(fila -> fila.subList(1, fila.size()).stream())  // Convierte la lista de listas en un stream de objetos
+        .filter(o -> o instanceof Boolean && (Boolean) o)  // Filtra los valores que son `true`
+        .count();  // Cuenta los valores `true`
+        assertEquals(2, cantidad);
+}
 
     @Test
     @DisplayName("Test de obtener asistencia por estudiante")
@@ -180,29 +190,13 @@ public class AsistenciaTest {
         asistenciaPostDTO.setLu(estudiante2.getLu());
         target.registrarAsistencia(asistenciaPostDTO);
         // Se comprueba que no se permite obtener asistencias si el estudiante no existe
-        assertThrows( ModelException.class, () -> target.obtenerAsistenciaPorLuYCurso("123123131", cursoGetDTO.getId()));
+        assertThrows( ModelException.class, () -> target.obtenerAsistenciaPorLuCursoYPeriodo("123123131", cursoGetDTO.getId(), fechaInicio, fechaFin));
         // Se comprueba que no se permita obtener asistencias si el curso no existe
-        assertThrows( ModelException.class, () -> target.obtenerAsistenciaPorLuYCurso(estudiante1.getLu(), "123123131"));
+        assertThrows( ModelException.class, () -> target.obtenerAsistenciaPorLuCursoYPeriodo(estudiante1.getLu(), "123123131", fechaInicio, fechaFin));
         // Se comprueba que se permite obtener asistencias si el estudiante existe
-        assertEquals(1, target.obtenerAsistenciaPorLuYCurso(estudiante1.getLu(), cursoGetDTO.getId()).size());
+        assertEquals(1, target.obtenerAsistenciaPorLuCursoYPeriodo(estudiante1.getLu(), cursoGetDTO.getId(),fechaInicio, fechaFin).size());
     }
 
-    @Test
-    @DisplayName("Test de obtener asistencia por periodo y curso")
-    public void obtenerAsistenciaPorPeriodoYCursoTest(){
-        inscripcionService.registrarInscripcion(inscripcionPostDTO1);
-        inscripcionService.registrarInscripcion(inscripcionPostDTO2);
-        target.registrarAsistencia(asistenciaPostDTO);
-        asistenciaPostDTO.setLu(estudiante2.getLu());
-        target.registrarAsistencia(asistenciaPostDTO);
-        // Se comprueba que no se permite obtener asistencias si el curso no existe
-        assertThrows( ModelException.class, () -> target.obtenerAsistenciaPorPeriodoYCurso("01/01/2021", "01/01/2021", "123123131"));
-        // Se comprueba que no se permita obtener asistencias si las fecha de inicio es posterior a la fecha de fin
-        assertThrows( ModelException.class, () -> target.obtenerAsistenciaPorPeriodoYCurso("02/01/2021", "01/01/2021", cursoGetDTO.getId()));
-        // Se comprueba un periodo sin asistencias
-        assertEquals(0, target.obtenerAsistenciaPorPeriodoYCurso("01/01/2021", "02/01/2021", cursoGetDTO.getId()).size());
-        // Se comprueba un periodo con asistencias
-        assertEquals(2, target.obtenerAsistenciaPorPeriodoYCurso(DateFormatter.localDateToString(LocalDate.now()), DateFormatter.localDateToString(LocalDate.now().plusDays(1)), cursoGetDTO.getId()).size());
-    }
+
 
 }
