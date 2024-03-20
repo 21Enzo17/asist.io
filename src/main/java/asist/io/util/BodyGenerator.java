@@ -5,9 +5,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class BodyGenerator {
 
-    private static final String SITIO = "http://localhost:8080/api/v1";
-    private static final String VALIDACION = SITIO + "/usuario/validar/";
-    private static final String RESET_PASSWORD = SITIO + "/usuario/cambiar-contrasena/";
+    private static final String VALIDACION = Constantes.SITIO_SETEADO + "/auth/verify-email/";
+    private static final String RESET_PASSWORD = Constantes.SITIO_SETEADO + "/auth/reset-password/";
 
     
     /**

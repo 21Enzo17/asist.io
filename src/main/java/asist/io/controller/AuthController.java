@@ -47,7 +47,8 @@ public class AuthController {
                 response.put("errorInicioSesion", "Usuario no verificado, revise su casilla de email para verificar su cuenta.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(new HttpHeaders()).body(response);
             }
-            response.put("usuario", loginRes);
+            response.put("usuario", loginRes.getUsuario());
+            response.put("token", loginRes.getToken());
             return ResponseEntity.ok().headers(responseHeaders).body(response);
         } catch (ModelException e) {
             response.put("mensaje", "Nombre de usuario o contraseña invalidos");

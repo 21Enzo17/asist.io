@@ -2,6 +2,8 @@ package asist.io.service;
 
 import java.util.List;
 
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import asist.io.dto.asistenciaDTO.AsistenciaGetDTO;
@@ -57,4 +59,25 @@ public interface IAsistenciaService {
      * @return asistencia en formato AsistenciaGetDTO
      */
     public AsistenciaGetDTO obtenerAsistenciaPorFechaLuYHorario(String fecha, String lu, String horarioId);
+
+    /**
+     * Genera un archivo excel con las asistencias de un curso en un periodo
+     * @param cursoId Id del curso
+     * @param fechaInicio Fecha de inicio del periodo
+     * @param fechaFin Fecha de fin del periodo
+     * @return Archivo excel con las asistencias
+     */
+    public ResponseEntity<ByteArrayResource> generarExcelAsistenciaPorCursoYPeriodo(String cursoId, String fechaInicio, String fechaFin);
+
+    /**
+     * Genera un archivo excel con las asistencias de un alumno en un periodo
+     * @param lu Lu del alumno
+     * @param cursoId Id del curso
+     * @param fechaInicio Fecha de inicio del periodo
+     * @param fechaFin Fecha de fin del periodo
+     * @return Archivo excel con las asistencias
+     */
+    public ResponseEntity<ByteArrayResource> generarExcelAsistenciaPorLuCursoYPeriodo(String lu, String cursoId, String fechaInicio, String fechaFin);
+
+    
 }

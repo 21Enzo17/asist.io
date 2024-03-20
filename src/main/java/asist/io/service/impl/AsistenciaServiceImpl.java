@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import asist.io.dto.asistenciaDTO.AsistenciaGetDTO;
@@ -25,6 +27,7 @@ import asist.io.service.IEstudianteService;
 import asist.io.service.IHorarioService;
 import asist.io.service.IInscripcionService;
 import asist.io.util.DateFormatter;
+import asist.io.util.ExcelGenerator;
 
 @Service
 public class AsistenciaServiceImpl implements IAsistenciaService {
@@ -141,6 +144,33 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
     }
 
     /**
+     * Genera un archivo excel con las asistencias de un curso en un periodo
+     * @param cursoId Id del curso
+     * @param fechaInicio Fecha de inicio del periodo
+     * @param fechaFin Fecha de fin del periodo
+     * @return Archivo excel con las asistencias
+     */
+    @Override
+    public ResponseEntity<ByteArrayResource> generarExcelAsistenciaPorCursoYPeriodo(String cursoId, String fechaInicio, String fechaFin){
+        String nombreArchivo = cursoService.obtenerCursoPorId(cursoId).getNombre() +" - "+ fechaInicio.replace("/", "-") + " a " + fechaFin.replace("/", "-");
+        return ExcelGenerator.escribirTablaEnExcel(obtenerAsistenciaPorCursoYPeriodo(cursoId, fechaInicio, fechaFin), nombreArchivo );
+    }
+
+    /**
+     * Genera un archivo excel con las asistencias de un alumno en un periodo
+     * @param lu Lu del alumno
+     * @param cursoId Id del curso
+     * @param fechaInicio Fecha de inicio del periodo
+     * @param fechaFin Fecha de fin del periodo
+     * @return Archivo excel con las asistencias
+     */
+    public ResponseEntity<ByteArrayResource> generarExcelAsistenciaPorLuCursoYPeriodo(String lu, String cursoId, String fechaInicio, String fechaFin){
+        String nombreArchivo = estudianteService.obtenerEstudiantePorLu(lu).getNombre() +" - "+ fechaInicio.replace("/", "-") + " a " + fechaFin.replace("/", "-");
+        return ExcelGenerator.escribirTablaEnExcel(obtenerAsistenciaPorLuCursoYPeriodo(lu, cursoId, fechaInicio, fechaFin), nombreArchivo );
+    }
+
+
+    /**
      * Metodo Interno
      * Valida que todos los campos de asistencia sean validos, se valida:
      * - Que la asistencia no sea nula
@@ -156,12 +186,13 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
         cursoService.obtenerCursoPorCodigoAsistencia(asistenciaPostDTO.getCodigoAsistencia());
         estudianteService.obtenerEstudiantePorLu(asistenciaPostDTO.getLu());
         inscripcionService.existePorCodigoAsistenciaYLu(asistenciaPostDTO.getCodigoAsistencia(), asistenciaPostDTO.getLu());
-        
-        if(obtenerAsistenciaPorFechaLuYHorario(DateFormatter.localDateToString(LocalDate.now()),asistenciaPostDTO.getLu(), asistenciaPostDTO.getHorarioId()) != null){
+        try{
+            obtenerAsistenciaPorFechaLuYHorario(DateFormatter.localDateToString(LocalDate.now()),asistenciaPostDTO.getLu(), asistenciaPostDTO.getHorarioId());
             logger.error("El alumno con LU " + asistenciaPostDTO.getLu() + " ya tiene registrada una asistencia para la fecha " + DateFormatter.localDateTimeToString(LocalDateTime.now()));
             throw new ModelException("El alumno con LU " + asistenciaPostDTO.getLu() + " ya tiene registrada una asistencia para la fecha " + DateFormatter.localDateTimeToString(LocalDateTime.now()));
+        }catch(ModelException e){
+            logger.info ("Asistencia validada con exito");
         }
-        logger.info ("Asistencia validada con exito");
     }
     
 
@@ -192,12 +223,13 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
      */
     private List<List<Object>> generarTablaAsistencias(Map<LocalDate, List<AsistenciaGetDTO>> asistencias, List<EstudianteGetDTO> estudiantes, Map<String,Horario> horarios) {
         List<List<Object>> tabla = new ArrayList<>();
-
+        logger.info("Generando tabla de asistencias");
         // Añade los encabezados de horarios a la tabla
         List<Object> encabezados = new ArrayList<>();
+        encabezados.add("Estudiante");
         encabezados.addAll(horarios.keySet());
         tabla.add(encabezados);
-
+        
         // Añade las asistencias de cada estudiante a la tabla
         for (EstudianteGetDTO estudiante : estudiantes) {
             List<Object> fila = new ArrayList<>();
@@ -205,7 +237,10 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
             for (String encabezado : horarios.keySet()) {
                 LocalDate fecha = LocalDate.parse(encabezado.split(" ")[0], DateTimeFormatter.ofPattern("dd/MM/yyyy"));
                 List<AsistenciaGetDTO> asistenciasDelDia = asistencias.get(fecha);
-                boolean asistio = asistenciasDelDia != null && asistenciasDelDia.stream().anyMatch(a -> a.getEstudiante().getNombre().equals(estudiante.getNombre()) && a.getHorarioId().equals(horarios.get(encabezado).getId()));
+                if (asistenciasDelDia == null) {
+                    fila.add(false);
+                    continue;
+                }boolean asistio = asistenciasDelDia != null && asistenciasDelDia.stream().anyMatch(a -> a.getEstudiante().getNombre().equals(estudiante.getNombre()) && a.getHorarioId().equals(horarios.get(encabezado).getId()));
                 fila.add(asistio);
             }
             tabla.add(fila);
