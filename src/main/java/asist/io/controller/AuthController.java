@@ -44,7 +44,7 @@ public class AuthController {
             UsuarioGetLoginDTO loginRes = authService.login(loginReq);
             HttpHeaders responseHeaders = new HttpHeaders();
             if(!loginRes.getUsuario().getVerificado()){
-                response.put("errorInicioSesion", "Usuario no verificado, revise su casilla de email para verificar su cuenta.");
+                response.put("mensaje", "Usuario no verificado, revise su casilla de email para verificar su cuenta.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).headers(new HttpHeaders()).body(response);
             }
             response.put("usuario", loginRes.getUsuario());
