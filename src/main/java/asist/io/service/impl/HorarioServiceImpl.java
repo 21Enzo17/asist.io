@@ -1,5 +1,6 @@
 package asist.io.service.impl;
 
+import java.text.DateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
@@ -20,6 +21,7 @@ import asist.io.mapper.HorarioMapper;
 import asist.io.repository.HorarioRepository;
 import asist.io.service.ICursoService;
 import asist.io.service.IHorarioService;
+import asist.io.util.DateFormatter;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -146,8 +148,8 @@ public class HorarioServiceImpl implements IHorarioService {
         }
         Horario horario = horarioRepository.findHorarioContainingTime(codigoAsistencia, fecha.getDayOfWeek(),fecha.toLocalTime());
         if(horario == null){
-            logger.error("No se encontro un horario para la fecha " + fecha);
-            throw new ModelException("No se encontro un horario para la fecha " + fecha);
+            logger.error("No se encontro un horario para la fecha " + DateFormatter.localDateTimeToString(fecha));
+            throw new ModelException("No se encontro un horario para la fecha " + DateFormatter.localDateTimeToString(fecha));
         }
         logger.info("Horario encontrado para la fecha " + fecha + " con exito");   
         return horario;
