@@ -36,10 +36,16 @@ clases y ahorrar tiempo a los docentes.
 
 - Spring Boot DevTools
 - Spring Web
+- Json Web Token
 - Spring Data JPA
 - MySQL Driver
 - Spring Security
 - Lombok
+- Apache POI
+- Jakarta Mail
+- Jakarta Validation
+- Hibernate
+
 
 ## Roadmap
 - Crear capa repository y service

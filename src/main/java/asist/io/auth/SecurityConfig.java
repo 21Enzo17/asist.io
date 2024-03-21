@@ -138,6 +138,7 @@ public class SecurityConfig  {
                 auth.requestMatchers("/api/v1/usuario/olvide-mi-contrasena").permitAll();
                 auth.requestMatchers("/api/v1/usuario/cambiar-contrasena/**").permitAll();
                 auth.requestMatchers("/api/v1/usuario/reenviar-correo-confirmacion").permitAll();
+                auth.requestMatchers("/api/v1/asistencias/registrar").permitAll();
                 auth.anyRequest().authenticated();
             })
             .sessionManagement(session ->{

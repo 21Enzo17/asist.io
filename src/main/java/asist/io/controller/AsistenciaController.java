@@ -15,6 +15,9 @@ import asist.io.service.IAsistenciaService;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 
@@ -67,6 +70,21 @@ public class AsistenciaController {
         }
 
     }
+
+    @GetMapping("/obtenerAsistenciasPorCursoYPeriodo/excel")
+    public ResponseEntity<?> obtenerAsistenciasPorCursoYPeriodoExcel(@RequestParam String fechaInicio, @RequestParam String fechaFin, @RequestParam String idCurso){
+        Map<String, Object> response = new HashMap<>();
+        try {
+            return asistenciaService.generarExcelAsistenciaPorCursoYPeriodo(idCurso, fechaInicio, fechaFin);
+        } catch (Exception e) {
+            response.put("mensaje", "Error al obtener asistencias");
+            response.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+
+    }
+    
+
     /**
      * Maneja las solicitudes de obtención de asistencias de los usuarios.
      * @param lu
@@ -83,6 +101,27 @@ public class AsistenciaController {
             response.put("asistencias", asistenciaService.obtenerAsistenciaPorLuCursoYPeriodo(lu, idCurso, fechaInicio, fechaFin));
             response.put("mensaje", "Asistencias obtenidas correctamente");
             return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            response.put("mensaje", "Error al obtener asistencias");
+            response.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+
+    }
+
+    /**
+     * Maneja la solicitud de obtener asistencias de un alumno en un periodo y curso especifico en formato excel.
+     * @param lu lu del usuario
+     * @param idCurso id del curso
+     * @param fechaInicio fecha de inicio del periodo
+     * @param fechaFin fecha de fin del periodo
+     * @return ResponseEntity con el archivo de excel si la operación fue exitosa,
+     */ 
+    @GetMapping("/obtenerAsistenciasPorLuCursoYPeriodo/excel")
+    public ResponseEntity<?> obtenerAsistenciasPorLuCursoYPeriodoExcel(@RequestParam String lu, @RequestParam String idCurso, @RequestParam String fechaInicio, @RequestParam String fechaFin){
+        Map<String, Object> response = new HashMap<>();
+        try {
+            return asistenciaService.generarExcelAsistenciaPorLuCursoYPeriodo(lu, idCurso, fechaInicio, fechaFin);
         } catch (Exception e) {
             response.put("mensaje", "Error al obtener asistencias");
             response.put("error", e.getMessage());
@@ -113,6 +152,8 @@ public class AsistenciaController {
         }
 
     }
+
+    
     
     
 

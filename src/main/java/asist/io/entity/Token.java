@@ -52,6 +52,6 @@ public class Token {
         this.token = token;
         this.usuario = usuario;
         this.tipo = tipo;
-        this.fechaExpiracion = LocalDate.now().plusDays(1);
+        this.fechaExpiracion = LocalDate.now().plusDays(7);
     }
 }
