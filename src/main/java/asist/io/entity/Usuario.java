@@ -36,7 +36,7 @@ public class Usuario {
     @JoinColumn(name = "token_id", nullable = true)
     private Token token;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "usuario")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "usuario",orphanRemoval = true)
     private List<Curso> cursos;
 }   
 

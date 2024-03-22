@@ -149,7 +149,7 @@ public class EstudianteServiceTest {
         inscripcionService.eliminarInscripcionPorId(inscripcionRegistrada.getId());
         cursoService.eliminarCurso(cursoRegistrado.getId());
         estudianteService.eliminarEstudiante(estudianteRegistrado.getId());
-        usuarioService.eliminarUsuario(usuario.getCorreo());
+        usuarioService.eliminarUsuario(usuario.getCorreo(),usuario.getContrasena());
     }
 
     @Test

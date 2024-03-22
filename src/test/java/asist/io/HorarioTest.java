@@ -25,6 +25,7 @@ import asist.io.exception.ModelException;
 import asist.io.service.ICursoService;
 import asist.io.service.IHorarioService;
 import asist.io.service.IUsuarioService;
+import asist.io.util.Constantes;
 import jakarta.transaction.Transactional;
 
 @SpringBootTest
@@ -68,7 +69,7 @@ public class HorarioTest {
         cursoGetDTO = cursoService.registrarCurso(cursoPostDTO);
 
         horarioPostDTO1 = new HorarioPostDTO();
-        horarioPostDTO1.setDia(LocalDate.now().getDayOfWeek());
+        horarioPostDTO1.setDia(Constantes.DIAS_DE_LA_SEMANA_INVERSO.get(LocalDate.now().getDayOfWeek()));
         horarioPostDTO1.setEntrada(LocalTime.now());
         horarioPostDTO1.setSalida(LocalTime.now().plusHours(2));
         horarioPostDTO1.setCursoId(cursoGetDTO.getId());
@@ -79,7 +80,7 @@ public class HorarioTest {
         horarioPatchDTO.setDia(horarioPostDTO1.getDia());
         
         horarioPostDTO2 = new HorarioPostDTO();
-        horarioPostDTO2.setDia(LocalDate.now().getDayOfWeek().plus(1));
+        horarioPostDTO2.setDia(Constantes.DIAS_DE_LA_SEMANA_INVERSO.get(LocalDate.now().getDayOfWeek().plus(1)));
         horarioPostDTO2.setEntrada(LocalTime.now());
         horarioPostDTO2.setSalida(LocalTime.now().plusHours(2));
         horarioPostDTO2.setCursoId(cursoGetDTO.getId());
@@ -89,7 +90,7 @@ public class HorarioTest {
     @AfterEach
     public void tearDown() {
         
-        usuarioService.eliminarUsuario(usuarioPostDTO.getCorreo());
+        usuarioService.eliminarUsuario(usuarioPostDTO.getCorreo(),usuarioPostDTO.getContrasena());
         usuarioPostDTO = null;
         cursoPostDTO = null;
         cursoGetDTO = null;

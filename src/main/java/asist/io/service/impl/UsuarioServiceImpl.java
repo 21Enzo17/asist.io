@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import asist.io.dto.ContrasenaDTO.ContrasenaDTO;
 import asist.io.dto.usuarioDTO.UsuarioCambioContrasenaDTO;
 import asist.io.dto.usuarioDTO.UsuarioGetDTO;
+import asist.io.dto.usuarioDTO.UsuarioPatchDTO;
 import asist.io.dto.usuarioDTO.UsuarioPostDTO;
 import asist.io.entity.Usuario;
 import asist.io.exception.ModelException;
@@ -17,6 +18,7 @@ import asist.io.repository.UsuarioRepository;
 import asist.io.service.IEmailSenderService;
 import asist.io.service.ITokenService;
 import asist.io.service.IUsuarioService;
+import jakarta.transaction.Transactional;
 
 @Service
 public class UsuarioServiceImpl implements IUsuarioService {
@@ -58,8 +60,13 @@ public class UsuarioServiceImpl implements IUsuarioService {
      * @param correo Correo del usuario que se va a eliminar.
      */
     @Override
-    public void eliminarUsuario(String correo) {
-        buscarUsuario(correo);
+    @Transactional
+    public void eliminarUsuario(String correo, String contrasena) {
+        Usuario usuario = buscarUsuario(correo);
+        if(!passwordEncoder.matches(contrasena, usuario.getContrasena())){
+            logger.error("La contraseña ingresada no coincide con la contraseña del usuario " + correo);
+            throw new ModelException("La contraseña ingresada no coincide con la contraseña del usuario");
+        }
         usuarioRepository.deleteByCorreo(correo);
         logger.info ("Usuario eliminado con exito, " + correo);
     }
@@ -70,12 +77,14 @@ public class UsuarioServiceImpl implements IUsuarioService {
      * @return
      */
     @Override
-    public void actualizarUsuario(UsuarioGetDTO usuario) {
-        buscarUsuario(usuario.getCorreo());
-        Usuario usuarioActualizado = UsuarioMapper.toEntity(usuario);
-        usuarioActualizado.setContrasena(usuarioRepository.findByCorreo(usuario.getCorreo()).getContrasena());
-        usuarioRepository.save(usuarioActualizado);
-        logger.info("Usuario actualizado con exito, " + usuario.getCorreo());
+    @SuppressWarnings("null")
+    public void actualizarUsuario(UsuarioPatchDTO usuario) {
+        Usuario usuarioEncontrado = usuarioRepository.findById(usuario.getId()).orElseThrow(() -> new ModelException("No existe un usuario con este id"));
+        if(usuario.getNombre() != null){
+            usuarioEncontrado.setNombre(usuario.getNombre());
+        }
+        usuarioRepository.save(usuarioEncontrado);
+        logger.info("Usuario actualizado con exito, " + usuarioEncontrado.getCorreo());
     }
 
     /**

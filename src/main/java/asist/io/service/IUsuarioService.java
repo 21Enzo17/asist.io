@@ -3,6 +3,7 @@ package asist.io.service;
 import asist.io.dto.ContrasenaDTO.ContrasenaDTO;
 import asist.io.dto.usuarioDTO.UsuarioCambioContrasenaDTO;
 import asist.io.dto.usuarioDTO.UsuarioGetDTO;
+import asist.io.dto.usuarioDTO.UsuarioPatchDTO;
 import asist.io.dto.usuarioDTO.UsuarioPostDTO;
 import asist.io.entity.Usuario;
 
@@ -18,15 +19,16 @@ public interface IUsuarioService {
     /**
      * Metodo encargado de eliminar un usuario.
      * @param correo Correo del usuario que se va a eliminar.
+     * @param contrasena Contraseña del usuario que se va a eliminar.
      */
-    public void eliminarUsuario(String correo);
+    public void eliminarUsuario(String correo, String contrasena);
 
     /**
      * Metodo encargado de actualizar un usuario.
      * @param usuario 
      * @return
      */
-    public void actualizarUsuario(UsuarioGetDTO usuario);
+    public void actualizarUsuario(UsuarioPatchDTO usuario);
 
 
     /**
