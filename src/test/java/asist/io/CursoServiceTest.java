@@ -54,7 +54,7 @@ public class CursoServiceTest {
         cursoPostDTO = null;
         cursoPatchDTO = null;
         cursoGetDTO = null;
-        usuarioService.eliminarUsuario(usuario.getCorreo());
+        usuarioService.eliminarUsuario(usuario.getCorreo(), usuario.getContrasena());
         usuario = null;
 
     }

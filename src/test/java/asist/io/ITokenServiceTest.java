@@ -40,7 +40,7 @@ public class ITokenServiceTest {
 
     @AfterEach
     public void tearDown() {
-        usuarioService.eliminarUsuario(usuarioRegDto.getCorreo());
+        usuarioService.eliminarUsuario(usuarioRegDto.getCorreo(),usuarioRegDto.getContrasena());
         usuarioRegDto = null;
     }
 

@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import asist.io.dto.ContrasenaDTO.ContrasenaDTO;
 import asist.io.dto.usuarioDTO.UsuarioGetDTO;
 import asist.io.dto.usuarioDTO.UsuarioLoginDTO;
+import asist.io.dto.usuarioDTO.UsuarioPatchDTO;
 import asist.io.dto.usuarioDTO.UsuarioGetLoginDTO;
 import asist.io.dto.usuarioDTO.UsuarioPostDTO;
 import asist.io.exception.ModelException;
@@ -34,19 +35,25 @@ public class IUsuarioServiceTest {
     static UsuarioLoginDTO usuarioLoginDto;
     static UsuarioGetLoginDTO usuarioLoginResDto;
     static UsuarioGetDTO usuarioGetDto;
+    static UsuarioPatchDTO usuarioPatchDto;
+
+    static String contrasena = "contrasena.1";
 
      
 
     @BeforeEach
     public void setUp() {
         usuarioRegDto = new UsuarioPostDTO();
-        usuarioRegDto.setCorreo("enzo.meneghini@hotmail.com");
+        usuarioRegDto.setCorreo("fenix.meneghini@hotmail.com");
         usuarioRegDto.setNombre("Enzo Meneghini");
-        usuarioRegDto.setContrasena("contrasena.1");
+        usuarioRegDto.setContrasena(contrasena);
 
         usuarioLoginDto = new UsuarioLoginDTO();
-        usuarioLoginDto.setCorreo("enzo.meneghini@hotmail.com");
-        usuarioLoginDto.setContrasena("contrasena.1");
+        usuarioLoginDto.setCorreo("fenix.meneghini@hotmail.com");
+        usuarioLoginDto.setContrasena(contrasena);
+
+        usuarioPatchDto = new UsuarioPatchDTO();
+        usuarioPatchDto.setNombre("Test");
 
 
     }
@@ -64,7 +71,8 @@ public class IUsuarioServiceTest {
 
         target.guardarUsuario(usuarioRegDto);
         assertEquals(target.buscarUsuarioDto(usuarioRegDto.getCorreo()).getCorreo(), usuarioRegDto.getCorreo());
-        target.eliminarUsuario("enzo.meneghini@hotmail.com");
+        System.out.println("CONTRASEÑAAAAA: " + contrasena);
+        target.eliminarUsuario("fenix.meneghini@hotmail.com", contrasena);
     }
 
     @Test
@@ -72,7 +80,7 @@ public class IUsuarioServiceTest {
     public void testEliminarUsuario(){
         target.guardarUsuario(usuarioRegDto);
         assertEquals(target.buscarUsuarioDto(usuarioRegDto.getCorreo()).getCorreo(), usuarioRegDto.getCorreo());
-        target.eliminarUsuario(usuarioRegDto.getCorreo());
+        target.eliminarUsuario(usuarioRegDto.getCorreo(), "contrasena.1");
         assertThrows( ModelException.class, () -> target.buscarUsuario(usuarioRegDto.getCorreo()));
     }
 
@@ -83,9 +91,10 @@ public class IUsuarioServiceTest {
         assertEquals(target.buscarUsuarioDto(usuarioRegDto.getCorreo()).getCorreo(), usuarioRegDto.getCorreo());
         usuarioGetDto = target.buscarUsuarioDto(usuarioRegDto.getCorreo());
         usuarioGetDto.setNombre("Enzo Meneghini");
-        target.actualizarUsuario(usuarioGetDto);
-        assertEquals(target.buscarUsuarioDto(usuarioRegDto.getCorreo()).getNombre(), usuarioGetDto.getNombre());
-        target.eliminarUsuario(usuarioRegDto.getCorreo());
+        usuarioPatchDto.setId(usuarioGetDto.getId());
+        target.actualizarUsuario(usuarioPatchDto);
+        assertEquals(target.buscarUsuarioDto(usuarioRegDto.getCorreo()).getNombre(), usuarioPatchDto.getNombre());
+        target.eliminarUsuario(usuarioRegDto.getCorreo(),contrasena);
     }
 
     @Test
@@ -93,7 +102,7 @@ public class IUsuarioServiceTest {
     public void testBuscarUsuario(){
         target.guardarUsuario(usuarioRegDto);
         assertEquals(target.buscarUsuarioDto(usuarioRegDto.getCorreo()).getCorreo(), usuarioRegDto.getCorreo());
-        target.eliminarUsuario(usuarioRegDto.getCorreo());
+        target.eliminarUsuario(usuarioRegDto.getCorreo(),contrasena);
     }
 
     @Test
@@ -101,7 +110,7 @@ public class IUsuarioServiceTest {
     public void testBuscarUsuarioPorCorreo(){
         target.guardarUsuario(usuarioRegDto);
         assertEquals(target.buscarUsuario(usuarioRegDto.getCorreo()).getCorreo(), usuarioRegDto.getCorreo());
-        target.eliminarUsuario(usuarioRegDto.getCorreo());
+        target.eliminarUsuario(usuarioRegDto.getCorreo(),contrasena);
     }
 
     @Test
@@ -110,7 +119,7 @@ public class IUsuarioServiceTest {
         target.guardarUsuario(usuarioRegDto);
         target.validarUsuario(target.obtenerTokenPorCorreoTipo(usuarioRegDto.getCorreo(),"VERIFICACION"));
         assertEquals(target.buscarUsuarioDto(usuarioRegDto.getCorreo()).getCorreo(), usuarioLoginDto.getCorreo());
-        target.eliminarUsuario(usuarioRegDto.getCorreo());
+        target.eliminarUsuario(usuarioRegDto.getCorreo(),contrasena);
     }
 
     @Test
@@ -120,7 +129,7 @@ public class IUsuarioServiceTest {
         target.enviarOlvideContrasena(usuarioRegDto.getCorreo());
         target.cambiarContrasena(target.obtenerTokenPorCorreoTipo(usuarioRegDto.getCorreo(),"RECUPERACION"), new ContrasenaDTO("contrasena.2"));
         assertTrue(passwordEncoder.matches("contrasena.2", target.buscarUsuario(usuarioRegDto.getCorreo()).getContrasena()));
-        target.eliminarUsuario(usuarioRegDto.getCorreo());
+        target.eliminarUsuario(usuarioRegDto.getCorreo(),"contrasena.2");
     }
 
 

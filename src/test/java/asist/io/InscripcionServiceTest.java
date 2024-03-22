@@ -130,7 +130,7 @@ public class InscripcionServiceTest {
         estudianteService.eliminarEstudiante(santiagoMatRegistrado.getId());
         estudianteService.eliminarEstudiante(santiagoInfRegistrado.getId());
 
-        usuarioService.eliminarUsuario(usuario.getCorreo());
+        usuarioService.eliminarUsuario(usuario.getCorreo(),usuario.getContrasena());
 
         juan = null;
         rocio = null;

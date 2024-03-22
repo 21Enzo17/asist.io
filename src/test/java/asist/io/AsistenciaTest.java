@@ -32,6 +32,7 @@ import asist.io.service.IEstudianteService;
 import asist.io.service.IHorarioService;
 import asist.io.service.IInscripcionService;
 import asist.io.service.IUsuarioService;
+import asist.io.util.Constantes;
 import asist.io.util.DateFormatter;
 import jakarta.transaction.Transactional;
 
@@ -109,7 +110,7 @@ public class AsistenciaTest {
 
         horarioPostDTO = new HorarioPostDTO();
         horarioPostDTO.setCursoId(cursoGetDTO.getId());
-        horarioPostDTO.setDia(LocalDate.now().getDayOfWeek());
+        horarioPostDTO.setDia(Constantes.DIAS_DE_LA_SEMANA_INVERSO.get(LocalDate.now().getDayOfWeek()));
         horarioPostDTO.setEntrada(LocalTime.now());
         horarioPostDTO.setSalida(LocalTime.now().plusHours(2));
         horarioService.registrarHorario(horarioPostDTO);
@@ -126,7 +127,7 @@ public class AsistenciaTest {
 
     @AfterEach
     public void tearDown(){
-        usuarioService.eliminarUsuario(usuarioPostDTO.getCorreo());
+        usuarioService.eliminarUsuario(usuarioPostDTO.getCorreo(), usuarioPostDTO.getContrasena());
         /*cursoService.eliminarCurso(cursoGetDTO.getId());
         estudianteService.eliminarEstudiante(estudiante1.getLu());
         estudianteService.eliminarEstudiante(estudiante2.getLu());*/

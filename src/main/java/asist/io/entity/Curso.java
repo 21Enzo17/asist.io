@@ -27,7 +27,11 @@ public class Curso {
     @ManyToOne()
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "horario_id")
+    
+    @OneToMany(mappedBy = "curso", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Inscripcion> inscripciones;
+
+
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true, mappedBy = "curso")
     private List<Horario> horario;
 }

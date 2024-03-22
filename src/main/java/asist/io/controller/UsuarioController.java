@@ -13,12 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import asist.io.dto.ContrasenaDTO.ContrasenaDTO;
 import asist.io.dto.usuarioDTO.UsuarioCambioContrasenaDTO;
+import asist.io.dto.usuarioDTO.UsuarioPatchDTO;
 import asist.io.dto.usuarioDTO.UsuarioPostDTO;
 import asist.io.exception.ModelException;
 import asist.io.service.IUsuarioService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,6 +65,40 @@ public class UsuarioController {
         } catch (Exception e) {
             response.put("error", "Ups!, ha ocurrido un error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Maneja la solicitud de eliminación de un usuario.
+     * 
+     * @param correo El correo electrónico del usuario que se eliminará.
+     * @param contrasena La contraseña del usuario que se eliminará.
+     * 
+     * @return Una respuesta HTTP que contiene un mensaje indicando si el usuario fue eliminado correctamente o no.
+     */
+    @DeleteMapping("/eliminar")
+    public ResponseEntity<?> eliminarUsuario(@RequestParam String correo, @RequestParam String contrasena) {
+        Map<String, Object> response = new HashMap<>();
+        try{
+            usuarioService.eliminarUsuario(correo, contrasena);
+            response.put("success", "Usuario eliminado correctamente");
+            return ResponseEntity.ok().body(response);
+        }catch(ModelException exception){
+            response.put("error", exception.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
+    @PatchMapping("/actualizar")
+    public ResponseEntity<?> actualizarUsuario(@RequestBody @Valid UsuarioPatchDTO usuario) {
+        Map<String, Object> response = new HashMap<>();
+        try{
+            usuarioService.actualizarUsuario(usuario);
+            response.put("success", "Usuario actualizado correctamente");
+            return ResponseEntity.ok().body(response);
+        }catch(ModelException exception){
+            response.put("error", exception.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 
@@ -199,6 +235,8 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
+
+    
     
     
     
