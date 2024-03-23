@@ -17,6 +17,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @Service
+@SuppressWarnings("null")
 public class EstudianteServiceImpl implements IEstudianteService {
 
     private final static Logger logger = Logger.getLogger(EstudianteServiceImpl.class);
@@ -39,12 +40,17 @@ public class EstudianteServiceImpl implements IEstudianteService {
             throw new ModelException("El estudiante no puede ser nulo");
         }
 
-        if (estudianteRepository.existsByLu(estudiante.getLu())) {
-            logger.error("Error al registrar el estudiante: El lu, " + estudiante.getLu() + ", ya esta en uso");
-            throw new ModelException("El lu " + estudiante.getLu() + " ya esta en uso");
+        if (estudianteRepository.existsByLuAndCursoId(estudiante.getLu(), estudiante.getCursoId())) {
+            logger.error("Error al registrar el estudiante: El lu, " + estudiante.getLu() + ", ya esta en uso en este curso");
+            throw new ModelException("El lu " + estudiante.getLu() + " ya esta en uso en este curso");
         }
 
-        EstudianteGetDTO estudianteRegistrado = EstudianteMapper.toGetDTO(estudianteRepository.save(EstudianteMapper.toEntity(estudiante)));
+        if(cursoRepository.existsById(estudiante.getCursoId()) == false){
+            logger.error("Error al registrar el estudiante: El curso con id " + estudiante.getCursoId() + " no existe");
+            throw new ModelException("El curso con id " + estudiante.getCursoId() + " no existe");
+        }
+        
+        EstudianteGetDTO estudianteRegistrado = EstudianteMapper.toGetDTO(estudianteRepository.save(EstudianteMapper.toEntity(estudiante,cursoRepository.findById(estudiante.getCursoId()).get())));
         logger.info("Estudiante registrado con éxito, id: " + estudianteRegistrado.getId());
         return estudianteRegistrado;
     }
@@ -60,8 +66,12 @@ public class EstudianteServiceImpl implements IEstudianteService {
             logger.error("Error al registrar los estudiantes: La lista de estudiantes no puede ser nula ni vacía");
             throw new ModelException("La lista de estudiantes no puede ser nula ni vacía");
         }
+        if(!cursoRepository.existsById(estudiantes.get(0).getCursoId())){
+            logger.error("Error al registrar los estudiantes: El curso con id " + estudiantes.get(0).getCursoId() + " no existe");
+            throw new ModelException("El curso con id " + estudiantes.get(0).getCursoId() + " no existe");
+        }
 
-        List<EstudianteGetDTO> estudiantesRegistrados = EstudianteMapper.toGetDTO(estudianteRepository.saveAll(EstudianteMapper.toEntity(estudiantes)));
+        List<EstudianteGetDTO> estudiantesRegistrados = EstudianteMapper.toGetDTO(estudianteRepository.saveAll(EstudianteMapper.toEntity(estudiantes,cursoRepository.findById(estudiantes.get(0).getCursoId()).get())));
         logger.info("Estudiantes registrados con éxito");
         return estudiantesRegistrados;
     }
@@ -70,7 +80,7 @@ public class EstudianteServiceImpl implements IEstudianteService {
      * Elimina un estudiante en la base de datos
      * @param id Id del estudiante a eliminar
      * @return true si se eliminó el estudiante, false si no existe el estudiante
-     * @throws ModelException
+     * @throws ModelException Si el id es nulo o vacío
      */
     @Override
     public boolean eliminarEstudiante(String id) throws ModelException {
@@ -115,24 +125,25 @@ public class EstudianteServiceImpl implements IEstudianteService {
     }
 
     /**
-     * Obtiene un estudiante por su lu
+     * Obtiene un estudiante por su lu y curso id
      * @param lu Lu del estudiante a obtener
+     * @param cursoId Id del curso
      * @return Estudiante si existe, null si no existe
      * @throws ModelException Si el lu es nulo o vacío
      */
     @Override
-    public EstudianteGetDTO obtenerEstudiantePorLu(String lu) throws ModelException {
+    public EstudianteGetDTO obtenerEstudiantePorLuYCursoId(String lu, String cursoId)throws ModelException {
         if (lu == null || lu.isEmpty() || lu.isBlank()) {
             logger.error("Error al obtener el estudiante: El lu no puede ser nulo ni vacío");
             throw new ModelException("El lu no puede ser nulo ni vacío");
         }
 
-        if (!estudianteRepository.existsByLu(lu)) {
+        if (!estudianteRepository.existsByLuAndCursoId(lu,cursoId)) {
             logger.error("Error al obtener el estudiante: El estudiante con el lu " + lu + " no existe");
             return null;
         }
 
-        EstudianteGetDTO estudianteEncontrado = EstudianteMapper.toGetDTO(estudianteRepository.findByLu(lu));
+        EstudianteGetDTO estudianteEncontrado = EstudianteMapper.toGetDTO(estudianteRepository.findByLuAndCursoId(lu, cursoId));
         logger.info("Estudiante encontrado con éxito, lu: " + lu);
         return estudianteEncontrado;
     }
@@ -177,21 +188,50 @@ public class EstudianteServiceImpl implements IEstudianteService {
             throw new ModelException("El curso con el id " + id + " no existe");
         }
 
-        List<EstudianteGetDTO> estudiantesEncontrados = EstudianteMapper.toGetDTO(estudianteRepository.obtenerEstudiantesPorIdCurso(id));
+        List<EstudianteGetDTO> estudiantesEncontrados = EstudianteMapper.toGetDTO(estudianteRepository.findByCursoId(id));
         estudiantesEncontrados.sort(Comparator.comparing(EstudianteGetDTO::getNombre));
         logger.info("Estudiantes encontrados con éxito con cursoId: " + id);
         return estudiantesEncontrados;
     }
 
     /**
-     * Obtiene un estudiante por su lu
+     * Obtiene un estudiante por su lu y curso Id
      * @param lu Lu del estudiante
+     * @param cursoId Id del curso
      * @return Estudiante Entity 
      * @throws ModelException Si el estudiante no existe
      */
     @Override
-    public Estudiante obtenerEstudianteEntityPorLu(String lu) {
-        Estudiante estudiante = estudianteRepository.findByLu(lu);
+    public Estudiante obtenerEstudianteEntityPorLuYCursoId(String lu,String cursoId) {
+        Estudiante estudiante = estudianteRepository.findByLuAndCursoId(lu,cursoId);
+        if(estudiante == null){
+            logger.error("El estudiante con el lu " + lu + " no existe");
+            throw new ModelException("El estudiante con el lu " + lu + " no existe");
+        }
+        logger.info("Estudiante encontrado con éxito, lu: " + lu);
+        return estudiante;
+    }
+
+    /**
+     * Obtiene un estudiante inscripto a un curso
+     * @param codigoAsistencia Código de asistencia del curso
+     * @param lu Legajo del estudiante
+     * @return Estudiante inscripto al curso
+     * @throws ModelException Si el id del curso o el lu del estudiante es nulo o vacío
+     * @throws ModelException Si el estudiante no está inscripto al curso
+     */
+    @Override
+    public Estudiante obtenerEstudianteEntityPorCodigoAsistenciaYLu(String codigoAsistencia, String lu) {
+        if (codigoAsistencia == null || codigoAsistencia.isEmpty() || codigoAsistencia.isBlank()) {
+            logger.error("Error al obtener el estudiante: El id del curso no puede ser nulo ni vacío");
+            throw new ModelException("El id del curso no puede ser nulo ni vacío");
+        }
+
+        if (lu == null || lu.isEmpty() || lu.isBlank()) {
+            logger.error("Error al obtener el estudiante: El lu no puede ser nulo ni vacío");
+            throw new ModelException("El lu no puede ser nulo ni vacío");
+        }
+        Estudiante estudiante = estudianteRepository.findByCursoCodigoAsistenciaAndLu(codigoAsistencia, lu);
         if(estudiante == null){
             logger.error("El estudiante con el lu " + lu + " no existe");
             throw new ModelException("El estudiante con el lu " + lu + " no existe");

@@ -32,7 +32,7 @@ public class ITokenServiceTest {
     @BeforeEach
     public void setUp() {
         usuarioRegDto = new UsuarioPostDTO();
-        usuarioRegDto.setCorreo("enzo.meneghini@hotmail.com");
+        usuarioRegDto.setCorreo("fenix.meneghini@hotmail.com");
         usuarioRegDto.setNombre("Enzo Meneghini");
         usuarioRegDto.setContrasena("contrasena.1");
         usuarioService.guardarUsuario(usuarioRegDto);
@@ -40,7 +40,7 @@ public class ITokenServiceTest {
 
     @AfterEach
     public void tearDown() {
-        usuarioService.eliminarUsuario(usuarioRegDto.getCorreo(),usuarioRegDto.getContrasena());
+        usuarioService.eliminarUsuario(usuarioRegDto.getCorreo(),"contrasena.1");
         usuarioRegDto = null;
     }
 

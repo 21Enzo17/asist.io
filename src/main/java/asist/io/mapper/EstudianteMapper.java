@@ -3,21 +3,25 @@ package asist.io.mapper;
 import asist.io.dto.estudianteDTO.EstudianteGetDTO;
 import asist.io.dto.estudianteDTO.EstudiantePathDTO;
 import asist.io.dto.estudianteDTO.EstudiantePostDTO;
+import asist.io.entity.Curso;
 import asist.io.entity.Estudiante;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class EstudianteMapper {
+
     /**
      * Convierte un EstudiantePostDTO a un Estudiante
      * @param estudiante EstudiantePostDTO a convertir
      * @return Estudiante convertido
      */
-    public static Estudiante toEntity(EstudiantePostDTO estudiante) {
+    public static Estudiante toEntity(EstudiantePostDTO estudiante, Curso curso) {
         Estudiante entity = new Estudiante();
         entity.setNombre(estudiante.getNombre());
         entity.setLu(estudiante.getLu());
+        entity.setCurso(curso);
 
         return entity;
     }
@@ -41,10 +45,11 @@ public class EstudianteMapper {
      * @param estudiantes Lista de EstudiantePostDTO a convertir
      * @return Lista de Estudiante convertida
      */
-    public static List<Estudiante> toEntity(List<EstudiantePostDTO> estudiantes) {
+    public static List<Estudiante> toEntity(List<EstudiantePostDTO> estudiantes,Curso curso) {
         List<Estudiante> entities = new ArrayList<>();
         for (EstudiantePostDTO estudiante : estudiantes) {
-            entities.add(toEntity(estudiante));
+
+            entities.add(toEntity(estudiante,curso));
         }
         return entities;
     }

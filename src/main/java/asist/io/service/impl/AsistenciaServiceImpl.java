@@ -25,7 +25,6 @@ import asist.io.service.IAsistenciaService;
 import asist.io.service.ICursoService;
 import asist.io.service.IEstudianteService;
 import asist.io.service.IHorarioService;
-import asist.io.service.IInscripcionService;
 import asist.io.util.DateFormatter;
 import asist.io.util.ExcelGenerator;
 
@@ -39,8 +38,6 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
     private ICursoService cursoService;
     @Autowired
     private IEstudianteService estudianteService;
-    @Autowired
-    private IInscripcionService inscripcionService;
     @Autowired
     private IHorarioService horarioService;
 
@@ -62,7 +59,7 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
         return AsistenciaMapper.toDTO(asistenciaRepository.save(
             AsistenciaMapper.toEntity(asistenciaPostDTO,
             cursoService.obtenerCursoEntityPorCodigoAsistencia(asistenciaPostDTO.getCodigoAsistencia()),
-            estudianteService.obtenerEstudianteEntityPorLu(asistenciaPostDTO.getLu()),horarioService.obtenerHorarioEntityPorId(asistenciaPostDTO.getHorarioId()))));
+            estudianteService.obtenerEstudianteEntityPorCodigoAsistenciaYLu(asistenciaPostDTO.getCodigoAsistencia(),asistenciaPostDTO.getLu()),horarioService.obtenerHorarioEntityPorId(asistenciaPostDTO.getHorarioId()))));
     }
 
 
@@ -110,11 +107,11 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
     @Override
     public List<List<Object>> obtenerAsistenciaPorLuCursoYPeriodo(String lu, String cursoId, String fechaInicio, String fechaFin) {
         cursoService.existePorId(cursoId);
-        estudianteService.obtenerEstudianteEntityPorLu(lu);
+        estudianteService.obtenerEstudianteEntityPorLuYCursoId(lu, cursoId);
         logger.info("Obteniendo asistencia para el alumno con LU " + lu + " en el curso con id " + cursoId);
         Map<LocalDate, List<AsistenciaGetDTO>> asistenciasAgrupadas = agruparAsistenciasPorFechaYHorario(AsistenciaMapper.toDTO(asistenciaRepository.findByEstudianteLuAndCursoId(lu, cursoId)));
         List<EstudianteGetDTO> estudiantes = new ArrayList<>();
-        estudiantes.add(estudianteService.obtenerEstudiantePorLu(lu));
+        estudiantes.add(estudianteService.obtenerEstudiantePorLuYCursoId(lu, cursoId));
         Map<String,Horario> horarios = horarioService.obtenerEncabezadosYHorariosEntreDosFechas(DateFormatter.stringToLocalDate(fechaInicio).atStartOfDay(), DateFormatter.stringToLocalDate(fechaFin).plusDays(1).atStartOfDay(), cursoId);
         
         return generarTablaAsistencias(asistenciasAgrupadas, estudiantes, horarios);
@@ -165,7 +162,7 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
      * @return Archivo excel con las asistencias
      */
     public ResponseEntity<ByteArrayResource> generarExcelAsistenciaPorLuCursoYPeriodo(String lu, String cursoId, String fechaInicio, String fechaFin){
-        String nombreArchivo = estudianteService.obtenerEstudiantePorLu(lu).getNombre() +" - "+ fechaInicio.replace("/", "-") + " a " + fechaFin.replace("/", "-");
+        String nombreArchivo = estudianteService.obtenerEstudiantePorLuYCursoId(lu,cursoId).getNombre() +" - "+ fechaInicio.replace("/", "-") + " a " + fechaFin.replace("/", "-");
         return ExcelGenerator.escribirTablaEnExcel(obtenerAsistenciaPorLuCursoYPeriodo(lu, cursoId, fechaInicio, fechaFin), nombreArchivo );
     }
 
@@ -175,8 +172,7 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
      * Valida que todos los campos de asistencia sean validos, se valida:
      * - Que la asistencia no sea nula
      * - Que el curso exista
-     * - Que el alumno exista
-     * - Que la inscripcion exista
+     * - Que el alumno exista en el curso especifico
      * - Que el alumno no tenga registrada una asistencia para la fecha y horario especifico
      * @param asistenciaPostDTO Asistencia a validar
      * @throws ModelException Si la asistencia es nula, si el curso o el alumno no existen, o si el alumno ya tiene registrada una asistencia para la fecha
@@ -184,8 +180,8 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
     private void validarAsistencia(AsistenciaPostDTO asistenciaPostDTO){
         if (asistenciaPostDTO == null) throw new ModelException("La asistencia no puede ser nula");
         cursoService.obtenerCursoPorCodigoAsistencia(asistenciaPostDTO.getCodigoAsistencia());
-        estudianteService.obtenerEstudiantePorLu(asistenciaPostDTO.getLu());
-        inscripcionService.existePorCodigoAsistenciaYLu(asistenciaPostDTO.getCodigoAsistencia(), asistenciaPostDTO.getLu());
+        estudianteService.obtenerEstudianteEntityPorCodigoAsistenciaYLu(asistenciaPostDTO.getCodigoAsistencia(), asistenciaPostDTO.getLu());
+        
         try{
             obtenerAsistenciaPorFechaLuYHorario(DateFormatter.localDateToString(LocalDate.now()),asistenciaPostDTO.getLu(), asistenciaPostDTO.getHorarioId());
             logger.error("El alumno con LU " + asistenciaPostDTO.getLu() + " ya tiene registrada una asistencia para la fecha " + DateFormatter.localDateTimeToString(LocalDateTime.now()));

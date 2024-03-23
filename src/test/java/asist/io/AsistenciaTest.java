@@ -22,7 +22,6 @@ import asist.io.dto.cursoDTO.CursoGetDTO;
 import asist.io.dto.cursoDTO.CursoPostDTO;
 import asist.io.dto.estudianteDTO.EstudianteGetDTO;
 import asist.io.dto.estudianteDTO.EstudiantePostDTO;
-import asist.io.dto.inscripcionDTO.InscripcionPostDTO;
 import asist.io.dto.usuarioDTO.UsuarioGetDTO;
 import asist.io.dto.usuarioDTO.UsuarioPostDTO;
 import asist.io.exception.ModelException;
@@ -30,7 +29,6 @@ import asist.io.service.IAsistenciaService;
 import asist.io.service.ICursoService;
 import asist.io.service.IEstudianteService;
 import asist.io.service.IHorarioService;
-import asist.io.service.IInscripcionService;
 import asist.io.service.IUsuarioService;
 import asist.io.util.Constantes;
 import asist.io.util.DateFormatter;
@@ -49,8 +47,6 @@ public class AsistenciaTest {
     @Autowired
     private IEstudianteService estudianteService;
     @Autowired
-    private IInscripcionService inscripcionService;
-    @Autowired
     private IHorarioService horarioService;
     
     static UsuarioPostDTO usuarioPostDTO;
@@ -63,8 +59,6 @@ public class AsistenciaTest {
     static EstudiantePostDTO estudiante2;
     static EstudianteGetDTO estudianteGetDTO1;
     static EstudianteGetDTO estudianteGetDTO2;
-    static InscripcionPostDTO inscripcionPostDTO1;
-    static InscripcionPostDTO inscripcionPostDTO2;
     static HorarioPostDTO horarioPostDTO;
 
     static String fechaInicio;
@@ -76,7 +70,7 @@ public class AsistenciaTest {
     public void setUp(){
         usuarioPostDTO = new UsuarioPostDTO();
         usuarioPostDTO.setNombre("Usuario de prueba");
-        usuarioPostDTO.setCorreo("enzo.meneghini@hotmail.com");
+        usuarioPostDTO.setCorreo("fenix.meneghini@hotmail.com");
         usuarioPostDTO.setContrasena("contraseña.1");
         usuarioService.guardarUsuario(usuarioPostDTO);
 
@@ -91,21 +85,15 @@ public class AsistenciaTest {
         estudiante1 = new EstudiantePostDTO();
         estudiante1.setLu("1234");
         estudiante1.setNombre("Estudiante de prueba 1");
+        estudiante1.setCursoId(cursoGetDTO.getId());
 
         estudiante2 = new EstudiantePostDTO();
         estudiante2.setLu("5678");
         estudiante2.setNombre("Estudiante de prueba 2");
+        estudiante2.setCursoId(cursoGetDTO.getId());
 
         estudianteGetDTO1 = estudianteService.registrarEstudiante(estudiante1);
         estudianteGetDTO2 = estudianteService.registrarEstudiante(estudiante2);
-
-        inscripcionPostDTO1 = new InscripcionPostDTO();
-        inscripcionPostDTO1.setIdCurso(cursoGetDTO.getId());
-        inscripcionPostDTO1.setIdEstudiante(estudianteGetDTO1.getId());
-
-        inscripcionPostDTO2 = new InscripcionPostDTO();
-        inscripcionPostDTO2.setIdCurso(cursoGetDTO.getId());
-        inscripcionPostDTO2.setIdEstudiante(estudianteGetDTO2.getId());
 
 
         horarioPostDTO = new HorarioPostDTO();
@@ -127,11 +115,7 @@ public class AsistenciaTest {
 
     @AfterEach
     public void tearDown(){
-        usuarioService.eliminarUsuario(usuarioPostDTO.getCorreo(), usuarioPostDTO.getContrasena());
-        /*cursoService.eliminarCurso(cursoGetDTO.getId());
-        estudianteService.eliminarEstudiante(estudiante1.getLu());
-        estudianteService.eliminarEstudiante(estudiante2.getLu());*/
-        
+        usuarioService.eliminarUsuario(usuarioPostDTO.getCorreo(), "contraseña.1");
 
         usuarioPostDTO = null;
         usuarioGetDTO = null;
@@ -156,9 +140,6 @@ public class AsistenciaTest {
         // Se comprueba que no se permite registrar una asistencia si el estudiante no existe
         assertThrows( ModelException.class, () -> target.registrarAsistencia(asistenciaPostDTO));
         asistenciaPostDTO.setLu(estudiante1.getLu());
-        // Se comprueba que no se permite registrar una asisencia si el estudiante no esta inscripto al curso
-        assertThrows( ModelException.class, () -> target.registrarAsistencia(asistenciaPostDTO));
-        inscripcionService.registrarInscripcion(inscripcionPostDTO1);
         // Se comprueba que se permite registrar una asistencia si el curso y el estudiante existen y el estudiante esta inscripto al curso 
         assertNotNull(target.registrarAsistencia(asistenciaPostDTO));
     }
@@ -166,8 +147,6 @@ public class AsistenciaTest {
     @Test
     @DisplayName("Test de obtener asistencia por curso")
     public void obtenerAsistenciaPorCursoTest(){
-        inscripcionService.registrarInscripcion(inscripcionPostDTO1);
-        inscripcionService.registrarInscripcion(inscripcionPostDTO2);
         target.registrarAsistencia(asistenciaPostDTO);
         asistenciaPostDTO.setLu(estudiante2.getLu());
         target.registrarAsistencia(asistenciaPostDTO);
@@ -185,8 +164,6 @@ public class AsistenciaTest {
     @Test
     @DisplayName("Test de obtener asistencia por estudiante")
     public void obtenerAsistenciaPorEstudianteTest(){
-        inscripcionService.registrarInscripcion(inscripcionPostDTO1);
-        inscripcionService.registrarInscripcion(inscripcionPostDTO2);
         target.registrarAsistencia(asistenciaPostDTO);
         asistenciaPostDTO.setLu(estudiante2.getLu());
         target.registrarAsistencia(asistenciaPostDTO);
@@ -195,7 +172,11 @@ public class AsistenciaTest {
         // Se comprueba que no se permita obtener asistencias si el curso no existe
         assertThrows( ModelException.class, () -> target.obtenerAsistenciaPorLuCursoYPeriodo(estudiante1.getLu(), "123123131", fechaInicio, fechaFin));
         // Se comprueba que se permite obtener asistencias si el estudiante existe
-        assertEquals(1, target.obtenerAsistenciaPorLuCursoYPeriodo(estudiante1.getLu(), cursoGetDTO.getId(),fechaInicio, fechaFin).size());
+        Long cantidad = target.obtenerAsistenciaPorLuCursoYPeriodo(estudiante1.getLu(), cursoGetDTO.getId(),fechaInicio, fechaFin).stream()
+        .flatMap(fila -> fila.subList(1, fila.size()).stream())  // Convierte la lista de listas en un stream de objetos
+        .filter(o -> o instanceof Boolean && (Boolean) o)  // Filtra los valores que son `true`
+        .count();  // C
+        assertEquals(1, cantidad);
     }
 
 

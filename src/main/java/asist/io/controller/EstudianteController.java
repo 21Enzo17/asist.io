@@ -96,11 +96,11 @@ public class EstudianteController {
      * petición fue exitosa o un mensaje de error en caso contrario
      */
     @GetMapping("/lu/{lu}")
-    public ResponseEntity obtenerEstudiantePorLu(@PathVariable String lu) {
+    public ResponseEntity obtenerEstudiantePorLuYCursoId(@PathVariable String lu, @RequestParam String cursoId) {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            EstudianteGetDTO estudianteObtenido = estudianteService.obtenerEstudiantePorLu(lu);
+            EstudianteGetDTO estudianteObtenido = estudianteService.obtenerEstudiantePorLuYCursoId(lu,cursoId );
             response.put("estudiante", estudianteObtenido);
             response.put("success", true);
             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);

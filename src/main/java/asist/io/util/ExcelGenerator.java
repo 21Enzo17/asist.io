@@ -25,6 +25,7 @@ public class ExcelGenerator {
      * @param nombreArchivo Nombre del archivo
      * @return ResponseEntity con el archivo de Excel
      */
+    @SuppressWarnings("null")
     public static ResponseEntity<ByteArrayResource> escribirTablaEnExcel(List<List<Object>> tabla, String nombreArchivo) {
         try{        
             Workbook workbook = new XSSFWorkbook();

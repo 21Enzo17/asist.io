@@ -19,8 +19,12 @@ public class Estudiante {
     private String id;
     @Column(name = "nombre", nullable = false)
     private String nombre;
-    @Column(name = "lu", nullable = false, unique = true)
+    @Column(name = "lu", nullable = false)
     private String lu;
+
+
+    @ManyToOne
+    private Curso curso;
 
     @OneToMany(mappedBy = "estudiante", cascade = CascadeType.REMOVE)
     private List<Asistencia> asistencias;

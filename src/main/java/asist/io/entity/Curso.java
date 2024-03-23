@@ -29,7 +29,7 @@ public class Curso {
     private Usuario usuario;
     
     @OneToMany(mappedBy = "curso", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Inscripcion> inscripciones;
+    private List<Estudiante> estudiantes;
 
 
     @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true, mappedBy = "curso")
