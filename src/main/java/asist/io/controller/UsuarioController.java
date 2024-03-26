@@ -57,13 +57,13 @@ public class UsuarioController {
         Map<String, Object> response = new HashMap<>();
         try {
             usuarioService.guardarUsuario(usuario);
-            response.put("mensaje", "Usuario registrado correctamente");
+            response.put("message", "Usuario registrado correctamente");
             return ResponseEntity.ok().body(response);
         } catch (ModelException e) {
-            response.put("error", e.getMessage());
+            response.put("message", "Error al registrar el usuario: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (Exception e) {
-            response.put("error", "Ups!, ha ocurrido un error: " + e.getMessage());
+            response.put("message", "Ups!, ha ocurrido un error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
@@ -81,10 +81,10 @@ public class UsuarioController {
         Map<String, Object> response = new HashMap<>();
         try{
             usuarioService.eliminarUsuario(correo, contrasena);
-            response.put("success", "Usuario eliminado correctamente");
+            response.put("message", "Usuario eliminado correctamente");
             return ResponseEntity.ok().body(response);
         }catch(ModelException exception){
-            response.put("error", exception.getMessage());
+            response.put("message", "Error al eliminar usuario: " + exception.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
@@ -94,10 +94,10 @@ public class UsuarioController {
         Map<String, Object> response = new HashMap<>();
         try{
             usuarioService.actualizarUsuario(usuario);
-            response.put("success", "Usuario actualizado correctamente");
+            response.put("message", "Usuario actualizado correctamente");
             return ResponseEntity.ok().body(response);
         }catch(ModelException exception){
-            response.put("error", exception.getMessage());
+            response.put("message", "Error al actualizar usuario: " + exception.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
@@ -121,13 +121,13 @@ public class UsuarioController {
         logger.info("Confirmando usuario con token: " + token);
         try {
             usuarioService.validarUsuario(token);
-            response.put("success", "Usuario confirmado correctamente");
+            response.put("message", "Usuario confirmado correctamente");
             return ResponseEntity.ok().body(response);
         } catch (ModelException e) {
-            response.put("error", e.getMessage());
+            response.put("message", "Error al validar el usuario: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (Exception e) {
-            response.put("error", "Ups!, ha ocurrido un error: " + e.getMessage());
+            response.put("message", "Ups!, ha ocurrido un error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
@@ -150,10 +150,10 @@ public class UsuarioController {
         Map<String, Object> response = new HashMap<>();
         try{
             usuarioService.enviarOlvideContrasena(correo);
-            response.put("success", "Se ha enviado un correo para restablecer la contraseña");
+            response.put("message", "Se ha enviado un correo para restablecer la contraseña");
             return ResponseEntity.ok().body(response);
         }catch(ModelException exception){
-            response.put("error", exception.getMessage());
+            response.put("message", "Ups!, ha ocurrido un error: " + exception.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
         
@@ -178,10 +178,10 @@ public class UsuarioController {
 
         try{
             usuarioService.cambiarContrasena(token, contrasena);
-            response.put("success", "Contraseña restablecida correctamente");
+            response.put("message", "Contraseña restablecida correctamente");
             return ResponseEntity.ok().body(response);
         }catch(ModelException exception){
-            response.put("error", exception.getMessage());
+            response.put("message", "Error al cambiar contraseña: " + exception.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
@@ -203,10 +203,10 @@ public class UsuarioController {
         Map<String, Object> response = new HashMap<>();
         try{
             usuarioService.enviarCorreoConfirmacion(correo);
-            response.put("success", "Se ha reenviado el correo de confirmacion");
+            response.put("message", "Se ha reenviado el correo de confirmacion");
             return ResponseEntity.ok().body(response);
         }catch(ModelException exception){
-            response.put("error", exception.getMessage());
+            response.put("message", "Error al reenviar correo de confirmacion: " +  exception.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
@@ -228,10 +228,10 @@ public class UsuarioController {
         Map<String, Object> response = new HashMap<>();
         try{
             usuarioService.cambiarContrasenaLogueado(usuarioCambio);
-            response.put("success", "Contraseña cambiada correctamente");
+            response.put("message", "Contraseña cambiada correctamente");
             return ResponseEntity.ok().body(response);
         }catch(ModelException exception){
-            response.put("error", exception.getMessage());
+            response.put("message", "Errror al cambiar la contraseña: " + exception.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
