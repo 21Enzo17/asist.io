@@ -116,15 +116,25 @@ public class CursoServiceImpl implements ICursoService {
             throw new ModelException("El código de asistencia " + curso.getCodigoAsistencia() + " ya esta en uso");
         }
 
-        if (!usuarioRepository.existsById(curso.getIdUsuario())) {
-            logger.error("Error al actualizar el curso: El usuario con id " + curso.getId() + " no existe");
-            throw new ModelException("El usuario con id " + curso.getId() + " no existe");
+        Curso cursoActualizado = cursoRepository.findById(curso.getId()).get();
+        if(cursoActualizado == null) {
+            logger.error("Error al actualizar el curso: El curso con id " + curso.getId() + " no existe");
+            throw new ModelException("El curso con id " + curso.getId() + " no existe");
         }
 
-        Usuario usuario = usuarioRepository.findById(curso.getIdUsuario()).get();
-        CursoGetDTO cursoActualizado = CursoMapper.toGetDTO(cursoRepository.save(CursoMapper.toEntity(curso, usuario)));
-        logger.info("Curso actualizado con éxito, id: " + cursoActualizado.getId());
-        return cursoActualizado;
+        if(curso.getNombre() != null && !curso.getNombre().isEmpty() && !curso.getNombre().isBlank())
+            cursoActualizado.setNombre(curso.getNombre());
+        if(curso.getDescripcion() != null && !curso.getDescripcion().isEmpty() && !curso.getDescripcion().isBlank() )
+            cursoActualizado.setDescripcion(curso.getDescripcion());
+        if(curso.getCarrera()!=null && !curso.getCarrera().isEmpty() && !curso.getCarrera().isBlank())
+            cursoActualizado.setCarrera(curso.getCarrera());
+        if(curso.getCodigoAsistencia()!=null) cursoActualizado.setCodigoAsistencia(curso.getCodigoAsistencia());
+            cursoActualizado.setCodigoAsistencia(curso.getCodigoAsistencia());
+        
+        CursoGetDTO cursoActualizadoGET = CursoMapper.toGetDTO(cursoRepository.save(cursoActualizado));
+        
+        logger.info("Curso actualizado con exito, id: " + cursoActualizado.getId());
+        return cursoActualizadoGET;
     }
 
     /**
