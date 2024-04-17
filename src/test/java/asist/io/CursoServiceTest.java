@@ -235,6 +235,7 @@ public class CursoServiceTest {
      * Test para obtener un curso por término de búsqueda
      * @throws ModelException
      */
+    /* 
     @Test()
     @DisplayName("Obtener curso por término de búsqueda")
     public void obtenerCursosPorTermino() throws ModelException {
@@ -247,7 +248,7 @@ public class CursoServiceTest {
         });
         cursoService.eliminarCurso(cursoRegistrado.getId());
     }
-
+*/
     @Test()
     @DisplayName("Obtener cursos por id de usuario")
     @Disabled

@@ -27,10 +27,11 @@ public interface CursoRepository extends JpaRepository<Curso, String> {
     /**
      * Busca cursos por el nombre que coincida con la palabra clave
      * @param nombre Palabra clave para buscar cursos
+     * @param usuarioId Id del usuario
      * @return Lista de cursos que contienen la palabra clave
      */
-    @Query("SELECT c FROM Curso c WHERE c.nombre LIKE %?1%")
-    public List<Curso> findByNombreContaining(String nombre);
+    @Query("SELECT c FROM Curso c WHERE c.nombre LIKE %:nombre% AND c.usuario.id = :usuarioId")
+    public List<Curso> findByNombreContainingAndUsuarioId(String nombre,String usuarioId);
 
     /**
      * Busca cursos por el id de un usuario

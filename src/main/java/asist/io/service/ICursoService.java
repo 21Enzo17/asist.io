@@ -69,9 +69,10 @@ public interface ICursoService {
     /**
      * Obtiene los cursos según una palabra clave que coincida con el nombre
      * @param termino Palabra clave para buscar cursos
+     * @param usuarioId Id del usuario
      * @return Lista de cursos que contienen la palabra clave
      */
-    public List<CursoGetDTO> obtenerCursosPorTermino(String termino) throws ModelException;
+    public List<CursoGetDTO> obtenerCursosPorTerminoYUsuario(String termino,String usuarioId) throws ModelException;
 
     /**
      * Encuentra un curso por su código de asistencia

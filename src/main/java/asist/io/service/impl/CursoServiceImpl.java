@@ -247,10 +247,11 @@ public class CursoServiceImpl implements ICursoService {
     /**
      * Obtiene los cursos según una palabra clave que coincida con el nombre
      * @param termino Palabra clave para buscar cursos
+     * @param usuarioId Id del usuario
      * @return Lista de cursos que contienen la palabra clave
      */
     @Override
-    public List<CursoGetDTO> obtenerCursosPorTermino(String termino) throws ModelException {
+    public List<CursoGetDTO> obtenerCursosPorTerminoYUsuario(String termino,String usuarioId) throws ModelException {
         logger.info("Buscando cursos con el término: " + termino);
 
         if (termino == null || termino.isBlank() || termino.isEmpty()) {
@@ -258,7 +259,7 @@ public class CursoServiceImpl implements ICursoService {
             return List.of();
         }
 
-        List<CursoGetDTO> cursosObtenidos = CursoMapper.toGetDTO(cursoRepository.findByNombreContaining(termino));
+        List<CursoGetDTO> cursosObtenidos = CursoMapper.toGetDTO(cursoRepository.findByNombreContainingAndUsuarioId(termino,usuarioId));
         if (cursosObtenidos.isEmpty()) {
             logger.error("Error al buscar los cursos: No se encontraron cursos con el término " + termino);
             throw new ModelException("No se encontraron cursos con el término " + termino);

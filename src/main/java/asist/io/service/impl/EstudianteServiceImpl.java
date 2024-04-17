@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -70,8 +71,12 @@ public class EstudianteServiceImpl implements IEstudianteService {
             logger.error("Error al registrar los estudiantes: El curso con id " + estudiantes.get(0).getCursoId() + " no existe");
             throw new ModelException("El curso con id " + estudiantes.get(0).getCursoId() + " no existe");
         }
-
-        List<EstudianteGetDTO> estudiantesRegistrados = EstudianteMapper.toGetDTO(estudianteRepository.saveAll(EstudianteMapper.toEntity(estudiantes,cursoRepository.findById(estudiantes.get(0).getCursoId()).get())));
+        List<EstudianteGetDTO> estudiantesRegistrados = new ArrayList<>();
+        for(EstudiantePostDTO estudiante : estudiantes){
+            if(!estudianteRepository.existsByLuAndCursoId(estudiante.getLu(), estudiante.getCursoId())){
+                estudiantesRegistrados.add(EstudianteMapper.toGetDTO(estudianteRepository.save(EstudianteMapper.toEntity(estudiante,cursoRepository.findById(estudiante.getCursoId()).get()))));
+            }
+        }
         logger.info("Estudiantes registrados con éxito");
         return estudiantesRegistrados;
     }
