@@ -41,12 +41,13 @@ public interface IEstudianteService {
     public boolean eliminarEstudiantes(List<String> ids) throws ModelException;
 
     /**
-     * Obtiene un estudiante por su lu
+     * Obtiene un estudiante por su lu y curso id
      * @param lu Lu del estudiante a obtener
+     * @param cursoId Id del curso
      * @return Estudiante si existe, null si no existe
      * @throws ModelException Si el lu es nulo o vacío
      */
-    public EstudianteGetDTO obtenerEstudiantePorLu(String lu) throws ModelException;
+    public EstudianteGetDTO obtenerEstudiantePorLuYCursoId(String lu, String cursoId) throws ModelException;
 
     /**
      * Obtiene un estudiante por id
@@ -64,10 +65,21 @@ public interface IEstudianteService {
     public List<EstudianteGetDTO> obtenerEstudiantesPorIdCurso(String id) throws ModelException;
 
     /**
-     * Obtiene un estudiante por su lu
+     * Obtiene un estudiante por su lu y curso Id
      * @param lu Lu del estudiante
+     * @param cursoId Id del curso
      * @return Estudiante Entity 
      * @throws ModelException Si el estudiante no existe
      */
-    public Estudiante obtenerEstudianteEntityPorLu(String lu);
+    public Estudiante obtenerEstudianteEntityPorLuYCursoId(String lu,String cursoId);
+
+    /**
+     * Obtiene un estudiante inscripto a un curso
+     * @param codigoAsistencia Código de asistencia del curso
+     * @param lu Legajo del estudiante
+     * @return Estudiante inscripto al curso
+     * @throws ModelException Si el id del curso o el lu del estudiante es nulo o vacío
+     * @throws ModelException Si el estudiante no está inscripto al curso
+     */
+    public Estudiante obtenerEstudianteEntityPorCodigoAsistenciaYLu(String codigoAsistencia, String lu);
 }

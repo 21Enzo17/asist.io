@@ -26,4 +26,9 @@ public class EstudiantePostDTO implements Serializable {
     @NotBlank(message = "El campo no puede contener solamente espacios vacíos")
     @Size(min = 3, max = 150, message = "La longitud del campo debe ser entre 3 y  150 carácteres")
     private String nombre;
+
+    @NotNull(message = "El campo no puede ser nulo")
+    @NotEmpty(message = "El campo no puede estar vacío")
+    @NotBlank(message = "El campo no puede contener solamente espacios vacíos")
+    private String cursoId;
 }

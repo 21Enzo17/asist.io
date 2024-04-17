@@ -4,13 +4,10 @@ import asist.io.dto.cursoDTO.CursoGetDTO;
 import asist.io.dto.cursoDTO.CursoPostDTO;
 import asist.io.dto.estudianteDTO.EstudianteGetDTO;
 import asist.io.dto.estudianteDTO.EstudiantePostDTO;
-import asist.io.dto.inscripcionDTO.InscripcionGetDTO;
-import asist.io.dto.inscripcionDTO.InscripcionPostDTO;
 import asist.io.dto.usuarioDTO.UsuarioPostDTO;
 import asist.io.exception.ModelException;
 import asist.io.service.ICursoService;
 import asist.io.service.IEstudianteService;
-import asist.io.service.IInscripcionService;
 import asist.io.service.IUsuarioService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,20 +24,27 @@ public class EstudianteServiceTest {
     @Autowired
     private ICursoService cursoService;
     @Autowired
-    private IInscripcionService inscripcionService;
-    @Autowired
     private IUsuarioService usuarioService;
 
     EstudiantePostDTO estudiante;
     CursoPostDTO curso;
-    InscripcionPostDTO inscripcion;
+    CursoGetDTO cursoRegistrado;
     UsuarioPostDTO usuario;
 
     @BeforeEach
     public void setup() {
+        curso = new CursoPostDTO();
+        curso.setCarrera("Test");
+        curso.setDescripcion("Test");
+        curso.setNombre("TestEstudiantes");
+        curso.setIdUsuario("5ee995c0-e978-4bdf-b5bd-a83d36bc1603");
+
+        cursoRegistrado = cursoService.registrarCurso(curso);
+
         estudiante = new EstudiantePostDTO();
         estudiante.setLu("ING123");
         estudiante.setNombre("Juan Perez");
+        estudiante.setCursoId(cursoRegistrado.getId());
     }
 
 
@@ -49,9 +53,9 @@ public class EstudianteServiceTest {
         estudiante = null;
 
         curso = null;
-        inscripcion = null;
     }
 
+    
     /**
      * Test para registrar un estudiante
      */
@@ -98,8 +102,8 @@ public class EstudianteServiceTest {
     public void obtenerEstudiantePorLu() throws ModelException {
         EstudianteGetDTO estudianteRegistrado = estudianteService.registrarEstudiante(estudiante);
 
-        assertNotNull(estudianteService.obtenerEstudiantePorLu(estudiante.getLu()));
-        assertEquals(estudianteRegistrado.getId(), estudianteService.obtenerEstudiantePorLu(estudiante.getLu()).getId());
+        assertNotNull(estudianteService.obtenerEstudiantePorLuYCursoId(estudiante.getLu(),estudiante.getCursoId()));
+        assertEquals(estudianteRegistrado.getId(), estudianteService.obtenerEstudiantePorLuYCursoId(estudiante.getLu(), estudiante.getCursoId()).getId());
 
         estudianteService.eliminarEstudiante(estudianteRegistrado.getId());
     }
@@ -110,9 +114,9 @@ public class EstudianteServiceTest {
     @Test
     @DisplayName("Obtener estudiante por lu - argumento inválido")
     public void obtenerEstudiantePorLuArgumentoInvalido() {
-        assertThrows(ModelException.class, () -> estudianteService.obtenerEstudiantePorLu(null));
-        assertThrows(ModelException.class, () -> estudianteService.obtenerEstudiantePorLu(""));
-        assertThrows(ModelException.class, () -> estudianteService.obtenerEstudiantePorLu("    "));
+        assertThrows(ModelException.class, () -> estudianteService.obtenerEstudiantePorLuYCursoId(null,null));
+        assertThrows(ModelException.class, () -> estudianteService.obtenerEstudiantePorLuYCursoId("",""));
+        assertThrows(ModelException.class, () -> estudianteService.obtenerEstudiantePorLuYCursoId("    ", ""));
     }
 
     /**
@@ -136,20 +140,18 @@ public class EstudianteServiceTest {
         curso.setIdUsuario(usuarioService.buscarUsuarioDto(usuario.getCorreo()).getId());
 
         CursoGetDTO cursoRegistrado = cursoService.registrarCurso(curso);
+        estudiante.setCursoId(cursoRegistrado.getId());
         EstudianteGetDTO estudianteRegistrado = estudianteService.registrarEstudiante(estudiante);
 
-        inscripcion = new InscripcionPostDTO(estudianteRegistrado.getId(), cursoRegistrado.getId());
-        InscripcionGetDTO inscripcionRegistrada = inscripcionService.registrarInscripcion(inscripcion);
 
         List<EstudianteGetDTO> estudiantesObtenidos = estudianteService.obtenerEstudiantesPorIdCurso(cursoRegistrado.getId());
 
         assertNotNull(estudiantesObtenidos);
         assertEquals(estudiantesObtenidos.get(0).getId(), estudianteRegistrado.getId());
 
-        inscripcionService.eliminarInscripcionPorId(inscripcionRegistrada.getId());
         cursoService.eliminarCurso(cursoRegistrado.getId());
         estudianteService.eliminarEstudiante(estudianteRegistrado.getId());
-        usuarioService.eliminarUsuario(usuario.getCorreo(),usuario.getContrasena());
+        usuarioService.eliminarUsuario(usuario.getCorreo(),"1234");
     }
 
     @Test
@@ -158,10 +160,12 @@ public class EstudianteServiceTest {
         EstudiantePostDTO estudiante2 = new EstudiantePostDTO();
         estudiante2.setLu("ING124");
         estudiante2.setNombre("Juan Perez");
+        estudiante2.setCursoId(cursoRegistrado.getId());
 
         EstudiantePostDTO estudiante3 = new EstudiantePostDTO();
         estudiante3.setLu("ING125");
         estudiante3.setNombre("Juan Perez");
+        estudiante3.setCursoId(cursoRegistrado.getId());
 
         List<EstudiantePostDTO> estudiantes = List.of(estudiante, estudiante2, estudiante3);
         List<EstudianteGetDTO> estudiantesRegistrados = estudianteService.registrarEstudiantes(estudiantes);
@@ -180,10 +184,12 @@ public class EstudianteServiceTest {
         EstudiantePostDTO estudiante2 = new EstudiantePostDTO();
         estudiante2.setLu("ING124");
         estudiante2.setNombre("Juan Perez");
+        estudiante2.setCursoId(cursoRegistrado.getId());
 
         EstudiantePostDTO estudiante3 = new EstudiantePostDTO();
         estudiante3.setLu("ING125");
         estudiante3.setNombre("Juan Perez");
+        estudiante3.setCursoId(cursoRegistrado.getId());
 
         EstudianteGetDTO estudianteRegistrado = estudianteService.registrarEstudiante(estudiante);
         EstudianteGetDTO estudianteRegistrado2 = estudianteService.registrarEstudiante(estudiante2);

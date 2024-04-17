@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@SuppressWarnings("null")
 public class CursoServiceImpl implements ICursoService {
 
 
@@ -115,15 +116,25 @@ public class CursoServiceImpl implements ICursoService {
             throw new ModelException("El código de asistencia " + curso.getCodigoAsistencia() + " ya esta en uso");
         }
 
-        if (!usuarioRepository.existsById(curso.getIdUsuario())) {
-            logger.error("Error al actualizar el curso: El usuario con id " + curso.getId() + " no existe");
-            throw new ModelException("El usuario con id " + curso.getId() + " no existe");
+        Curso cursoActualizado = cursoRepository.findById(curso.getId()).get();
+        if(cursoActualizado == null) {
+            logger.error("Error al actualizar el curso: El curso con id " + curso.getId() + " no existe");
+            throw new ModelException("El curso con id " + curso.getId() + " no existe");
         }
 
-        Usuario usuario = usuarioRepository.findById(curso.getIdUsuario()).get();
-        CursoGetDTO cursoActualizado = CursoMapper.toGetDTO(cursoRepository.save(CursoMapper.toEntity(curso, usuario)));
-        logger.info("Curso actualizado con éxito, id: " + cursoActualizado.getId());
-        return cursoActualizado;
+        if(curso.getNombre() != null && !curso.getNombre().isEmpty() && !curso.getNombre().isBlank())
+            cursoActualizado.setNombre(curso.getNombre());
+        if(curso.getDescripcion() != null && !curso.getDescripcion().isEmpty() && !curso.getDescripcion().isBlank() )
+            cursoActualizado.setDescripcion(curso.getDescripcion());
+        if(curso.getCarrera()!=null && !curso.getCarrera().isEmpty() && !curso.getCarrera().isBlank())
+            cursoActualizado.setCarrera(curso.getCarrera());
+        if(curso.getCodigoAsistencia()!=null) cursoActualizado.setCodigoAsistencia(curso.getCodigoAsistencia());
+            cursoActualizado.setCodigoAsistencia(curso.getCodigoAsistencia());
+        
+        CursoGetDTO cursoActualizadoGET = CursoMapper.toGetDTO(cursoRepository.save(cursoActualizado));
+        
+        logger.info("Curso actualizado con exito, id: " + cursoActualizado.getId());
+        return cursoActualizadoGET;
     }
 
     /**
@@ -236,10 +247,11 @@ public class CursoServiceImpl implements ICursoService {
     /**
      * Obtiene los cursos según una palabra clave que coincida con el nombre
      * @param termino Palabra clave para buscar cursos
+     * @param usuarioId Id del usuario
      * @return Lista de cursos que contienen la palabra clave
      */
     @Override
-    public List<CursoGetDTO> obtenerCursosPorTermino(String termino) throws ModelException {
+    public List<CursoGetDTO> obtenerCursosPorTerminoYUsuario(String termino,String usuarioId) throws ModelException {
         logger.info("Buscando cursos con el término: " + termino);
 
         if (termino == null || termino.isBlank() || termino.isEmpty()) {
@@ -247,7 +259,7 @@ public class CursoServiceImpl implements ICursoService {
             return List.of();
         }
 
-        List<CursoGetDTO> cursosObtenidos = CursoMapper.toGetDTO(cursoRepository.findByNombreContaining(termino));
+        List<CursoGetDTO> cursosObtenidos = CursoMapper.toGetDTO(cursoRepository.findByNombreContainingAndUsuarioId(termino,usuarioId));
         if (cursosObtenidos.isEmpty()) {
             logger.error("Error al buscar los cursos: No se encontraron cursos con el término " + termino);
             throw new ModelException("No se encontraron cursos con el término " + termino);

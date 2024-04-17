@@ -34,20 +34,20 @@ public class IAuthServiceTest {
     @BeforeEach
     public void setUp() {
         usuarioRegDto = new UsuarioPostDTO();
-        usuarioRegDto.setCorreo("enzo.meneghini@hotmail.com");
+        usuarioRegDto.setCorreo("fenix.meneghini@hotmail.com");
         usuarioRegDto.setNombre("Enzo Meneghini");
         usuarioRegDto.setContrasena("contrasena.1");
         usuarioService.guardarUsuario(usuarioRegDto);
 
         usuarioLoginDto = new UsuarioLoginDTO();
-        usuarioLoginDto.setCorreo("enzo.meneghini@hotmail.com");
+        usuarioLoginDto.setCorreo("fenix.meneghini@hotmail.com");
         usuarioLoginDto.setContrasena("contrasena.1");
 
     }
 
     @AfterEach
     public void tearDown() {
-        usuarioService.eliminarUsuario(usuarioRegDto.getCorreo(),usuarioRegDto.getContrasena());
+        usuarioService.eliminarUsuario(usuarioRegDto.getCorreo(),"contrasena.1");
         usuarioRegDto = null;
         usuarioLoginDto = null;
     }

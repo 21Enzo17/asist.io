@@ -60,7 +60,6 @@ public class CursoMapper {
         dto.setDescripcion(curso.getDescripcion());
         dto.setCarrera(curso.getCarrera());
         dto.setCodigoAsistencia(curso.getCodigoAsistencia());
-        dto.setIdUsuario(curso.getIdUsuario());
         return dto;
     }
 

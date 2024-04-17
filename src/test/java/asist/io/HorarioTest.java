@@ -56,7 +56,7 @@ public class HorarioTest {
     public void setUp() {
         usuarioPostDTO = new UsuarioPostDTO();
         usuarioPostDTO.setNombre("Usuario de prueba");
-        usuarioPostDTO.setCorreo("enzo.meneghini@hotmail.com");
+        usuarioPostDTO.setCorreo("fenix.meneghini@hotmail.com");
         usuarioPostDTO.setContrasena("contraseña.1");
         usuarioService.guardarUsuario(usuarioPostDTO);
 
@@ -90,7 +90,7 @@ public class HorarioTest {
     @AfterEach
     public void tearDown() {
         
-        usuarioService.eliminarUsuario(usuarioPostDTO.getCorreo(),usuarioPostDTO.getContrasena());
+        usuarioService.eliminarUsuario(usuarioPostDTO.getCorreo(),"contraseña.1");
         usuarioPostDTO = null;
         cursoPostDTO = null;
         cursoGetDTO = null;

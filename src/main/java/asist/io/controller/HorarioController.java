@@ -40,11 +40,10 @@ public class HorarioController {
         try {
             HorarioGetDTO horarioGetDTO  = horarioService.registrarHorario(horarioDTO);
             response.put ("horario", horarioGetDTO);
-            response.put("mensaje", "Horario registrado correctamente");
+            response.put("message", "Horario registrado correctamente");
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
-            response.put("mensaje", "Error al registrar horario");
-            response.put("error", e.getMessage());
+            response.put("message", "Error al registrar el horario: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
@@ -61,11 +60,10 @@ public class HorarioController {
         try {
             HorarioGetDTO horarioGetDTO  = horarioService.actualizarHorario(horarioPatchDTO);
             response.put ("horario", horarioGetDTO);
-            response.put("mensaje", "Horario actualizado correctamente");
+            response.put("message", "Horario actualizado correctamente");
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
-            response.put("mensaje", "Error al actualizar horario");
-            response.put("error", e.getMessage());
+            response.put("message", "Error al actualizar el horario: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
@@ -81,11 +79,10 @@ public class HorarioController {
         Map<String, Object> response = new HashMap<>();
         try {
             horarioService.eliminarHorario(id);
-            response.put("mensaje", "Horario eliminado correctamente");
+            response.put("message", "Horario eliminado correctamente");
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
-            response.put("mensaje", "Error al eliminar horario");
-            response.put("error", e.getMessage());
+            response.put("message", "Error al eliminar el horario: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
@@ -101,11 +98,10 @@ public class HorarioController {
         Map<String, Object> response = new HashMap<>();
         try {
             response.put("horarios", horarioService.obtenerHorariosPorCurso(cursoId));
-            response.put("mensaje", "Horarios obtenidos correctamente");
+            response.put("message", "Horarios obtenidos correctamente");
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
-            response.put("mensaje", "Error al obtener horarios");
-            response.put("error", e.getMessage());
+            response.put("message", "Error al obtener los horarios: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
@@ -121,11 +117,10 @@ public class HorarioController {
         Map<String, Object> response = new HashMap<>();
         try {
             response.put("horario", horarioService.obtenerHorarioPorId(id));
-            response.put("mensaje", "Horario obtenido correctamente");
+            response.put("message", "Horario obtenido correctamente");
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
-            response.put("mensaje", "Error al obtener horario");
-            response.put("error", e.getMessage());
+            response.put("message", "Error al obtener los horarios: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }

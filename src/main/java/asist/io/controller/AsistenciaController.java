@@ -39,11 +39,10 @@ public class AsistenciaController {
         try {
             AsistenciaGetDTO asistenciaGetDTO  = asistenciaService.registrarAsistencia(asistenciaPostDTO);
             response.put ("asistencia", asistenciaGetDTO);
-            response.put("mensaje", "Asistencia registrada correctamente");
+            response.put("message", "Asistencia registrada correctamente");
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
-            response.put("mensaje", "Error al registrar asistencia");
-            response.put("error", e.getMessage());
+             response.put("message", "Error al registrar la asistencia: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
@@ -61,11 +60,10 @@ public class AsistenciaController {
         Map<String, Object> response = new HashMap<>();
         try {
             response.put("asistencias", asistenciaService.obtenerAsistenciaPorCursoYPeriodo(idCurso, fechaInicio, fechaFin));
-            response.put("mensaje", "Asistencias obtenidas correctamente");
+            response.put("message", "Asistencias obtenidas correctamente");
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
-            response.put("mensaje", "Error al obtener asistencias");
-            response.put("error", e.getMessage());
+            response.put("message", "Error al obtener asistencias: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
@@ -77,8 +75,7 @@ public class AsistenciaController {
         try {
             return asistenciaService.generarExcelAsistenciaPorCursoYPeriodo(idCurso, fechaInicio, fechaFin);
         } catch (Exception e) {
-            response.put("mensaje", "Error al obtener asistencias");
-            response.put("error", e.getMessage());
+            response.put("error", "Error al obtener asistencias: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
@@ -99,11 +96,10 @@ public class AsistenciaController {
         Map<String, Object> response = new HashMap<>();
         try {
             response.put("asistencias", asistenciaService.obtenerAsistenciaPorLuCursoYPeriodo(lu, idCurso, fechaInicio, fechaFin));
-            response.put("mensaje", "Asistencias obtenidas correctamente");
+            response.put("message", "Asistencias obtenidas correctamente");
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
-            response.put("mensaje", "Error al obtener asistencias");
-            response.put("error", e.getMessage());
+            response.put("message", "Error al obtener asistencias: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
@@ -123,8 +119,7 @@ public class AsistenciaController {
         try {
             return asistenciaService.generarExcelAsistenciaPorLuCursoYPeriodo(lu, idCurso, fechaInicio, fechaFin);
         } catch (Exception e) {
-            response.put("mensaje", "Error al obtener asistencias");
-            response.put("error", e.getMessage());
+            response.put("message", "Error al obtener asistencias: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
@@ -143,19 +138,12 @@ public class AsistenciaController {
         Map<String, Object> response = new HashMap<>();
         try {
             response.put("asistencia", asistenciaService.obtenerAsistenciaPorFechaLuYHorario(fecha, lu, idHorario));
-            response.put("mensaje", "Asistencia obtenida correctamente");
+            response.put("message", "Asistencia obtenida correctamente");
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
-            response.put("mensaje", "Error al obtener asistencia");
-            response.put("error", e.getMessage());
+            response.put("message", "Error al obtener asistencia: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
-    }
-
-    
-    
-    
-
-    
+    }    
 }

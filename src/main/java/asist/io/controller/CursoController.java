@@ -169,15 +169,16 @@ public class CursoController {
     /**
      * Obtiene una lista de cursos según una palabra clave que coincida con el nombre
      * @param termino Palabra clave para buscar cursos
+     * @param usuarioId Id del usuario
      * @return ResponseEntity con la lista de cursos si se encontraron cursos con la palabra clave proporcionada,
      * de lo contrario la ResponseEntity contendrá un mensaje de error
      */
     @GetMapping("/termino/{termino}")
-    public ResponseEntity obtenerCursosPorTermino(@PathVariable String termino) {
+    public ResponseEntity obtenerCursosPorTermino(@PathVariable String termino,@RequestParam String usuarioId) {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            response.put("cursos", cursoService.obtenerCursosPorTermino(termino));
+            response.put("cursos", cursoService.obtenerCursosPorTerminoYUsuario(termino,usuarioId));
             response.put("success", true);
             return new ResponseEntity(response, HttpStatus.OK);
         }

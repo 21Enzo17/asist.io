@@ -2,7 +2,6 @@ package asist.io.repository;
 
 import asist.io.entity.Estudiante;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,25 +9,33 @@ import java.util.List;
 @Repository
 public interface EstudianteRepository extends JpaRepository<Estudiante, String> {
     /**
-     * Busca un estudiante por su legajo
+     * Busca un estudiante por su legajo en un curso especifico
      * @param lu legajo del estudiante
+     * @param cursoId Id del curso
      * @return estudiante con el legajo especificado
      */
-    @Query("SELECT e FROM Estudiante e WHERE e.lu = ?1")
-    public Estudiante findByLu(String lu);
+    public Estudiante findByLuAndCursoId(String lu, String cursoId);
 
     /**
-     * Verifica si existe un estudiante con el legajo especificado
+     * Verifica si existe un estudiante con el legajo especificado en un curso
      * @param lu legajo del estudiante
-     * @return true si existe un estudiante con el legajo especificado, false si no existe
+     * @param cursoId Id del curso
+     * @return true si existe un estudiante con el legajo especificado en el curso especificado, false si no existe
      */
-    public boolean existsByLu(String lu);
+    public boolean existsByLuAndCursoId(String lu, String cursoId);
 
     /**
      * Obtiene los estudiantes que están inscriptos en un curso
      * @param id Id del curso
      * @return Lista de estudiantes inscriptos en el curso
      */
-    @Query("SELECT e FROM Estudiante e INNER JOIN Inscripcion i ON e.id = i.estudiante.id INNER JOIN Curso c ON i.curso.id = c.id WHERE c.id = ?1")
-    List<Estudiante> obtenerEstudiantesPorIdCurso(String id);
+    List<Estudiante> findByCursoId(String id);
+
+    /**
+     * Obtiene un estudiante inscripto a un curso mediante el codigo de asistencia del curso
+     * @param codigoAsistencia Código de asistencia del curso
+     * @param lu Legajo del estudiante
+     * @return Estudiante inscripto al curso
+     */
+    public Estudiante findByCursoCodigoAsistenciaAndLu(String codigoAsistencia, String lu);
 }
