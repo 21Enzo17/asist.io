@@ -48,9 +48,8 @@ clases y ahorrar tiempo a los docentes.
 
 
 ## Roadmap
-- Crear capa repository y service
-- Crear capa controller
-- Crear capa de seguridad
+
+El roadmap esta cerrado por el momento.
 
 ## Estado
 
