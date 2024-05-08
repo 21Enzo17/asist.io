@@ -30,17 +30,10 @@ public class EstudianteController {
     public ResponseEntity registrarEstudiante(@Valid @RequestBody EstudiantePostDTO estudiante) {
         Map<String, Object> response = new HashMap<>();
 
-        try {
-            EstudianteGetDTO estudianteRegistrado = estudianteService.registrarEstudiante(estudiante);
-            response.put("estudiante", estudianteRegistrado);
-            response.put("success", true);
-            return new ResponseEntity(response, HttpStatus.CREATED);
-        }
-        catch (ModelException e) {
-            response.put("error", e.getMessage());
-            response.put("success", false);
-            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-        }
+        EstudianteGetDTO estudianteRegistrado = estudianteService.registrarEstudiante(estudiante);
+        response.put("estudiante", estudianteRegistrado);
+        response.put("success", true);
+        return new ResponseEntity(response, HttpStatus.CREATED);
     }
 
     /**
@@ -53,17 +46,10 @@ public class EstudianteController {
     public ResponseEntity registrarEstudiantes(@Valid @RequestBody List<EstudiantePostDTO> estudiantes) {
         Map<String, Object> response = new HashMap<>();
 
-        try {
-            List<EstudianteGetDTO> estudiantesRegistrados = estudianteService.registrarEstudiantes(estudiantes);
-            response.put("estudiantes", estudiantesRegistrados);
-            response.put("success", true);
-            return new ResponseEntity(response, HttpStatus.CREATED);
-        }
-        catch (ModelException e) {
-            response.put("error", e.getMessage());
-            response.put("success", false);
-            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-        }
+        List<EstudianteGetDTO> estudiantesRegistrados = estudianteService.registrarEstudiantes(estudiantes);
+        response.put("estudiantes", estudiantesRegistrados);
+        response.put("success", true);
+        return new ResponseEntity(response, HttpStatus.CREATED);
     }
 
     /**
@@ -76,17 +62,10 @@ public class EstudianteController {
     public ResponseEntity obtenerEstudiantePorId(@PathVariable String idEstudiante) {
         Map<String, Object> response = new HashMap<>();
 
-        try {
-            EstudianteGetDTO estudianteObtenido = estudianteService.obtenerEstudiantePorId(idEstudiante);
-            response.put("estudiante", estudianteObtenido);
-            response.put("success", true);
-            return new ResponseEntity(response, HttpStatus.OK);
-        }
-        catch (ModelException e) {
-            response.put("error", e.getMessage());
-            response.put("success", false);
-            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-        }
+        EstudianteGetDTO estudianteObtenido = estudianteService.obtenerEstudiantePorId(idEstudiante);
+        response.put("estudiante", estudianteObtenido);
+        response.put("success", true);
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 
     /**
@@ -99,17 +78,10 @@ public class EstudianteController {
     public ResponseEntity obtenerEstudiantePorLuYCursoId(@PathVariable String lu, @RequestParam String cursoId) {
         Map<String, Object> response = new HashMap<>();
 
-        try {
-            EstudianteGetDTO estudianteObtenido = estudianteService.obtenerEstudiantePorLuYCursoId(lu,cursoId );
-            response.put("estudiante", estudianteObtenido);
-            response.put("success", true);
-            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-        }
-        catch (ModelException e) {
-            response.put("error", e.getMessage());
-            response.put("success", false);
-            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-        }
+        EstudianteGetDTO estudianteObtenido = estudianteService.obtenerEstudiantePorLuYCursoId(lu,cursoId );
+        response.put("estudiante", estudianteObtenido);
+        response.put("success", true);
+        return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -122,17 +94,10 @@ public class EstudianteController {
     public ResponseEntity obtenerEstudiantesPorIdCurso(@PathVariable String id) {
         Map<String, Object> response = new HashMap<>();
 
-        try {
-            List<EstudianteGetDTO> estudiantesObtenidos = estudianteService.obtenerEstudiantesPorIdCurso(id);
-            response.put("estudiantes", estudiantesObtenidos);
-            response.put("success", true);
-            return new ResponseEntity(response, HttpStatus.OK);
-        }
-        catch (ModelException e) {
-            response.put("error", e.getMessage());
-            response.put("success", false);
-            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-        }
+        List<EstudianteGetDTO> estudiantesObtenidos = estudianteService.obtenerEstudiantesPorIdCurso(id);
+        response.put("estudiantes", estudiantesObtenidos);
+        response.put("success", true);
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 
     /**
@@ -145,15 +110,9 @@ public class EstudianteController {
     public ResponseEntity eliminarEstudiantePorId(@PathVariable String id) {
         Map<String, Object> response = new HashMap<>();
 
-        try {
-            boolean eliminado = estudianteService.eliminarEstudiante(id);
-            response.put("success", eliminado);
-            return new ResponseEntity(response, HttpStatus.OK);
-        }
-        catch (ModelException e) {
-            response.put("error", e.getMessage());
-            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-        }
+        boolean eliminado = estudianteService.eliminarEstudiante(id);
+        response.put("success", eliminado);
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 
     /**
@@ -166,14 +125,8 @@ public class EstudianteController {
     public ResponseEntity eliminarEstudiantes(@RequestBody List<String> ids) {
         Map<String, Object> response = new HashMap<>();
 
-        try {
-            boolean eliminado = estudianteService.eliminarEstudiantes(ids);
-            response.put("success", eliminado);
-            return new ResponseEntity(response, HttpStatus.OK);
-        }
-        catch (ModelException e) {
-            response.put("error", e.getMessage());
-            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-        }
+        boolean eliminado = estudianteService.eliminarEstudiantes(ids);
+        response.put("success", eliminado);
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 }
