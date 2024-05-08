@@ -81,7 +81,7 @@ public class EstudianteController {
         EstudianteGetDTO estudianteObtenido = estudianteService.obtenerEstudiantePorLuYCursoId(lu,cursoId );
         response.put("estudiante", estudianteObtenido);
         response.put("success", true);
-        return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 
     /**
