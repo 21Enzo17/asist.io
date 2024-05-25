@@ -42,11 +42,11 @@ public class Horario {
     @Column(name = "dia", nullable = false)
     private DayOfWeek dia;
 
-    @ManyToOne(cascade =  CascadeType.REMOVE)
+    @ManyToOne()
     @JoinColumn(name = "curso_id", nullable = false)
     private Curso curso;
 
-    @OneToMany(mappedBy = "horario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "horario",  orphanRemoval = true)
     private List<Asistencia> asistencias;
 
 }

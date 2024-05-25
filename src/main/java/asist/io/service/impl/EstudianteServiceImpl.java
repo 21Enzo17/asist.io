@@ -72,11 +72,8 @@ public class EstudianteServiceImpl implements IEstudianteService {
             throw new ModelException("El curso con id " + estudiantes.get(0).getCursoId() + " no existe");
         }
         List<EstudianteGetDTO> estudiantesRegistrados = new ArrayList<>();
-        for(EstudiantePostDTO estudiante : estudiantes){
-            if(!estudianteRepository.existsByLuAndCursoId(estudiante.getLu(), estudiante.getCursoId())){
-                estudiantesRegistrados.add(EstudianteMapper.toGetDTO(estudianteRepository.save(EstudianteMapper.toEntity(estudiante,cursoRepository.findById(estudiante.getCursoId()).get()))));
-            }
-        }
+        estudianteRepository.deleteAllByCursoId(estudiantes.get(0).getCursoId());
+        estudiantes.addAll(estudiantes);
         logger.info("Estudiantes registrados con éxito");
         return estudiantesRegistrados;
     }

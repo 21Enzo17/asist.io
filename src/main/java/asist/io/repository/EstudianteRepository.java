@@ -38,4 +38,10 @@ public interface EstudianteRepository extends JpaRepository<Estudiante, String> 
      * @return Estudiante inscripto al curso
      */
     public Estudiante findByCursoCodigoAsistenciaAndLu(String codigoAsistencia, String lu);
+
+    /**
+     * Elimina los estudiantes inscriptos a un curso
+     * @param cursoId Id del curso
+     */
+    public void deleteAllByCursoId(String cursoId);
 }

@@ -26,7 +26,7 @@ public class HorarioMapper {
         horarioDTO.setEntrada(horario.getEntrada());
         horarioDTO.setSalida(horario.getSalida());
         horarioDTO.setHorarioId(horario.getId());
-        horarioDTO.setDia(horario.getDia());
+        horarioDTO.setDayOfWeek(horario.getDia());
         return horarioDTO;
     }
 
