@@ -71,11 +71,18 @@ public class EstudianteServiceImpl implements IEstudianteService {
             logger.error("Error al registrar los estudiantes: El curso con id " + estudiantes.get(0).getCursoId() + " no existe");
             throw new ModelException("El curso con id " + estudiantes.get(0).getCursoId() + " no existe");
         }
-        List<EstudianteGetDTO> estudiantesRegistrados = new ArrayList<>();
-        estudianteRepository.deleteAllByCursoId(estudiantes.get(0).getCursoId());
-        estudiantes.addAll(estudiantes);
+        List<Estudiante> estudiantesYaRegistrados = new ArrayList<>();
+        estudiantesYaRegistrados = estudianteRepository.findByCursoId(estudiantes.get(0).getCursoId());
+        List<EstudiantePostDTO> estudiantesARegistrar = new ArrayList<>();
+        for(EstudiantePostDTO estudiante : estudiantes){
+            boolean existe = estudiantesYaRegistrados.stream().anyMatch(e -> e.getLu().equals(estudiante.getLu()));
+            if(!existe){
+                estudiantesARegistrar.add(estudiante);
+            }
+        }
+        List<Estudiante> estudiantesRegistrados = estudianteRepository.saveAll(EstudianteMapper.toEntity(estudiantesARegistrar,cursoRepository.findById(estudiantes.get(0).getCursoId()).get())); 
         logger.info("Estudiantes registrados con éxito");
-        return estudiantesRegistrados;
+        return EstudianteMapper.toGetDTO(estudiantesRegistrados);
     }
 
     /**
