@@ -44,4 +44,8 @@ public interface EstudianteRepository extends JpaRepository<Estudiante, String> 
      * @param cursoId Id del curso
      */
     public void deleteAllByCursoId(String cursoId);
+
+    public void deleteByLuAndCursoId(String lu, String cursoId);
+    public void deleteAllByLuIn(List<String> lu);
+
 }
