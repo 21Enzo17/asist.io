@@ -9,6 +9,7 @@ import asist.io.repository.CursoRepository;
 import asist.io.repository.EstudianteRepository;
 import asist.io.service.IEstudianteService;
 
+import jakarta.transaction.Transactional;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -62,6 +63,7 @@ public class EstudianteServiceImpl implements IEstudianteService {
      * @return Lista de estudiantes registrados
      * @throws ModelException Si la lista de estudiantes es nula o vacía
      */
+    @Transactional
     public List<EstudianteGetDTO> registrarEstudiantes(List<EstudiantePostDTO> estudiantes) throws ModelException {
         if (estudiantes == null || estudiantes.isEmpty()) {
             logger.error("Error al registrar los estudiantes: La lista de estudiantes no puede ser nula ni vacía");
@@ -71,14 +73,54 @@ public class EstudianteServiceImpl implements IEstudianteService {
             logger.error("Error al registrar los estudiantes: El curso con id " + estudiantes.get(0).getCursoId() + " no existe");
             throw new ModelException("El curso con id " + estudiantes.get(0).getCursoId() + " no existe");
         }
-        List<EstudianteGetDTO> estudiantesRegistrados = new ArrayList<>();
-        for(EstudiantePostDTO estudiante : estudiantes){
-            if(!estudianteRepository.existsByLuAndCursoId(estudiante.getLu(), estudiante.getCursoId())){
-                estudiantesRegistrados.add(EstudianteMapper.toGetDTO(estudianteRepository.save(EstudianteMapper.toEntity(estudiante,cursoRepository.findById(estudiante.getCursoId()).get()))));
+
+        List[] estudiantesFiltrados = filtrarLista(estudiantes);
+        List<EstudiantePostDTO> estudiantesARegistrar = (List<EstudiantePostDTO>) estudiantesFiltrados[0];
+        List<String> estudiantesAEliminar = (List<String>) estudiantesFiltrados[1];
+
+        System.out.println("Estudiantes a registrar: " + estudiantesARegistrar.size());
+        System.out.println("Estudiantes a eliminar: " + estudiantesAEliminar.size());
+
+        if(!estudiantesAEliminar.isEmpty()){
+            estudianteRepository.deleteAllByLuIn(estudiantesAEliminar);
+            logger.info("Estudiantes eliminados con éxito");
+        }
+
+        if (!estudiantesARegistrar.isEmpty()) {
+            estudianteRepository.saveAll(EstudianteMapper.toEntity(estudiantesARegistrar,cursoRepository.findById(estudiantes.get(0).getCursoId()).get()));
+            logger.info("Estudiantes registrados con éxito");
+
+        }
+
+        logger.info("Lista de alumnos actualizada con éxito");
+        List<EstudianteGetDTO> estudiantesRegistradosDTO = EstudianteMapper.toGetDTO(estudianteRepository.findByCursoId(estudiantes.get(0).getCursoId()));
+        return estudiantesRegistradosDTO;
+    }
+
+    /**
+     * Filtra una lista de estudiantes para registrar y eliminar
+     * @param estudiantes Lista de estudiantes a filtrar
+     * @return Lista de estudiantes a registrar y lista de estudiantes a eliminar
+     */
+    private List<?>[] filtrarLista(List<EstudiantePostDTO> estudiantes){
+        List<Estudiante> estudiantesYaRegistrados = estudianteRepository.findByCursoId(estudiantes.get(0).getCursoId());
+        List<EstudiantePostDTO> estudiantesARegistrar = new ArrayList<>();
+        List<String> estudiantesAEliminar = new ArrayList<>();
+        for (Estudiante estudiante : estudiantesYaRegistrados) {
+            boolean yaNoExiste = estudiantes.stream().noneMatch(e -> e.getLu().equals(estudiante.getLu()));
+            if(yaNoExiste){
+                estudiantesAEliminar.add(estudiante.getLu());
             }
         }
-        logger.info("Estudiantes registrados con éxito");
-        return estudiantesRegistrados;
+
+        for (EstudiantePostDTO estudiante : estudiantes) {
+            boolean yaExiste = estudiantesYaRegistrados.stream().anyMatch(e -> e.getLu().equals(estudiante.getLu()));
+            if(!yaExiste){
+                estudiantesARegistrar.add(estudiante);
+            }
+        }
+
+        return new List[]{estudiantesARegistrar,estudiantesAEliminar};
     }
 
     /**
