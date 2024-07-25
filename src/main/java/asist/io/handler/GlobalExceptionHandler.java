@@ -1,5 +1,6 @@
 package asist.io.handler;
 
+import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -18,6 +19,8 @@ import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    private static final Logger logger = Logger.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
         Map<String, Object> response = new HashMap<>();
@@ -67,4 +70,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity(response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity handleException(Exception ex) {
+        logger.error("Fatal error: " + ex.getMessage());
+
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("message", "Internal Server Error. Si es administrador revise los logs.");
+        response.put("status", "500 Internal Server Error");
+        return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
