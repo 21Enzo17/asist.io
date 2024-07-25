@@ -1,6 +1,7 @@
 package asist.io.dto.asistenciaDTO;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -23,5 +24,6 @@ public class AsistenciaPostDTO implements Serializable {
     @NotEmpty(message = "La libreta universitaria no puede estar vacia")
     private String lu;
 
-    private String horarioId; 
+    @NotNull(message = "El horario no puede ser nulo")
+    private LocalDateTime horario;
 }

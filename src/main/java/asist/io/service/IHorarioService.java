@@ -1,6 +1,8 @@
 package asist.io.service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
@@ -81,4 +83,13 @@ public interface IHorarioService {
      * @return Lista de encabezados
      */
     public Map<String, Horario> obtenerEncabezadosYHorariosEntreDosFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin, String cursoId);
+
+    /**
+     * Obtiene un horario según los parámetros
+     * @param codigoAsistencia codigo del curso
+     * @param dia dia de la semana
+     * @param hora hora a verificar
+     * @return true si el horario es valido, false de lo contrario
+     */
+    public HorarioGetDTO obtenerHorario(String codigoAsistencia, DayOfWeek dia, LocalTime hora);
 } 

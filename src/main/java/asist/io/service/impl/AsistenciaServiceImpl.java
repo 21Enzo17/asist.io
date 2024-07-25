@@ -1,13 +1,17 @@
 package asist.io.service.impl;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import asist.io.dto.HorarioDTO.HorarioGetDTO;
+import asist.io.dto.asistenciaDTO.AsistenciaCreateDTO;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -50,16 +54,23 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
     @SuppressWarnings("null")
     @Override
     public AsistenciaGetDTO registrarAsistencia(AsistenciaPostDTO asistenciaPostDTO) {
+        DayOfWeek dia = asistenciaPostDTO.getHorario().getDayOfWeek();
+        LocalTime hora = asistenciaPostDTO.getHorario().toLocalTime();
+        HorarioGetDTO horarioEncontrado =  horarioService.obtenerHorario(asistenciaPostDTO.getCodigoAsistencia(), dia, hora);
 
-        asistenciaPostDTO.setHorarioId(horarioService.obtenerHorarioPorLocalDateTime(asistenciaPostDTO.getCodigoAsistencia(),LocalDateTime.now()).getId());
+        AsistenciaCreateDTO asistenciaCreateDto = new AsistenciaCreateDTO();
+        asistenciaCreateDto.setCodigoAsistencia(asistenciaPostDTO.getCodigoAsistencia());
+        asistenciaCreateDto.setLu(asistenciaPostDTO.getLu());
+        asistenciaCreateDto.setHorarioId(horarioEncontrado.getHorarioId());
+
         validarAsistencia(asistenciaPostDTO);
-        
+
         logger.info("Registrando asistencia para el alumno, " + asistenciaPostDTO.getLu() + " en el curso " + asistenciaPostDTO.getCodigoAsistencia());
 
         return AsistenciaMapper.toDTO(asistenciaRepository.save(
             AsistenciaMapper.toEntity(asistenciaPostDTO,
             cursoService.obtenerCursoEntityPorCodigoAsistencia(asistenciaPostDTO.getCodigoAsistencia()),
-            estudianteService.obtenerEstudianteEntityPorCodigoAsistenciaYLu(asistenciaPostDTO.getCodigoAsistencia(),asistenciaPostDTO.getLu()),horarioService.obtenerHorarioEntityPorId(asistenciaPostDTO.getHorarioId()))));
+            estudianteService.obtenerEstudianteEntityPorCodigoAsistenciaYLu(asistenciaPostDTO.getCodigoAsistencia(),asistenciaPostDTO.getLu()),horarioService.obtenerHorarioEntityPorId(asistenciaCreateDto.getHorarioId()))));
     }
 
 
@@ -178,17 +189,17 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
      * @throws ModelException Si la asistencia es nula, si el curso o el alumno no existen, o si el alumno ya tiene registrada una asistencia para la fecha
      */
     private void validarAsistencia(AsistenciaPostDTO asistenciaPostDTO){
-        if (asistenciaPostDTO == null) throw new ModelException("La asistencia no puede ser nula");
-        cursoService.obtenerCursoPorCodigoAsistencia(asistenciaPostDTO.getCodigoAsistencia());
-        estudianteService.obtenerEstudianteEntityPorCodigoAsistenciaYLu(asistenciaPostDTO.getCodigoAsistencia(), asistenciaPostDTO.getLu());
-        
-        try{
-            obtenerAsistenciaPorFechaLuYHorario(DateFormatter.localDateToString(LocalDate.now()),asistenciaPostDTO.getLu(), asistenciaPostDTO.getHorarioId());
-            logger.error("El alumno con LU " + asistenciaPostDTO.getLu() + " ya tiene registrada una asistencia para la fecha " + DateFormatter.localDateTimeToString(LocalDateTime.now()));
-            throw new ModelException("El alumno con LU " + asistenciaPostDTO.getLu() + " ya tiene registrada una asistencia para la fecha " + DateFormatter.localDateTimeToString(LocalDateTime.now()));
-        }catch(ModelException e){
-            logger.info ("Asistencia validada con exito");
-        }
+//        if (asistenciaPostDTO == null) throw new ModelException("La asistencia no puede ser nula");
+//        cursoService.obtenerCursoPorCodigoAsistencia(asistenciaPostDTO.getCodigoAsistencia());
+//        estudianteService.obtenerEstudianteEntityPorCodigoAsistenciaYLu(asistenciaPostDTO.getCodigoAsistencia(), asistenciaPostDTO.getLu());
+//
+//        try{
+//            obtenerAsistenciaPorFechaLuYHorario(DateFormatter.localDateToString(LocalDate.now()),asistenciaPostDTO.getLu(), asistenciaPostDTO.getHorarioId());
+//            logger.error("El alumno con LU " + asistenciaPostDTO.getLu() + " ya tiene registrada una asistencia para la fecha " + DateFormatter.localDateTimeToString(LocalDateTime.now()));
+//            throw new ModelException("El alumno con LU " + asistenciaPostDTO.getLu() + " ya tiene registrada una asistencia para la fecha " + DateFormatter.localDateTimeToString(LocalDateTime.now()));
+//        }catch(ModelException e){
+//            logger.info ("Asistencia validada con exito");
+//        }
     }
     
 

@@ -1,6 +1,8 @@
 package asist.io.service.impl;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
@@ -177,6 +179,26 @@ public class HorarioServiceImpl implements IHorarioService {
             }
         }
         return horarioPorEncabezado;
+    }
+
+    @Override
+    /**
+     * Obtiene un horario según los parámetros
+     * @param codigoAsistencia codigo del curso
+     * @param dia dia de la semana
+     * @param hora hora a verificar
+     * @return true si el horario es valido, false de lo contrario
+     */
+    public HorarioGetDTO obtenerHorario(String codigoAsistencia, DayOfWeek dia, LocalTime hora) {
+        Horario horario = horarioRepository.findHorarioContainingTime(codigoAsistencia, dia, hora);
+
+        if(horario == null){
+            logger.error("No se encontro un horario para el dia " + dia + " y la hora " + hora);
+            throw new ModelException("No se encontro un horario para el dia " + dia + " y la hora " + hora);
+        }
+
+        logger.info("Horario encontrado para el dia " + dia + " y la hora " + hora + " con exito");
+        return HorarioMapper.toDTO(horario);
     }
 
     /**
