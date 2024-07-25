@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -133,6 +134,7 @@ public class AsistenciaTest {
         asistenciaPostDTO = new AsistenciaPostDTO();
         asistenciaPostDTO.setCodigoAsistencia("151511155");
         asistenciaPostDTO.setLu("123122312312312");
+        asistenciaPostDTO.setHorario(LocalDateTime.now());
 
         // Se comprueba que no se permite registrar una asistencia si el curso no existe
         assertThrows( ModelException.class, () -> target.registrarAsistencia(asistenciaPostDTO));
@@ -147,6 +149,7 @@ public class AsistenciaTest {
     @Test
     @DisplayName("Test de obtener asistencia por curso")
     public void obtenerAsistenciaPorCursoTest(){
+        asistenciaPostDTO.setHorario(LocalDateTime.now());
         target.registrarAsistencia(asistenciaPostDTO);
         asistenciaPostDTO.setLu(estudiante2.getLu());
         target.registrarAsistencia(asistenciaPostDTO);
@@ -164,6 +167,7 @@ public class AsistenciaTest {
     @Test
     @DisplayName("Test de obtener asistencia por estudiante")
     public void obtenerAsistenciaPorEstudianteTest(){
+        asistenciaPostDTO.setHorario(LocalDateTime.now());
         target.registrarAsistencia(asistenciaPostDTO);
         asistenciaPostDTO.setLu(estudiante2.getLu());
         target.registrarAsistencia(asistenciaPostDTO);
