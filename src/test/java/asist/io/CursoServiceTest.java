@@ -5,6 +5,7 @@ import asist.io.dto.cursoDTO.CursoPatchDTO;
 import asist.io.dto.cursoDTO.CursoPostDTO;
 import asist.io.dto.usuarioDTO.UsuarioPostDTO;
 import asist.io.exception.ModelException;
+import asist.io.exception.filters.HttpException;
 import asist.io.mapper.CursoMapper;
 import asist.io.service.ICursoService;
 import asist.io.service.IUsuarioService;
@@ -61,7 +62,7 @@ public class CursoServiceTest {
 
     /**
      * Test para registrar un curso
-     * @throws ModelException
+     * @throws HttpException
      */
     @Test()
     @DisplayName("Registrar curso")
@@ -69,7 +70,7 @@ public class CursoServiceTest {
         CursoGetDTO cursoRegistrado = cursoService.registrarCurso(cursoPostDTO);
         assertNotNull(cursoRegistrado);
 
-        assertThrows(ModelException.class, () -> {
+        assertThrows(HttpException.class, () -> {
             cursoPostDTO = null;
             cursoService.registrarCurso(cursoPostDTO);
         });
@@ -79,31 +80,31 @@ public class CursoServiceTest {
 
     /**
      * Test para eliminar un curso
-     * @throws ModelException
+     * @throws HttpException
      */
     @Test()
     @DisplayName("Eliminar curso")
-    public void eliminarCursoTest() throws ModelException {
+    public void eliminarCursoTest() throws HttpException {
         CursoGetDTO cursoRegistrado = cursoService.registrarCurso(cursoPostDTO);
         boolean result = cursoService.eliminarCurso(cursoRegistrado.getId());
         assertTrue(result);
 
-        assertThrows(ModelException.class, () -> {
+        assertThrows(HttpException.class, () -> {
             cursoService.eliminarCurso("");
         });
 
-        assertThrows(ModelException.class, () -> {
+        assertThrows(HttpException.class, () -> {
             cursoService.eliminarCurso("        ");
         });
     }
 
     /**
      * Test para actualizar un curso
-     * @throws ModelException
+     * @throws HttpException
      */
     @Test()
     @DisplayName("Actualizar curso")
-    public void actualizarCursoTest() throws ModelException {
+    public void actualizarCursoTest() throws HttpException {
         CursoGetDTO cursoRegistrado = cursoService.registrarCurso(cursoPostDTO);
         String nuevoNombre = "Curso de prueba actualizado";
         cursoRegistrado.setNombre(nuevoNombre);
@@ -121,15 +122,15 @@ public class CursoServiceTest {
     @Test
     @DisplayName("Actualizar curso - Argumento inválido")
     public void actualizarCursoArgumentoInvalido() {
-        assertThrows(ModelException.class, () -> {
+        assertThrows(HttpException.class, () -> {
             cursoService.actualizarCurso(null);
         });
 
-        assertThrows(ModelException.class, () -> {
+        assertThrows(HttpException.class, () -> {
             cursoService.actualizarCurso(new CursoPatchDTO());
         });
 
-        assertThrows(ModelException.class, () -> {
+        assertThrows(HttpException.class, () -> {
             cursoPatchDTO.setId("");
             cursoService.actualizarCurso(cursoPatchDTO);
         });
@@ -137,11 +138,11 @@ public class CursoServiceTest {
 
     /**
      * Test para actualizar un curso - Código asistencia
-     * @throws ModelException
+     * @throws HttpException
      */
     @Test
     @DisplayName("Actualizar curso - Código asistencia")
-    public void actualizarCursoCodigoAsistencia() throws ModelException {
+    public void actualizarCursoCodigoAsistencia() throws HttpException {
         cursoPostDTO.setCodigoAsistencia("123ABC");
         CursoGetDTO cursoRegistrado = cursoService.registrarCurso(cursoPostDTO);
 
@@ -154,7 +155,7 @@ public class CursoServiceTest {
             cursoService.actualizarCurso(CursoMapper.toPatchDTO(cursoRegistrado));
         });
 
-        assertThrows(ModelException.class, () -> {
+        assertThrows(HttpException.class, () -> {
             cursoPostDTO.setCodigoAsistencia("124ABC");
             cursoService.registrarCurso(cursoPostDTO);
         });
@@ -164,11 +165,11 @@ public class CursoServiceTest {
 
     /**
      * Test para obtener un curso por id
-     * @throws ModelException
+     * @throws HttpException
      */
     @Test()
     @DisplayName("Obtener curso por id")
-    public void obtenerCursoPorId() throws ModelException {
+    public void obtenerCursoPorId() throws HttpException {
         CursoGetDTO expected = cursoService.registrarCurso(cursoPostDTO);
         CursoGetDTO result = cursoService.obtenerCursoPorId(expected.getId());
 
@@ -184,26 +185,26 @@ public class CursoServiceTest {
     @Test()
     @DisplayName("Obtener curso por código de asistencia - Argumento inválido")
     public void obtenerCursoPorCodigoAsistenciaArgumentoInvalido() {
-        assertThrows(ModelException.class, () -> {
+        assertThrows(HttpException.class, () -> {
             cursoService.obtenerCursoPorCodigoAsistencia("");
         });
 
-        assertThrows(ModelException.class, () -> {
+        assertThrows(HttpException.class, () -> {
             cursoService.obtenerCursoPorCodigoAsistencia(null);
         });
 
-        assertThrows(ModelException.class, () -> {
+        assertThrows(HttpException.class, () -> {
             cursoService.obtenerCursoPorCodigoAsistencia("    ");
         });
     }
 
     /**
      * Test para obtener un curso por código de asistencia
-     * @throws ModelException
+     * @throws HttpException
      */
     @Test()
     @DisplayName("Obtener curso por código de asistencia - Argumento válido")
-    public void obtenerCursoPorCodigoAsistenciaArgumentoValido() throws ModelException {
+    public void obtenerCursoPorCodigoAsistenciaArgumentoValido() throws HttpException {
         cursoPostDTO.setCodigoAsistencia("123ABC");
         CursoGetDTO expected = cursoService.registrarCurso(cursoPostDTO);
         CursoGetDTO result = cursoService.obtenerCursoPorCodigoAsistencia(expected.getCodigoAsistencia());
@@ -216,14 +217,14 @@ public class CursoServiceTest {
 
     /**
      * Test para comparar la unicidad de código de asistencia
-     * @throws ModelException
+     * @throws HttpException
      */
     @Test()
     @DisplayName("Comprobar unicidad de código de asistencia")
-    public void comprobarUnicidadCodigoAsistencia() throws ModelException {
+    public void comprobarUnicidadCodigoAsistencia() throws HttpException {
         cursoPostDTO.setCodigoAsistencia("123ABC");
         CursoGetDTO cursoRegistrado = cursoService.registrarCurso(cursoPostDTO);
-        assertThrows(ModelException.class, () -> {
+        assertThrows(HttpException.class, () -> {
             cursoService.registrarCurso(cursoPostDTO);
         });
 
@@ -233,7 +234,7 @@ public class CursoServiceTest {
 
     /**
      * Test para obtener un curso por término de búsqueda
-     * @throws ModelException
+     * @throws HttpException
      */
     /* 
     @Test()
@@ -262,7 +263,7 @@ public class CursoServiceTest {
         String codigo = cursoService.generarCodigoAsistencia();
         assertNotNull(codigo);
         assertEquals(6, codigo.length());
-        assertThrows(ModelException.class, () -> {
+        assertThrows(HttpException.class, () -> {
             cursoService.obtenerCursoPorCodigoAsistencia(codigo);
         });
     }

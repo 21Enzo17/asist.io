@@ -32,21 +32,11 @@ public class CursoController {
     public ResponseEntity registrarCurso(@Valid @RequestBody CursoPostDTO curso) {
         Map<String, Object> response = new HashMap<>();
 
-        try {
-            CursoGetDTO cursoRegistrado = cursoService.registrarCurso(curso);
-            response.put("curso", cursoRegistrado);
-            response.put("success", true);
-            return new ResponseEntity(response, HttpStatus.CREATED);
-        }
-        catch (ModelException e) {
-            response.put("error", e.getMessage());
-            response.put("success", false);
-            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-        }
-        catch (DataIntegrityViolationException e) {
-            response.put("error", "Body can't be null");
-            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-        }
+        CursoGetDTO cursoRegistrado = cursoService.registrarCurso(curso);
+        response.put("curso", cursoRegistrado);
+        response.put("success", true);
+        return new ResponseEntity(response, HttpStatus.CREATED);
+
     }
 
     /**
@@ -58,16 +48,9 @@ public class CursoController {
     public ResponseEntity eliminarCurso(@PathVariable String id) {
         Map<String, Object> response = new HashMap<>();
 
-        try {
-            boolean eliminado = cursoService.eliminarCurso(id);
-            response.put("success", eliminado);
-            return new ResponseEntity(response, HttpStatus.OK);
-        }
-        catch (ModelException e) {
-            response.put("error", e.getMessage());
-            response.put("success", false);
-            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-        }
+        boolean eliminado = cursoService.eliminarCurso(id);
+        response.put("success", eliminado);
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 
     /**
@@ -80,21 +63,10 @@ public class CursoController {
     public ResponseEntity actualizarCurso(@Valid @RequestBody CursoPatchDTO curso) {
         Map<String, Object> response = new HashMap<>();
 
-        try {
-            CursoGetDTO cursoActualizado = cursoService.actualizarCurso(curso);
-            response.put("curso", cursoActualizado);
-            response.put("success", true);
-            return new ResponseEntity(response, HttpStatus.OK);
-        }
-        catch (ModelException e) {
-            response.put("error", e.getMessage());
-            response.put("success", false);
-            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-        }
-        catch (DataIntegrityViolationException e) {
-            response.put("error", "Body can't be null");
-            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-        }
+        CursoGetDTO cursoActualizado = cursoService.actualizarCurso(curso);
+        response.put("curso", cursoActualizado);
+        response.put("success", true);
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 
     /**
@@ -107,17 +79,11 @@ public class CursoController {
     public ResponseEntity obtenerCursoPorId(@PathVariable String id) {
         Map<String, Object> response = new HashMap<>();
 
-        try {
-            CursoGetDTO curso = cursoService.obtenerCursoPorId(id);
-            response.put("curso", curso);
-            response.put("success", true);
-            return new ResponseEntity(response, HttpStatus.OK);
-        }
-        catch (ModelException e) {
-            response.put("error", e.getMessage());
-            response.put("success", false);
-            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-        }
+        CursoGetDTO curso = cursoService.obtenerCursoPorId(id);
+        response.put("curso", curso);
+        response.put("success", true);
+        return new ResponseEntity(response, HttpStatus.OK);
+
     }
 
     /**
@@ -130,17 +96,10 @@ public class CursoController {
     public ResponseEntity obtenerCursoPorCodigoAsistencia(@PathVariable String codigoAsistencia) {
         Map<String, Object> response = new HashMap<>();
 
-        try {
-            CursoGetDTO curso = cursoService.obtenerCursoPorCodigoAsistencia(codigoAsistencia);
-            response.put("curso", curso);
-            response.put("success", true);
-            return new ResponseEntity(response, HttpStatus.OK);
-        }
-        catch (ModelException e) {
-            response.put("error", e.getMessage());
-            response.put("success", false);
-            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-        }
+        CursoGetDTO curso = cursoService.obtenerCursoPorCodigoAsistencia(codigoAsistencia);
+        response.put("curso", curso);
+        response.put("success", true);
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 
     /**
@@ -153,17 +112,10 @@ public class CursoController {
     public ResponseEntity obtenerCursosPorIdUsuario(@PathVariable String idUsuario) {
         Map<String, Object> response = new HashMap<>();
 
-        try {
-            List<CursoGetDTO> curso = cursoService.obtenerCursosPorIdUsuario(idUsuario);
-            response.put("cursos", curso);
-            response.put("success", true);
-            return new ResponseEntity(response, HttpStatus.OK);
-        }
-        catch (ModelException e) {
-            response.put("error", e.getMessage());
-            response.put("success", false);
-            return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
-        }
+        List<CursoGetDTO> curso = cursoService.obtenerCursosPorIdUsuario(idUsuario);
+        response.put("cursos", curso);
+        response.put("success", true);
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 
     /**
@@ -177,16 +129,9 @@ public class CursoController {
     public ResponseEntity obtenerCursosPorTermino(@PathVariable String termino,@RequestParam String usuarioId) {
         Map<String, Object> response = new HashMap<>();
 
-        try {
-            response.put("cursos", cursoService.obtenerCursosPorTerminoYUsuario(termino,usuarioId));
-            response.put("success", true);
-            return new ResponseEntity(response, HttpStatus.OK);
-        }
-        catch (ModelException e) {
-            response.put("error", e.getMessage());
-            response.put("success", false);
-            return new ResponseEntity(response, HttpStatus.NOT_FOUND);
-        }
+        response.put("cursos", cursoService.obtenerCursosPorTerminoYUsuario(termino,usuarioId));
+        response.put("success", true);
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 
     /**
@@ -198,15 +143,8 @@ public class CursoController {
     public ResponseEntity generarCodigoAsistencia() {
         Map<String, Object> response = new HashMap<>();
 
-        try {
-            response.put("codigoAsistencia", cursoService.generarCodigoAsistencia());
-            response.put("success", true);
-            return new ResponseEntity(response, HttpStatus.OK);
-        }
-        catch (ModelException e) {
-            response.put("error", e.getMessage());
-            response.put("success", false);
-            return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        response.put("codigoAsistencia", cursoService.generarCodigoAsistencia());
+        response.put("success", true);
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 }
