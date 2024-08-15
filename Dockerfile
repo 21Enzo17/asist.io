@@ -1,5 +1,12 @@
 FROM openjdk:17-jdk-slim
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} app_asistio.jar
-EXPOSE 8080
-ENTRYPOINT [ "java", "-jar", "app_asistio.jar" ]
+WORKDIR /app
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
+COPY src src
+RUN chmod +x ./mvnw
+RUN ./mvnw package -DskipTests
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+COPY --from=0 /app/target/*.jar app.jar
+CMD ["java", "-jar", "app.jar"]
