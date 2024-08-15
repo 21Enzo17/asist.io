@@ -15,7 +15,7 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("https://66be85a21f58235f9ad6f703--grand-panda-d208e4.netlify.app").allowedMethods("*").allowedHeaders("*");
+                registry.addMapping("/**").allowedOrigins("**").allowedMethods("*").allowedHeaders("*");
             }
         };
     }
