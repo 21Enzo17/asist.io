@@ -1,4 +1,5 @@
 FROM openjdk:17-jdk-slim
+RUN apt-get update && apt-get install -y libfreetype6
 WORKDIR /app
 COPY mvnw .
 COPY .mvn .mvn
