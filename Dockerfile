@@ -1,5 +1,9 @@
 FROM openjdk:17-jdk-slim
-RUN apt-get update && apt-get install -y libfreetype6
+RUN apt-get update && apt-get install -y \
+    libfreetype6 \
+    libxrender1 \
+    libxext6 \
+    && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY mvnw .
 COPY .mvn .mvn
