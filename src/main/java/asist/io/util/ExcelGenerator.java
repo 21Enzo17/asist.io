@@ -37,19 +37,19 @@ public class ExcelGenerator {
             CellStyle crossStyle = crearEstiloCruz(workbook);
             CellStyle cellStyle = crearEstiloCelda(workbook);
 
-
+            logger.info("aca1");
             crearHeader(sheet, cellStyle, nombreArchivo);
             
-
+            logger.info("aca2");
             int rowNum = 1;
             for (List<Object> rowData : tabla) {
                 crearFila(sheet, rowData, rowNum++, cellStyle, checkStyle, crossStyle);
             }
-
+            logger.info("aca3");
             ajustarAnchoColumnas(sheet, tabla.get(0).size());
-
+            logger.info("aca4");
             ByteArrayOutputStream outputStream = woorkBookAByteArrayOutputStream(workbook);
-
+            logger.info("aca5");
             ByteArrayResource resource = new ByteArrayResource(outputStream.toByteArray());
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + ".xlsx\"");
