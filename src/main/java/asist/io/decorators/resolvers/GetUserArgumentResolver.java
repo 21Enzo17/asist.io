@@ -30,7 +30,6 @@ public class GetUserArgumentResolver implements HandlerMethodArgumentResolver {
                                   NativeWebRequest webRequest,
                                   WebDataBinderFactory binderFactory) throws UnauthorizedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("authentication = " + authentication);
         if (authentication == null) {
             throw new UnauthorizedException("El JWT no contiene información de autenticación");
         }
