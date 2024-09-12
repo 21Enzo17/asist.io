@@ -231,17 +231,9 @@ public class CursoServiceImpl implements ICursoService {
             throw new NotFoundException("El usuario con id " + id + " no existe");
         }
 
-        if (cursoRepository.findByUsuarioId(id).isEmpty()) {
-            logger.error("Error al buscar los cursos: El usuario con id " + id + " no tiene cursos registrados");
-            throw new NotFoundException("El usuario con id " + id + " no tiene cursos registrados");
-        }
 
         List<CursoGetDTO> cursosEncontrados = CursoMapper.toGetDTO(cursoRepository.findByUsuarioId(id));
 
-        if (cursosEncontrados.isEmpty()) {
-            logger.error("Error al buscar los cursos: El usuario con id " + id + " no tiene cursos registrados");
-            throw new NotFoundException("El usuario con id " + id + " no tiene cursos registrados");
-        }
 
         logger.info("Cursos encontrados con éxito para el usuario con id: " + id);
         return cursosEncontrados;
