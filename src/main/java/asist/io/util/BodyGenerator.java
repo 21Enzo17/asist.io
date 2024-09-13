@@ -1,12 +1,14 @@
 package asist.io.util;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class BodyGenerator {
-
-    private static final String VALIDACION = Constantes.SITIO_SETEADO + "/auth/verify-email/";
-    private static final String RESET_PASSWORD = Constantes.SITIO_SETEADO + "/auth/reset-password/";
+    @Value("${cors.allowed-origins}")
+    public static String SITIO_SETEADO;
+    private static final String VALIDACION = SITIO_SETEADO + "/auth/verify-email/";
+    private static final String RESET_PASSWORD = SITIO_SETEADO + "/auth/reset-password/";
 
     
     /**
