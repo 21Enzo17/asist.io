@@ -1,5 +1,7 @@
 package asist.io.util;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import java.time.DayOfWeek;
 import java.util.HashMap;
 import java.util.Map;
@@ -7,7 +9,8 @@ import java.util.Map;
 public class Constantes {
     public static final String CONTRASENA_PATTERN = "(?=.*[a-zA-Z])(?=.*[@#$%^&+=.])(?=\\S+$).{5,}$";
     public static final String CORREO_SETEADO = "poo2023correo@gmail.com";
-    public static final String SITIO_SETEADO = "http://localhost:4200";
+    @Value("${cors.allowed-origins}")
+    public static final String SITIO_SETEADO = "";
 
     public static final Map<String, DayOfWeek> DIAS_DE_LA_SEMANA = new HashMap<>();
     static {
