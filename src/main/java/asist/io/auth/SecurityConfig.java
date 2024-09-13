@@ -141,6 +141,7 @@ public class SecurityConfig  {
                 auth.requestMatchers("/api/v1/usuario/reenviar-correo-confirmacion").permitAll();
                 auth.requestMatchers("/api/v1/asistencias/registrar").permitAll();
                 auth.requestMatchers("/api/v1/cursos/codigo-asistencia/**").permitAll();
+                auth.requestMatchers("/api/v1/horarios/obtenerHorarios/**").permitAll();
                 auth.anyRequest().authenticated();
             })
             .sessionManagement(session ->{
