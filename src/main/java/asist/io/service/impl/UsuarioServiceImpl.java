@@ -107,6 +107,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
     @Override
     public Usuario buscarUsuario(String correo) {
         Usuario usuario = usuarioRepository.findByCorreo(correo);
+        logger.info ("Usuario: " + usuario.getCorreo());
         if(usuario == null){
             throw new ModelException("No existe un usuario con este correo");
         }

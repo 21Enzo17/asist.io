@@ -9,6 +9,7 @@ import asist.io.exception.ModelException;
 import asist.io.exception.filters.BadRequestException;
 import asist.io.exception.filters.HttpException;
 import asist.io.exception.filters.NotFoundException;
+import asist.io.exception.filters.UnauthorizedException;
 import asist.io.mapper.CursoMapper;
 import asist.io.repository.CursoRepository;
 import asist.io.repository.UsuarioRepository;
@@ -326,6 +327,28 @@ public class CursoServiceImpl implements ICursoService {
 
         return codigo;
     }
+    
+    
+    /**
+     * Determina si un usuario es propietario de un curso
+     * @param idCurso Id del curso
+     * @param idUsuario Id del usuario
+     */
+    @Override
+    public void esPropietario(String idCurso, String idUsuario){
+        if (!obtenerPropietario(idCurso).equals(idUsuario)){
+            throw new UnauthorizedException("No tienes permisos para actualizar este curso");
+        }
+    }
+
+    /**
+     * Obtiene el propietario de un curso
+     * @param idCurso
+     * @return
+     */
+    public  String obtenerPropietario(String idCurso){
+        return obtenerCursoEntityPorId(idCurso).getUsuario().getId();
+    }
 
     /**
      * Genera un código aleatorio
@@ -343,5 +366,5 @@ public class CursoServiceImpl implements ICursoService {
 
     }
 
-   
+    
 }

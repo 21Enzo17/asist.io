@@ -81,4 +81,12 @@ public interface IHorarioService {
      * @return Lista de encabezados
      */
     public Map<String, Horario> obtenerEncabezadosYHorariosEntreDosFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin, String cursoId);
+
+
+    /**
+     * Obtiene el id del curso al que pertenece un horario
+     * @param horarioId
+     * @return id del curso
+     */
+    public String obtenerCursoIdPorHorarioId(String horarioId);
 } 

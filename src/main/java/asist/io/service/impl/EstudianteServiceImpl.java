@@ -291,5 +291,17 @@ public class EstudianteServiceImpl implements IEstudianteService {
         return estudiante;
     }
 
+    /**
+     * Obtiene un estudiante de la base de datos
+     */
+    @Override
+    public String obtenerCursoIdPorEstudianteId(String id){
+        Estudiante estudiante = estudianteRepository.findById(id).get();
+        if (estudiante == null) {
+            logger.error("No se encontro el estudiante");
+            throw new BadRequestException("No se encontro el estudiante");
+        }
+        return estudiante.getCurso().getId();
+    }
 
 }

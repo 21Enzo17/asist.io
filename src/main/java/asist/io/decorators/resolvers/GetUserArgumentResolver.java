@@ -35,6 +35,7 @@ public class GetUserArgumentResolver implements HandlerMethodArgumentResolver {
         }
 
         String userEmail = (String) authentication.getPrincipal();
+        System.out.println("User email: " + userEmail);
         UsuarioGetDTO usuarioGetDTO = usuarioService.buscarUsuarioDto(userEmail);
 
         return usuarioGetDTO;

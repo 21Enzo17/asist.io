@@ -83,4 +83,12 @@ public interface IEstudianteService {
      * @throws ModelException Si el estudiante no está inscripto al curso
      */
     public Estudiante obtenerEstudianteEntityPorCodigoAsistenciaYLu(String codigoAsistencia, String lu);
+
+    /**
+     * Obtiene el curso al que pertence un estudiante
+     * @param id Id del estudiante
+     * @return Id curso al que pertenece el estudiante
+     */
+    public String obtenerCursoIdPorEstudianteId(String id);
+
 }
