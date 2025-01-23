@@ -1,8 +1,11 @@
 package asist.io.controller;
 
+import asist.io.decorators.GetUser;
 import asist.io.dto.estudianteDTO.EstudianteGetDTO;
 import asist.io.dto.estudianteDTO.EstudiantePostDTO;
+import asist.io.dto.usuarioDTO.UsuarioGetDTO;
 import asist.io.exception.ModelException;
+import asist.io.service.ICursoService;
 import asist.io.service.IEstudianteService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,8 @@ import java.util.Map;
 public class EstudianteController {
     @Autowired
     private IEstudianteService estudianteService;
+    @Autowired
+    private ICursoService cursoService;
 
     /**
      * Endpoint que registra un estudiante en la base de datos
@@ -27,8 +32,10 @@ public class EstudianteController {
      * la petición fue exitosa o un mensaje de error en caso contrario
      */
     @PostMapping()
-    public ResponseEntity registrarEstudiante(@Valid @RequestBody EstudiantePostDTO estudiante) {
+    public ResponseEntity registrarEstudiante(@Valid @RequestBody EstudiantePostDTO estudiante, @GetUser UsuarioGetDTO user) {
         Map<String, Object> response = new HashMap<>();
+
+        cursoService.esPropietario(estudiante.getCursoId(), user.getId());
 
         EstudianteGetDTO estudianteRegistrado = estudianteService.registrarEstudiante(estudiante);
         response.put("estudiante", estudianteRegistrado);
@@ -43,8 +50,10 @@ public class EstudianteController {
      * petición fue exitosa o un mensaje de error en caso contrario
      */
     @PostMapping("/lista")
-    public ResponseEntity registrarEstudiantes(@Valid @RequestBody List<EstudiantePostDTO> estudiantes) {
+    public ResponseEntity registrarEstudiantes(@Valid @RequestBody List<EstudiantePostDTO> estudiantes, @GetUser UsuarioGetDTO user) {
         Map<String, Object> response = new HashMap<>();
+
+        cursoService.esPropietario(estudiantes.get(0).getCursoId(), user.getId());
 
         List<EstudianteGetDTO> estudiantesRegistrados = estudianteService.registrarEstudiantes(estudiantes);
         response.put("estudiantes", estudiantesRegistrados);
@@ -107,8 +116,10 @@ public class EstudianteController {
      * petición fue exitosa o un mensaje de error en caso contrario
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity eliminarEstudiantePorId(@PathVariable String id) {
+    public ResponseEntity eliminarEstudiantePorId(@PathVariable String id, @GetUser UsuarioGetDTO user) {
         Map<String, Object> response = new HashMap<>();
+
+        cursoService.esPropietario(estudianteService.obtenerCursoIdPorEstudianteId(id), user.getId());
 
         boolean eliminado = estudianteService.eliminarEstudiante(id);
         response.put("success", eliminado);
@@ -122,8 +133,11 @@ public class EstudianteController {
      * petición fue exitosa o un mensaje de error en caso contrario
      */
     @DeleteMapping()
-    public ResponseEntity eliminarEstudiantes(@RequestBody List<String> ids) {
+    public ResponseEntity eliminarEstudiantes(@RequestBody List<String> ids, @GetUser UsuarioGetDTO user) {
         Map<String, Object> response = new HashMap<>();
+
+        cursoService.esPropietario(estudianteService.obtenerCursoIdPorEstudianteId(ids.get(0)) ,user.getId());
+
 
         boolean eliminado = estudianteService.eliminarEstudiantes(ids);
         response.put("success", eliminado);

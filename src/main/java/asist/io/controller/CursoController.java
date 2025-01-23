@@ -1,8 +1,10 @@
 package asist.io.controller;
 
+import asist.io.decorators.GetUser;
 import asist.io.dto.cursoDTO.CursoGetDTO;
 import asist.io.dto.cursoDTO.CursoPatchDTO;
 import asist.io.dto.cursoDTO.CursoPostDTO;
+import asist.io.dto.usuarioDTO.UsuarioGetDTO;
 import asist.io.exception.ModelException;
 import asist.io.service.ICursoService;
 import jakarta.validation.Valid;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -45,8 +48,10 @@ public class CursoController {
      * @return ResponseEntity que indica si la operación fue exitosa o no
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity eliminarCurso(@PathVariable String id) {
+    public ResponseEntity eliminarCurso(@PathVariable String id, @GetUser UsuarioGetDTO user) {
         Map<String, Object> response = new HashMap<>();
+
+        cursoService.esPropietario(id, user.getId());
 
         boolean eliminado = cursoService.eliminarCurso(id);
         response.put("success", eliminado);
@@ -60,8 +65,11 @@ public class CursoController {
      * de lo contrario la ResponseEntity contendrá un mensaje de error
      */
     @PatchMapping()
-    public ResponseEntity actualizarCurso(@Valid @RequestBody CursoPatchDTO curso) {
+    //@PreAuthorize("@cursoService.esPropietario(#curso.getId(), #user.getId())")
+    public ResponseEntity actualizarCurso(@Valid @RequestBody CursoPatchDTO curso, @GetUser UsuarioGetDTO user) {
         Map<String, Object> response = new HashMap<>();
+
+        cursoService.esPropietario(curso.getId(), user.getId());
 
         CursoGetDTO cursoActualizado = cursoService.actualizarCurso(curso);
         response.put("curso", cursoActualizado);
@@ -76,9 +84,10 @@ public class CursoController {
      * de lo contrario la ResponseEntity contendrá un mensaje de error
      */
     @GetMapping("/id/{id}")
+    
     public ResponseEntity obtenerCursoPorId(@PathVariable String id) {
         Map<String, Object> response = new HashMap<>();
-
+        
         CursoGetDTO curso = cursoService.obtenerCursoPorId(id);
         response.put("curso", curso);
         response.put("success", true);
@@ -142,7 +151,6 @@ public class CursoController {
     @GetMapping("/codigo-asistencia")
     public ResponseEntity generarCodigoAsistencia() {
         Map<String, Object> response = new HashMap<>();
-
         response.put("codigoAsistencia", cursoService.generarCodigoAsistencia());
         response.put("success", true);
         return new ResponseEntity(response, HttpStatus.OK);

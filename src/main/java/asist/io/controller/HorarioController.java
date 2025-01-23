@@ -15,9 +15,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import asist.io.decorators.GetUser;
 import asist.io.dto.HorarioDTO.HorarioGetDTO;
 import asist.io.dto.HorarioDTO.HorarioPatchDTO;
 import asist.io.dto.HorarioDTO.HorarioPostDTO;
+import asist.io.dto.usuarioDTO.UsuarioGetDTO;
+import asist.io.service.ICursoService;
 import asist.io.service.IHorarioService;
 import jakarta.validation.Valid;
 
@@ -27,6 +30,8 @@ public class HorarioController {
 
     @Autowired
     private IHorarioService horarioService;
+    @Autowired
+    private ICursoService cursoService;
 
     /**
      * Maneja las solicitudes de registro de horarios de los usuarios.
@@ -35,8 +40,11 @@ public class HorarioController {
      * de lo contrario la ResponseEntity contendrá un mensaje de error.
      */
     @PostMapping("/registrar")
-    public ResponseEntity<?> registrarHorario(@RequestBody @Valid HorarioPostDTO horarioDTO){
+    public ResponseEntity<?> registrarHorario(@RequestBody @Valid HorarioPostDTO horarioDTO, @GetUser UsuarioGetDTO user){
         Map<String, Object> response = new HashMap<>();
+
+        cursoService.esPropietario(horarioDTO.getCursoId(), user.getId());
+
         try {
             HorarioGetDTO horarioGetDTO  = horarioService.registrarHorario(horarioDTO);
             response.put ("horario", horarioGetDTO);
@@ -55,8 +63,11 @@ public class HorarioController {
      * de lo contrario la ResponseEntity contendrá un mensaje de error.
      */
     @PatchMapping("/actualizar")
-    public ResponseEntity<?> actualizarHorario(@RequestBody @Valid HorarioPatchDTO horarioPatchDTO){
+    public ResponseEntity<?> actualizarHorario(@RequestBody @Valid HorarioPatchDTO horarioPatchDTO, @GetUser UsuarioGetDTO user){
         Map<String, Object> response = new HashMap<>();
+
+        cursoService.esPropietario(horarioService.obtenerCursoIdPorHorarioId(horarioPatchDTO.getHorarioId()), user.getId());
+
         try {
             HorarioGetDTO horarioGetDTO  = horarioService.actualizarHorario(horarioPatchDTO);
             response.put ("horario", horarioGetDTO);
@@ -75,8 +86,11 @@ public class HorarioController {
      * de lo contrario la ResponseEntity contendrá un mensaje de error.
      */
     @DeleteMapping("/eliminar/{id}")
-    public ResponseEntity<?> eliminarHorario(@PathVariable String id){
+    public ResponseEntity<?> eliminarHorario(@PathVariable String id, @GetUser UsuarioGetDTO user){
         Map<String, Object> response = new HashMap<>();
+
+        cursoService.esPropietario(horarioService.obtenerCursoIdPorHorarioId(id), user.getId());
+
         try {
             horarioService.eliminarHorario(id);
             response.put("message", "Horario eliminado correctamente");

@@ -99,4 +99,12 @@ public interface ICursoService {
      */
     public String generarCodigoAsistencia() throws HttpException;
 
+
+    /**
+     * Determina si un usuario es propietario de un curso
+     * @param idCurso Id del curso
+     * @param idUsuario Id del usuario
+     * @TODO: En este metodo quizas estaria bueno analizar si un usuario tiene permisos en el curso, agregando colaboradores.
+     */
+    public void esPropietario(String idCurso, String idUsuario);
 }

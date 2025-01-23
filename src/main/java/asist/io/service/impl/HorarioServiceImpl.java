@@ -16,6 +16,7 @@ import asist.io.dto.HorarioDTO.HorarioPatchDTO;
 import asist.io.dto.HorarioDTO.HorarioPostDTO;
 import asist.io.entity.Horario;
 import asist.io.exception.ModelException;
+import asist.io.exception.filters.NotFoundException;
 import asist.io.mapper.HorarioMapper;
 import asist.io.repository.HorarioRepository;
 import asist.io.service.ICursoService;
@@ -230,7 +231,23 @@ public class HorarioServiceImpl implements IHorarioService {
         logger.info("Horario validado con exito");
     }
 
-    
+
+    /**
+     * Obtiene el id del curso al que pertenece un horario
+     * @param horarioId
+     * @return id del curso
+     */
+    @Override
+    public String obtenerCursoIdPorHorarioId(String horarioId){
+        logger.info("Obteniendo el id del curso al que pertenece el horario con id " + horarioId);
+        Horario horario = obtenerHorarioEntityPorId(horarioId);
+        if (horario == null) {
+            logger.error("No se encontro el horario con id: " + horarioId);
+            throw new NotFoundException("No se encontro el horario con id: " + horarioId);
+        }
+
+        return horario.getCurso().getId();
+    }
 }
 
     
