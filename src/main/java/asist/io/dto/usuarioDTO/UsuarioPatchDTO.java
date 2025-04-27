@@ -19,6 +19,6 @@ public class UsuarioPatchDTO implements Serializable{
     private String id;
 
     @NotEmpty(message = "El nombre no puede ser nulo ni vacío")
-    @Size(min = 3, max = 50, message = "El nombre debe tener entre 3 y 25 caracteres")
+    @Size(min = 3, max = 50, message = "El nombre debe tener entre 3 y 50 caracteres")
     private String nombre;
 }
