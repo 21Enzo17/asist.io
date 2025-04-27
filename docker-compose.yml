@@ -1,0 +1,28 @@
+version: "3"
+services:
+  asistio:
+    container_name: asistio
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+  db:
+    image: mysql:5.7
+    container_name: db-asistio
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=sistema-asistencia
+    ports:
+      - "3306:3306"
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin-asistio
+    environment:
+      - APACHE_PORT=8081
+    ports:
+      - "8090:8081"
+    depends_on:
+      - db
