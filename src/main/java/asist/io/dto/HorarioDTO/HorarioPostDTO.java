@@ -40,9 +40,17 @@ public class HorarioPostDTO implements Serializable {
     @NotNull(message = "El día no puede ser nulo")
     @Pattern(regexp = "^(LUNES|MARTES|MIERCOLES|JUEVES|VIERNES|SABADO|DOMINGO)$", 
              message = "El día de la semana debe ser uno de los siguientes: LUNES, MARTES, MIERCOLES, JUEVES, VIERNES, SABADO, DOMINGO")
-    private String dia;
+    private String diaString;
 
     public DayOfWeek getDia() {
-        return Constantes.DIAS_DE_LA_SEMANA.get(dia);
+        return Constantes.DIAS_DE_LA_SEMANA.get(diaString);
+    }
+    
+    public String getDiaString() {
+        return diaString;
+    }
+    
+    public void setDia(String dia) {
+        this.diaString = dia;
     }
 }

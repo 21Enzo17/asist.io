@@ -21,6 +21,7 @@ import asist.io.mapper.HorarioMapper;
 import asist.io.repository.HorarioRepository;
 import asist.io.service.ICursoService;
 import asist.io.service.IHorarioService;
+import asist.io.util.Constantes;
 import asist.io.util.DateFormatter;
 import jakarta.transaction.Transactional;
 
@@ -59,9 +60,12 @@ public class HorarioServiceImpl implements IHorarioService {
     @Override
     public HorarioGetDTO actualizarHorario(HorarioPatchDTO horarioDTO) {
         Horario horario = obtenerHorarioEntityPorId(horarioDTO.getHorarioId());
-        if(horarioDTO.getDia() != null )horario.setDia(horarioDTO.getDia());
-        if(horarioDTO.getEntrada() != null )horario.setEntrada(horarioDTO.getEntrada());
-        if(horarioDTO.getSalida() != null )horario.setSalida(horarioDTO.getSalida());
+        
+
+        if(horarioDTO.getDiaString() != null) horario.setDia(Constantes.DIAS_DE_LA_SEMANA.get(horarioDTO.getDiaString()));
+        if(horarioDTO.getEntrada() != null) horario.setEntrada(horarioDTO.getEntrada());
+        if(horarioDTO.getSalida() != null) horario.setSalida(horarioDTO.getSalida());
+        
         validarHorario(horario);
         logger.info("Horario: " + horario.getId() + " actualizado con exito");
         return HorarioMapper.toDTO(horarioRepository.save(horario));
@@ -250,8 +254,8 @@ public class HorarioServiceImpl implements IHorarioService {
     }
 }
 
-    
 
 
-    
+
+
 
