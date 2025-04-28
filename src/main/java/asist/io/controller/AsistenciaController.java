@@ -1,25 +1,18 @@
 package asist.io.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import asist.io.dto.asistenciaDTO.AsistenciaGetDTO;
 import asist.io.dto.asistenciaDTO.AsistenciaPostDTO;
+import asist.io.dto.response.ApiResponse;
 import asist.io.service.IAsistenciaService;
+import asist.io.util.ResponseBuilder;
+
 import jakarta.validation.Valid;
 
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-
-
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/asistencias")
@@ -30,120 +23,117 @@ public class AsistenciaController {
     /**
      * Maneja las solicitudes de registro de asistencia de los usuarios.
      * @param asistenciaPostDTO Un objeto AsistenciaPostDTO que contiene la información de la asistencia proporcionada por el usuario.
-     * @return ResponseEntity con la información de la asistencia registrada si la operación fue exitosa,
-     * de lo contrario la ResponseEntity contendrá un mensaje de error.
+     * @return ResponseEntity con la información de la asistencia registrada si la operación fue exitosa.
      */
     @PostMapping("/registrar")
-    public ResponseEntity<?> registrarAsistencia(@RequestBody @Valid AsistenciaPostDTO asistenciaPostDTO){
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<ApiResponse<AsistenciaGetDTO>> registrarAsistencia(@RequestBody @Valid AsistenciaPostDTO asistenciaPostDTO) {
         try {
-            AsistenciaGetDTO asistenciaGetDTO  = asistenciaService.registrarAsistencia(asistenciaPostDTO);
-            response.put ("asistencia", asistenciaGetDTO);
-            response.put("message", "Asistencia registrada correctamente");
-            return ResponseEntity.ok().body(response);
+            AsistenciaGetDTO asistenciaGetDTO = asistenciaService.registrarAsistencia(asistenciaPostDTO);
+            return ResponseBuilder.created("Asistencia registrada correctamente", asistenciaGetDTO);
         } catch (Exception e) {
-             response.put("message", "Error al registrar la asistencia: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            return ResponseBuilder.badRequest("Error al registrar la asistencia: " + e.getMessage());
         }
     }
 
     /**
      * Maneja las solicitudes de obtención de asistencias de los usuarios.
-     * @param fechaInicio
-     * @param fechaFin
-     * @param idCurso
-     * @return ResponseEntity con la información de las asistencias obtenidas si la operación fue exitosa,
-     * de lo contrario la ResponseEntity contendrá un mensaje de error.
+     * @param fechaInicio Fecha de inicio del período
+     * @param fechaFin Fecha de fin del período
+     * @param idCurso ID del curso
+     * @return ResponseEntity con la información de las asistencias obtenidas si la operación fue exitosa.
      */
     @GetMapping("/obtenerAsistenciasPorCursoYPeriodo")
-    public ResponseEntity<?> obtenerAsistenciasPorCursoYPeriodo(@RequestParam String fechaInicio, @RequestParam String fechaFin, @RequestParam String idCurso){
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<ApiResponse<List<List<Object>>>> obtenerAsistenciasPorCursoYPeriodo(
+            @RequestParam String fechaInicio, 
+            @RequestParam String fechaFin, 
+            @RequestParam String idCurso) {
         try {
-            response.put("asistencias", asistenciaService.obtenerAsistenciaPorCursoYPeriodo(idCurso, fechaInicio, fechaFin));
-            response.put("message", "Asistencias obtenidas correctamente");
-            return ResponseEntity.ok().body(response);
+            List<List<Object>> asistencias = asistenciaService.obtenerAsistenciaPorCursoYPeriodo(idCurso, fechaInicio, fechaFin);
+            return ResponseBuilder.ok("Asistencias obtenidas correctamente", asistencias);
         } catch (Exception e) {
-            response.put("message", "Error al obtener asistencias: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            return ResponseBuilder.badRequest("Error al obtener asistencias: " + e.getMessage());
         }
-
     }
 
+    /**
+     * Maneja las solicitudes de obtención de asistencias en formato Excel.
+     * @param fechaInicio Fecha de inicio del período
+     * @param fechaFin Fecha de fin del período
+     * @param idCurso ID del curso
+     * @return ResponseEntity con el archivo Excel generado si la operación fue exitosa.
+     */
     @GetMapping("/obtenerAsistenciasPorCursoYPeriodo/excel")
-    public ResponseEntity<?> obtenerAsistenciasPorCursoYPeriodoExcel(@RequestParam String fechaInicio, @RequestParam String fechaFin, @RequestParam String idCurso){
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<?> obtenerAsistenciasPorCursoYPeriodoExcel(
+            @RequestParam String fechaInicio, 
+            @RequestParam String fechaFin, 
+            @RequestParam String idCurso) {
         try {
             return asistenciaService.generarExcelAsistenciaPorCursoYPeriodo(idCurso, fechaInicio, fechaFin);
         } catch (Exception e) {
-            response.put("error", "Error al obtener asistencias: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            return ResponseBuilder.badRequest("Error al obtener asistencias: " + e.getMessage());
         }
-
     }
-    
 
     /**
-     * Maneja las solicitudes de obtención de asistencias de los usuarios.
-     * @param lu
-     * @param idCurso
-     * @param fechaInicio
-     * @param fechaFin
-     * @return ResponseEntity con la información de las asistencias obtenidas si la operación fue exitosa,
-     * de lo contrario la ResponseEntity contendrá un mensaje de error.
-     */ 
+     * Maneja las solicitudes de obtención de asistencias de un alumno específico.
+     * @param lu Libreta universitaria del alumno
+     * @param idCurso ID del curso
+     * @param fechaInicio Fecha de inicio del período
+     * @param fechaFin Fecha de fin del período
+     * @return ResponseEntity con la información de las asistencias obtenidas si la operación fue exitosa.
+     */
     @GetMapping("/obtenerAsistenciasPorLuCursoYPeriodo")
-    public ResponseEntity<?> obtenerAsistenciasPorLuCursoYPeriodo(@RequestParam String lu, @RequestParam String idCurso, @RequestParam String fechaInicio, @RequestParam String fechaFin){
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<ApiResponse<List<List<Object>>>> obtenerAsistenciasPorLuCursoYPeriodo(
+            @RequestParam String lu, 
+            @RequestParam String idCurso, 
+            @RequestParam String fechaInicio, 
+            @RequestParam String fechaFin) {
         try {
-            response.put("asistencias", asistenciaService.obtenerAsistenciaPorLuCursoYPeriodo(lu, idCurso, fechaInicio, fechaFin));
-            response.put("message", "Asistencias obtenidas correctamente");
-            return ResponseEntity.ok().body(response);
+            List<List<Object>> asistencias = asistenciaService.obtenerAsistenciaPorLuCursoYPeriodo(lu, idCurso, fechaInicio, fechaFin);
+            return ResponseBuilder.ok("Asistencias obtenidas correctamente", asistencias);
         } catch (Exception e) {
-            response.put("message", "Error al obtener asistencias: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            return ResponseBuilder.badRequest("Error al obtener asistencias: " + e.getMessage());
         }
-
     }
 
     /**
      * Maneja la solicitud de obtener asistencias de un alumno en un periodo y curso especifico en formato excel.
-     * @param lu lu del usuario
-     * @param idCurso id del curso
-     * @param fechaInicio fecha de inicio del periodo
-     * @param fechaFin fecha de fin del periodo
-     * @return ResponseEntity con el archivo de excel si la operación fue exitosa,
-     */ 
+     * @param lu Libreta universitaria del alumno
+     * @param idCurso ID del curso
+     * @param fechaInicio Fecha de inicio del período
+     * @param fechaFin Fecha de fin del período
+     * @return ResponseEntity con el archivo Excel generado si la operación fue exitosa.
+     */
     @GetMapping("/obtenerAsistenciasPorLuCursoYPeriodo/excel")
-    public ResponseEntity<?> obtenerAsistenciasPorLuCursoYPeriodoExcel(@RequestParam String lu, @RequestParam String idCurso, @RequestParam String fechaInicio, @RequestParam String fechaFin){
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<?> obtenerAsistenciasPorLuCursoYPeriodoExcel(
+            @RequestParam String lu, 
+            @RequestParam String idCurso, 
+            @RequestParam String fechaInicio, 
+            @RequestParam String fechaFin) {
         try {
             return asistenciaService.generarExcelAsistenciaPorLuCursoYPeriodo(lu, idCurso, fechaInicio, fechaFin);
         } catch (Exception e) {
-            response.put("message", "Error al obtener asistencias: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            return ResponseBuilder.badRequest("Error al obtener asistencias: " + e.getMessage());
         }
-
     }
 
     /**
-     * Maneja las solicitudes de obtención de asistencias de los usuarios.
-     * @param fecha
-     * @param lu
-     * @param idHorario
-     * @return ResponseEntity con la información de la asistencia obtenida si la operación fue exitosa,
-     * de lo contrario la ResponseEntity contendrá un mensaje de error.
+     * Maneja las solicitudes de obtención de una asistencia específica por fecha, LU y horario.
+     * @param fecha Fecha de la asistencia
+     * @param lu Libreta universitaria del alumno
+     * @param idHorario ID del horario
+     * @return ResponseEntity con la información de la asistencia obtenida si la operación fue exitosa.
      */
     @GetMapping("/obtenerAsistenciaPorFechaLuYHorario")
-    public ResponseEntity<?> obtenerAsistenciaPorFechaLuYHorario(@RequestParam String fecha, @RequestParam String lu, @RequestParam String idHorario){
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<ApiResponse<AsistenciaGetDTO>> obtenerAsistenciaPorFechaLuYHorario(
+            @RequestParam String fecha, 
+            @RequestParam String lu, 
+            @RequestParam String idHorario) {
         try {
-            response.put("asistencia", asistenciaService.obtenerAsistenciaPorFechaLuYHorario(fecha, lu, idHorario));
-            response.put("message", "Asistencia obtenida correctamente");
-            return ResponseEntity.ok().body(response);
+            AsistenciaGetDTO asistencia = asistenciaService.obtenerAsistenciaPorFechaLuYHorario(fecha, lu, idHorario);
+            return ResponseBuilder.ok("Asistencia obtenida correctamente", asistencia);
         } catch (Exception e) {
-            response.put("message", "Error al obtener asistencia: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            return ResponseBuilder.badRequest("Error al obtener asistencia: " + e.getMessage());
         }
-
-    }    
+    }
 }

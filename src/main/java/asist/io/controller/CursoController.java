@@ -4,20 +4,17 @@ import asist.io.decorators.GetUser;
 import asist.io.dto.cursoDTO.CursoGetDTO;
 import asist.io.dto.cursoDTO.CursoPatchDTO;
 import asist.io.dto.cursoDTO.CursoPostDTO;
+import asist.io.dto.response.ApiResponse;
 import asist.io.dto.usuarioDTO.UsuarioGetDTO;
-import asist.io.exception.ModelException;
 import asist.io.service.ICursoService;
+import asist.io.util.ResponseBuilder;
+
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/cursos")
@@ -28,18 +25,12 @@ public class CursoController {
     /**
      * Registra un curso en la base de datos
      * @param curso Curso a registrar
-     * @return ResponseEntity con la información del curso registrado si la operación fue exitosa,
-     * de lo contrario la ResponseEntity contendrá un mensaje de error
+     * @return ResponseEntity con la información del curso registrado si la operación fue exitosa
      */
     @PostMapping()
-    public ResponseEntity registrarCurso(@Valid @RequestBody CursoPostDTO curso) {
-        Map<String, Object> response = new HashMap<>();
-
+    public ResponseEntity<ApiResponse<CursoGetDTO>> registrarCurso(@Valid @RequestBody CursoPostDTO curso) {
         CursoGetDTO cursoRegistrado = cursoService.registrarCurso(curso);
-        response.put("curso", cursoRegistrado);
-        response.put("success", true);
-        return new ResponseEntity(response, HttpStatus.CREATED);
-
+        return ResponseBuilder.created("Curso registrado correctamente", cursoRegistrado);
     }
 
     /**
@@ -48,111 +39,76 @@ public class CursoController {
      * @return ResponseEntity que indica si la operación fue exitosa o no
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity eliminarCurso(@PathVariable String id, @GetUser UsuarioGetDTO user) {
-        Map<String, Object> response = new HashMap<>();
-
+    public ResponseEntity<ApiResponse<Object>> eliminarCurso(@PathVariable String id, @GetUser UsuarioGetDTO user) {
         cursoService.esPropietario(id, user.getId());
-
         boolean eliminado = cursoService.eliminarCurso(id);
-        response.put("success", eliminado);
-        return new ResponseEntity(response, HttpStatus.OK);
+        return ResponseBuilder.ok("Curso eliminado correctamente");
     }
 
     /**
      * Actualiza un curso en la base de datos
      * @param curso Curso a actualizar
-     * @return ResponseEntity con la información del curso actualizado si la operación fue exitosa,
-     * de lo contrario la ResponseEntity contendrá un mensaje de error
+     * @return ResponseEntity con la información del curso actualizado si la operación fue exitosa
      */
     @PatchMapping()
-    //@PreAuthorize("@cursoService.esPropietario(#curso.getId(), #user.getId())")
-    public ResponseEntity actualizarCurso(@Valid @RequestBody CursoPatchDTO curso, @GetUser UsuarioGetDTO user) {
-        Map<String, Object> response = new HashMap<>();
-
+    public ResponseEntity<ApiResponse<CursoGetDTO>> actualizarCurso(@Valid @RequestBody CursoPatchDTO curso, @GetUser UsuarioGetDTO user) {
         cursoService.esPropietario(curso.getId(), user.getId());
-
         CursoGetDTO cursoActualizado = cursoService.actualizarCurso(curso);
-        response.put("curso", cursoActualizado);
-        response.put("success", true);
-        return new ResponseEntity(response, HttpStatus.OK);
+        return ResponseBuilder.ok("Curso actualizado correctamente", cursoActualizado);
     }
 
     /**
      * Obtiene un curso por su id
      * @param id Id del curso a obtener
-     * @return ResponseEntity con la información del curso si se encontró un curso con el id proporcionado,
-     * de lo contrario la ResponseEntity contendrá un mensaje de error
+     * @return ResponseEntity con la información del curso si se encontró un curso con el id proporcionado
      */
     @GetMapping("/id/{id}")
-    
-    public ResponseEntity obtenerCursoPorId(@PathVariable String id) {
-        Map<String, Object> response = new HashMap<>();
-        
+    public ResponseEntity<ApiResponse<CursoGetDTO>> obtenerCursoPorId(@PathVariable String id) {
         CursoGetDTO curso = cursoService.obtenerCursoPorId(id);
-        response.put("curso", curso);
-        response.put("success", true);
-        return new ResponseEntity(response, HttpStatus.OK);
-
+        return ResponseBuilder.ok("Curso obtenido correctamente", curso);
     }
 
     /**
      * Obtiene un curso por su código de asistencia
      * @param codigoAsistencia Código de asistencia del curso a obtener
-     * @return ResponseEntity con la información del curso si se encontró un curso con el código de asistencia proporcionado,
-     * de lo contrario la ResponseEntity contendrá un mensaje de error
+     * @return ResponseEntity con la información del curso si se encontró un curso con el código de asistencia proporcionado
      */
     @GetMapping("/codigo-asistencia/{codigoAsistencia}")
-    public ResponseEntity obtenerCursoPorCodigoAsistencia(@PathVariable String codigoAsistencia) {
-        Map<String, Object> response = new HashMap<>();
-
+    public ResponseEntity<ApiResponse<CursoGetDTO>> obtenerCursoPorCodigoAsistencia(@PathVariable String codigoAsistencia) {
         CursoGetDTO curso = cursoService.obtenerCursoPorCodigoAsistencia(codigoAsistencia);
-        response.put("curso", curso);
-        response.put("success", true);
-        return new ResponseEntity(response, HttpStatus.OK);
+        return ResponseBuilder.ok("Curso obtenido correctamente", curso);
     }
 
     /**
      * Obtiene una lista de cursos por el id de un usuario
      * @param idUsuario Id del usuario
-     * @return ResponseEntity con la lista de cursos si se encontraron cursos con el id de usuario proporcionado,
-     * de lo contrario la ResponseEntity contendrá un mensaje de error
+     * @return ResponseEntity con la lista de cursos si se encontraron cursos con el id de usuario proporcionado
      */
     @GetMapping("/usuario/{idUsuario}")
-    public ResponseEntity obtenerCursosPorIdUsuario(@PathVariable String idUsuario) {
-        Map<String, Object> response = new HashMap<>();
-
-        List<CursoGetDTO> curso = cursoService.obtenerCursosPorIdUsuario(idUsuario);
-        response.put("cursos", curso);
-        response.put("success", true);
-        return new ResponseEntity(response, HttpStatus.OK);
+    public ResponseEntity<ApiResponse<List<CursoGetDTO>>> obtenerCursosPorIdUsuario(@PathVariable String idUsuario) {
+        List<CursoGetDTO> cursos = cursoService.obtenerCursosPorIdUsuario(idUsuario);
+        return ResponseBuilder.ok("Cursos obtenidos correctamente", cursos);
     }
 
     /**
      * Obtiene una lista de cursos según una palabra clave que coincida con el nombre
      * @param termino Palabra clave para buscar cursos
      * @param usuarioId Id del usuario
-     * @return ResponseEntity con la lista de cursos si se encontraron cursos con la palabra clave proporcionada,
-     * de lo contrario la ResponseEntity contendrá un mensaje de error
+     * @return ResponseEntity con la lista de cursos si se encontraron cursos con la palabra clave proporcionada
      */
     @GetMapping("/termino/{termino}")
-    public ResponseEntity obtenerCursosPorTermino(@PathVariable String termino,@RequestParam String usuarioId) {
-        Map<String, Object> response = new HashMap<>();
-
-        response.put("cursos", cursoService.obtenerCursosPorTerminoYUsuario(termino,usuarioId));
-        response.put("success", true);
-        return new ResponseEntity(response, HttpStatus.OK);
+    public ResponseEntity<ApiResponse<List<CursoGetDTO>>> obtenerCursosPorTermino(@PathVariable String termino, @RequestParam String usuarioId) {
+        List<CursoGetDTO> cursos = cursoService.obtenerCursosPorTerminoYUsuario(termino, usuarioId);
+        return ResponseBuilder.ok("Cursos obtenidos correctamente", cursos);
     }
 
     /**
      * Genera un código de asistencia único
-     * @return ResponseEntity con el código de asistencia generado si la operación fue exitosa,
-     * de lo contrario la ResponseEntity contendrá un mensaje de error
+     * @return ResponseEntity con el código de asistencia generado si la operación fue exitosa
      */
     @GetMapping("/codigo-asistencia")
-    public ResponseEntity generarCodigoAsistencia() {
-        Map<String, Object> response = new HashMap<>();
-        response.put("codigoAsistencia", cursoService.generarCodigoAsistencia());
-        response.put("success", true);
-        return new ResponseEntity(response, HttpStatus.OK);
+    public ResponseEntity<ApiResponse<String>> generarCodigoAsistencia() {
+        String codigoAsistencia = cursoService.generarCodigoAsistencia();
+        return ResponseBuilder.ok("Código de asistencia generado correctamente", codigoAsistencia);
     }
 }

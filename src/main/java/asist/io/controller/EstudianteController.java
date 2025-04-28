@@ -3,25 +3,25 @@ package asist.io.controller;
 import asist.io.decorators.GetUser;
 import asist.io.dto.estudianteDTO.EstudianteGetDTO;
 import asist.io.dto.estudianteDTO.EstudiantePostDTO;
+import asist.io.dto.response.ApiResponse;
 import asist.io.dto.usuarioDTO.UsuarioGetDTO;
-import asist.io.exception.ModelException;
 import asist.io.service.ICursoService;
 import asist.io.service.IEstudianteService;
+import asist.io.util.ResponseBuilder;
+
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/estudiantes")
 public class EstudianteController {
     @Autowired
     private IEstudianteService estudianteService;
+    
     @Autowired
     private ICursoService cursoService;
 
@@ -32,15 +32,10 @@ public class EstudianteController {
      * la petición fue exitosa o un mensaje de error en caso contrario
      */
     @PostMapping()
-    public ResponseEntity registrarEstudiante(@Valid @RequestBody EstudiantePostDTO estudiante, @GetUser UsuarioGetDTO user) {
-        Map<String, Object> response = new HashMap<>();
-
+    public ResponseEntity<ApiResponse<EstudianteGetDTO>> registrarEstudiante(@Valid @RequestBody EstudiantePostDTO estudiante, @GetUser UsuarioGetDTO user) {
         cursoService.esPropietario(estudiante.getCursoId(), user.getId());
-
         EstudianteGetDTO estudianteRegistrado = estudianteService.registrarEstudiante(estudiante);
-        response.put("estudiante", estudianteRegistrado);
-        response.put("success", true);
-        return new ResponseEntity(response, HttpStatus.CREATED);
+        return ResponseBuilder.created("Estudiante registrado correctamente", estudianteRegistrado);
     }
 
     /**
@@ -50,15 +45,10 @@ public class EstudianteController {
      * petición fue exitosa o un mensaje de error en caso contrario
      */
     @PostMapping("/lista")
-    public ResponseEntity registrarEstudiantes(@Valid @RequestBody List<EstudiantePostDTO> estudiantes, @GetUser UsuarioGetDTO user) {
-        Map<String, Object> response = new HashMap<>();
-
+    public ResponseEntity<ApiResponse<List<EstudianteGetDTO>>> registrarEstudiantes(@Valid @RequestBody List<EstudiantePostDTO> estudiantes, @GetUser UsuarioGetDTO user) {
         cursoService.esPropietario(estudiantes.get(0).getCursoId(), user.getId());
-
         List<EstudianteGetDTO> estudiantesRegistrados = estudianteService.registrarEstudiantes(estudiantes);
-        response.put("estudiantes", estudiantesRegistrados);
-        response.put("success", true);
-        return new ResponseEntity(response, HttpStatus.CREATED);
+        return ResponseBuilder.created("Estudiantes registrados correctamente", estudiantesRegistrados);
     }
 
     /**
@@ -68,13 +58,9 @@ public class EstudianteController {
      * petición fue exitosa o un mensaje de error en caso contrario
      */
     @GetMapping("/id/{idEstudiante}")
-    public ResponseEntity obtenerEstudiantePorId(@PathVariable String idEstudiante) {
-        Map<String, Object> response = new HashMap<>();
-
+    public ResponseEntity<ApiResponse<EstudianteGetDTO>> obtenerEstudiantePorId(@PathVariable String idEstudiante) {
         EstudianteGetDTO estudianteObtenido = estudianteService.obtenerEstudiantePorId(idEstudiante);
-        response.put("estudiante", estudianteObtenido);
-        response.put("success", true);
-        return new ResponseEntity(response, HttpStatus.OK);
+        return ResponseBuilder.ok("Estudiante obtenido correctamente", estudianteObtenido);
     }
 
     /**
@@ -84,29 +70,21 @@ public class EstudianteController {
      * petición fue exitosa o un mensaje de error en caso contrario
      */
     @GetMapping("/lu/{lu}")
-    public ResponseEntity obtenerEstudiantePorLuYCursoId(@PathVariable String lu, @RequestParam String cursoId) {
-        Map<String, Object> response = new HashMap<>();
-
-        EstudianteGetDTO estudianteObtenido = estudianteService.obtenerEstudiantePorLuYCursoId(lu,cursoId );
-        response.put("estudiante", estudianteObtenido);
-        response.put("success", true);
-        return new ResponseEntity(response, HttpStatus.OK);
+    public ResponseEntity<ApiResponse<EstudianteGetDTO>> obtenerEstudiantePorLuYCursoId(@PathVariable String lu, @RequestParam String cursoId) {
+        EstudianteGetDTO estudianteObtenido = estudianteService.obtenerEstudiantePorLuYCursoId(lu, cursoId);
+        return ResponseBuilder.ok("Estudiante obtenido correctamente", estudianteObtenido);
     }
 
     /**
-     * Endpoint que obtiene una lista de estudiantes que entan registrados en un curso
+     * Endpoint que obtiene una lista de estudiantes que están registrados en un curso
      * @param id id del curso
      * @return ResponseEntity que contiene la lista de estudiantes obtenidos si la
      * petición fue exitosa o un mensaje de error en caso contrario
      */
     @GetMapping("/curso/{id}")
-    public ResponseEntity obtenerEstudiantesPorIdCurso(@PathVariable String id) {
-        Map<String, Object> response = new HashMap<>();
-
+    public ResponseEntity<ApiResponse<List<EstudianteGetDTO>>> obtenerEstudiantesPorIdCurso(@PathVariable String id) {
         List<EstudianteGetDTO> estudiantesObtenidos = estudianteService.obtenerEstudiantesPorIdCurso(id);
-        response.put("estudiantes", estudiantesObtenidos);
-        response.put("success", true);
-        return new ResponseEntity(response, HttpStatus.OK);
+        return ResponseBuilder.ok("Estudiantes obtenidos correctamente", estudiantesObtenidos);
     }
 
     /**
@@ -116,14 +94,10 @@ public class EstudianteController {
      * petición fue exitosa o un mensaje de error en caso contrario
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity eliminarEstudiantePorId(@PathVariable String id, @GetUser UsuarioGetDTO user) {
-        Map<String, Object> response = new HashMap<>();
-
+    public ResponseEntity<ApiResponse<Boolean>> eliminarEstudiantePorId(@PathVariable String id, @GetUser UsuarioGetDTO user) {
         cursoService.esPropietario(estudianteService.obtenerCursoIdPorEstudianteId(id), user.getId());
-
         boolean eliminado = estudianteService.eliminarEstudiante(id);
-        response.put("success", eliminado);
-        return new ResponseEntity(response, HttpStatus.OK);
+        return ResponseBuilder.ok("Estudiante eliminado correctamente", eliminado);
     }
 
     /**
@@ -133,14 +107,9 @@ public class EstudianteController {
      * petición fue exitosa o un mensaje de error en caso contrario
      */
     @DeleteMapping()
-    public ResponseEntity eliminarEstudiantes(@RequestBody List<String> ids, @GetUser UsuarioGetDTO user) {
-        Map<String, Object> response = new HashMap<>();
-
-        cursoService.esPropietario(estudianteService.obtenerCursoIdPorEstudianteId(ids.get(0)) ,user.getId());
-
-
+    public ResponseEntity<ApiResponse<Boolean>> eliminarEstudiantes(@RequestBody List<String> ids, @GetUser UsuarioGetDTO user) {
+        cursoService.esPropietario(estudianteService.obtenerCursoIdPorEstudianteId(ids.get(0)), user.getId());
         boolean eliminado = estudianteService.eliminarEstudiantes(ids);
-        response.put("success", eliminado);
-        return new ResponseEntity(response, HttpStatus.OK);
+        return ResponseBuilder.ok("Estudiantes eliminados correctamente", eliminado);
     }
 }
