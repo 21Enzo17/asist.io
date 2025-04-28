@@ -3,6 +3,7 @@ package asist.io.dto.cursoDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,16 +19,19 @@ public class CursoPostDTO implements Serializable {
     @NotNull(message = "El nombre no puede ser nulo")
     @NotEmpty(message = "El nombre no puede estar vacío")
     @NotBlank(message = "El nombre no puede estar en blanco")
+    @Size(max = 50, message = "El nombre no puede exceder los 50 caracteres")
     private String nombre;
 
     @NotNull(message = "La descripción no puede ser nula")
     @NotEmpty(message = "La descripción no puede estar vacía")
     @NotBlank(message = "La descripción no puede estar en blanco")
+    @Size(max = 255, message = "La descripción no puede exceder los 255 caracteres")
     private String descripcion;
 
     @NotNull(message = "La carrera no puede ser nula")
     @NotEmpty(message = "La carrera no puede estar vacía")
     @NotBlank(message = "La carrera no puede estar en blanco")
+    @Size(max = 50, message = "La carrera no puede exceder los 50 caracteres")
     private String carrera;
 
     private String codigoAsistencia;
