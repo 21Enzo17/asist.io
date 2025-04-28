@@ -82,6 +82,10 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
             logger.error("La fecha de inicio no puede ser posterior a la fecha de fin");
             throw new ModelException("La fecha de inicio no puede ser posterior a la fecha de fin");
         }
+        if (DateFormatter.stringToLocalDate(fechaFin).isAfter(LocalDate.now())) {
+            logger.error("La fecha de fin no puede ser posterior a la fecha actual");
+            throw new ModelException("La fecha de fin no puede ser posterior a la fecha actual");
+        }
         logger.info("Obteniendo asistencia para el curso con id " + cursoId);
         return generarTablaAsistencias(agruparAsistenciasPorFechaYHorario(
             AsistenciaMapper.toDTO(asistenciaRepository.findByCursoId(cursoId))), 
@@ -108,6 +112,14 @@ public class AsistenciaServiceImpl implements IAsistenciaService {
     public List<List<Object>> obtenerAsistenciaPorLuCursoYPeriodo(String lu, String cursoId, String fechaInicio, String fechaFin) {
         cursoService.existePorId(cursoId);
         estudianteService.obtenerEstudianteEntityPorLuYCursoId(lu, cursoId);
+        if( DateFormatter.stringToLocalDate(fechaInicio).isAfter(DateFormatter.stringToLocalDate(fechaFin))) {
+            logger.error("La fecha de inicio no puede ser posterior a la fecha de fin");
+            throw new ModelException("La fecha de inicio no puede ser posterior a la fecha de fin");
+        }
+        if (DateFormatter.stringToLocalDate(fechaFin).isAfter(LocalDate.now())) {
+            logger.error("La fecha de fin no puede ser posterior a la fecha actual");
+            throw new ModelException("La fecha de fin no puede ser posterior a la fecha actual");
+        }
         logger.info("Obteniendo asistencia para el alumno con LU " + lu + " en el curso con id " + cursoId);
         Map<LocalDate, List<AsistenciaGetDTO>> asistenciasAgrupadas = agruparAsistenciasPorFechaYHorario(AsistenciaMapper.toDTO(asistenciaRepository.findByEstudianteLuAndCursoId(lu, cursoId)));
         List<EstudianteGetDTO> estudiantes = new ArrayList<>();
