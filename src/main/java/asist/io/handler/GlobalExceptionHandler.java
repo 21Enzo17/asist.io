@@ -1,5 +1,7 @@
 package asist.io.handler;
 
+import asist.io.dto.response.ApiResponse;
+import asist.io.util.ResponseBuilder;
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,71 +15,74 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger logger = Logger.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity<ApiResponse<Object>> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+        List<String> errors = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .collect(Collectors.toList());
 
-        List<ValidationError> errors = new ArrayList<>();
-        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-            errors.add(new ValidationError(error.getField(), error.getDefaultMessage()));
-        }
-
-        response.put("success", false);
-        response.put("errors", errors);
-        return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+        return ResponseBuilder.badRequest("Error de validación de datos", errors);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
-        Map<String, Object> response = new HashMap<>();
-
-        response.put("success", false);
-        response.put("error", "El mensaje HTTP no es legible: " + ex.getMessage());
-        return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ApiResponse<Object>> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        return ResponseBuilder.badRequest("El mensaje HTTP no es legible: " + ex.getMessage());
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", false);
-        response.put("error", "Método no permitido: " + ex.getMessage());
-        return new ResponseEntity(response, HttpStatus.METHOD_NOT_ALLOWED);
+    public ResponseEntity<ApiResponse<Object>> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex) {
+        return ResponseBuilder.status(
+                HttpStatus.METHOD_NOT_ALLOWED,
+                false,
+                "Método no permitido: " + ex.getMessage(),
+                null
+        );
     }
 
     @ExceptionHandler(HttpServerErrorException.InternalServerError.class)
-    public ResponseEntity handleInternalServerError(HttpServerErrorException.InternalServerError ex) {
-        Map<String, Object> response = new HashMap<>();
-
-        response.put("success", false);
-        response.put("error", "Error interno del servidor: " + ex.getMessage());
-        return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<ApiResponse<Object>> handleInternalServerError(HttpServerErrorException.InternalServerError ex) {
+        logger.error("Error interno del servidor: " + ex.getMessage(), ex);
+        return ResponseBuilder.internalError("Error interno del servidor: " + ex.getMessage());
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity handleNoResourceFound(NoResourceFoundException ex) {
-        Map<String, Object> response = new HashMap<>();
-
-        response.put("success", false);
-        response.put("error", "Recurso no encontrado: " + ex.getMessage());
-        return new ResponseEntity(response, HttpStatus.NOT_FOUND);
+    public ResponseEntity<ApiResponse<Object>> handleNoResourceFound(NoResourceFoundException ex) {
+        return ResponseBuilder.notFound("Recurso no encontrado: " + ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity handleException(Exception ex) {
-        logger.error("Fatal error: " + ex.getMessage());
+    public ResponseEntity<ApiResponse<Object>> handleException(Exception ex) {
+        logger.error("Fatal error: " + ex.getMessage(), ex);
+        return ResponseBuilder.internalError("Internal Server Error. Si es administrador revise los logs.");
+    }
 
-        Map<String, Object> response = new HashMap<>();
+    /**
+     * Clase interna para representar errores de validación
+     * @deprecated Esta clase ha sido reemplazada por ApiResponse y ResponseBuilder
+     */
+    @Deprecated
+    private static class ValidationError {
+        private final String field;
+        private final String message;
 
-        response.put("message", "Internal Server Error. Si es administrador revise los logs.");
-        response.put("status", "500 Internal Server Error");
-        return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        public ValidationError(String field, String message) {
+            this.field = field;
+            this.message = message;
+        }
+
+        public String getField() {
+            return field;
+        }
+
+        public String getMessage() {
+            return message;
+        }
     }
 }
