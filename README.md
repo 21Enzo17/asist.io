@@ -31,6 +31,7 @@ clases y ahorrar tiempo a los docentes.
 ![JUnit](https://img.shields.io/badge/Junit5-25A162?style=for-the-badge&logo=junit5&logoColor=white)
 ![Maven](https://img.shields.io/badge/Maven-F2F4F9?style=for-the-badge&logo=Apache-Maven&logoColor=EA8220)
 ![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
 
 ## Dependencias utilizadas
 
@@ -45,7 +46,19 @@ clases y ahorrar tiempo a los docentes.
 - Jakarta Mail
 - Jakarta Validation
 - Hibernate
+- Spring Data Redis
 
+## Seguridad
+
+El sistema implementa una arquitectura de seguridad robusta basada en JWT (JSON Web Tokens) con las siguientes características:
+
+- **Autenticación con tokens JWT** firmados con algoritmo RS256 (criptografía asimétrica)
+- **Refresh tokens** para renovación de sesión sin reingreso de credenciales
+- **Lista negra de tokens** implementada en Redis para revocación inmediata
+- **Rotación automática de claves criptográficas** mensual
+- **Protección contra múltiples vectores de ataque** como ataques de repetición, man-in-the-middle, y fuerza bruta
+
+Para una documentación detallada del sistema de seguridad, consulte el [documento de seguridad](docs/SEGURIDAD.md).
 
 ## Roadmap
 
