@@ -17,14 +17,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import asist.io.dto.response.ApiResponse;
+import asist.io.exception.ModelException;
+
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
-    private final Logger logger =  Logger.getLogger(this.getClass());
+    private final Logger logger = Logger.getLogger(this.getClass());
 
     private final JwtUtil jwtUtil;
     private final ObjectMapper mapper;
@@ -35,55 +36,63 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Este método se encarga de validar y refrescar el token JWT en cada solicitud HTTP.
+     * Este método se encarga de validar el token JWT en cada solicitud HTTP.
      * 
-     * @param request La solicitud HTTP entrante. (Contiene el token JWT en la cabecera de autorización)
+     * @param request La solicitud HTTP entrante.
      * @param response La respuesta HTTP que se enviará.
      * @param filterChain El resto de los filtros en la cadena de filtros de Spring Security.
      * 
      * @throws ServletException Si ocurre un error al procesar la solicitud.
      * @throws IOException Si ocurre un error de entrada/salida.
-     * 
-     * 
-     * El método funciona de la siguiente manera:
-     * 1. Resuelve el token JWT de la solicitud HTTP.
-     * 2. Si no hay token, permite que la solicitud pase a través del filtro sin más procesamiento.
-     * 3. Si hay un token, resuelve las reclamaciones del token.
-     * 4. Si las reclamaciones son válidas, autentica al usuario en el contexto de seguridad de Spring.
-     * 5. Si ocurre una excepción (por ejemplo, el token no es válido), se devuelve una respuesta HTTP con estado 403 (Prohibido) y detalles del error en formato JSON.
-     * 6. Finalmente, permite que la solicitud pase a través del filtro para ser procesada por el resto de la cadena de filtros.
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        Map<String, Object> errorDetails = new HashMap<>();
-
         try {
+            // Intentamos resolver el token de la solicitud
             String accessToken = jwtUtil.resolveToken(request);
-            if (accessToken == null ) {
+            
+            // Si no hay token, permitimos el paso (las rutas no protegidas serán manejadas por SecurityConfig)
+            if (accessToken == null) {
                 filterChain.doFilter(request, response);
                 return;
             }
-            Claims claims = jwtUtil.resolveClaims(request);
-
-            if(claims != null && jwtUtil.validateClaims(claims)){
-                String email = claims.getSubject();
-                Authentication authentication =
-                        new UsernamePasswordAuthenticationToken(email,"",new ArrayList<>());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            }
-            filterChain.doFilter(request, response);
-
-        }catch (Exception e){
-            logger.error("Error al autenticar el token JWT: " + e.getMessage());
-            errorDetails.put("message", "Authentication Error");
-            errorDetails.put("details",e.getMessage());
-            response.setStatus(HttpStatus.FORBIDDEN.value());
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             
-            mapper.writeValue(response.getWriter(), errorDetails);
-
+            // Resolvemos y validamos las claims del token
+            Claims claims = jwtUtil.resolveClaims(request);
+            
+            if (claims != null && jwtUtil.validateClaims(claims)) {
+                String email = jwtUtil.getEmail(claims);
+                
+                // Autenticamos al usuario en el contexto de Spring Security
+                Authentication authentication = new UsernamePasswordAuthenticationToken(email, "", new ArrayList<>());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+            
+            filterChain.doFilter(request, response);
+        } catch (ModelException e) {
+            logger.error("Error de autenticación JWT: " + e.getMessage());
+            sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "Error de autenticación", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error inesperado al procesar token JWT: " + e.getMessage());
+            sendErrorResponse(response, HttpStatus.FORBIDDEN, "Error de autenticación", "Error al procesar el token: " + e.getMessage());
         }
+    }
+    
+    /**
+     * Envía una respuesta de error formateada al cliente
+     * 
+     * @param response La respuesta HTTP
+     * @param status El código de estado HTTP
+     * @param message Mensaje principal de error
+     * @param details Detalles del error
+     * @throws IOException Si ocurre un error al escribir la respuesta
+     */
+    private void sendErrorResponse(HttpServletResponse response, HttpStatus status, String message, String details) throws IOException {
+        response.setStatus(status.value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         
+        ApiResponse<Object> errorResponse = ApiResponse.error(message);
+        
+        mapper.writeValue(response.getWriter(), errorResponse);
     }
 }

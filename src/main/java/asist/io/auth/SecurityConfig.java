@@ -136,6 +136,8 @@ public class SecurityConfig  {
             })
             .authorizeHttpRequests(auth ->{
                 auth.requestMatchers("/api/v1/auth/login").permitAll();
+                auth.requestMatchers("/api/v1/auth/refresh-token").permitAll();
+                auth.requestMatchers("/api/v1/auth/logout").permitAll();
                 auth.requestMatchers("/api/v1/usuario/registro").permitAll();
                 auth.requestMatchers("/api/v1/usuario/validar/**").permitAll();
                 auth.requestMatchers("/api/v1/usuario/olvide-mi-contrasena").permitAll();
