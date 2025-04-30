@@ -151,7 +151,7 @@ public class JwtUtil {
         
         // Cargar clave privada
         try {
-            byte[] privateKeyBytes = Base64.getDecoder().decode(Files.readString(privateKeyPath));
+            byte[] privateKeyBytes = Base64.getDecoder().decode(Files.readString(privateKeyPath).trim());
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
             privateKey = keyFactory.generatePrivate(privateKeySpec);
@@ -162,7 +162,7 @@ public class JwtUtil {
         
         // Cargar clave pública
         try {
-            byte[] publicKeyBytes = Base64.getDecoder().decode(Files.readString(publicKeyPath));
+            byte[] publicKeyBytes = Base64.getDecoder().decode(Files.readString(publicKeyPath).trim());
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
             publicKey = keyFactory.generatePublic(publicKeySpec);
