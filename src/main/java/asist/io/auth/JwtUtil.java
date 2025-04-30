@@ -4,36 +4,45 @@ import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
-
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
-
 import asist.io.entity.RefreshToken;
 import asist.io.entity.Usuario;
 import asist.io.exception.ModelException;
 import asist.io.service.IRefreshTokenService;
 import asist.io.service.ITokenBlacklistService;
 
-
+import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.Key;
-import java.security.MessageDigest;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.spec.EncodedKeySpec;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
-
 @Component
 public class JwtUtil {
     private final Logger logger = Logger.getLogger(this.getClass());
     private final Dotenv dotenv = Dotenv.load();
     
-    private final String secretKey;
     private final long accessTokenValidity;
     private final String issuer;
     private final String audience;
@@ -45,6 +54,13 @@ public class JwtUtil {
     
     private final ITokenBlacklistService tokenBlacklistService;
     private final IRefreshTokenService refreshTokenService;
+    
+    private PrivateKey privateKey;
+    private PublicKey publicKey;
+    
+    private final String KEY_DIRECTORY = "config/keys";
+    private final String PRIVATE_KEY_FILE = "jwt_private.key";
+    private final String PUBLIC_KEY_FILE = "jwt_public.key";
 
     @Autowired
     public JwtUtil(ITokenBlacklistService tokenBlacklistService, IRefreshTokenService refreshTokenService) {
@@ -52,39 +68,112 @@ public class JwtUtil {
         this.refreshTokenService = refreshTokenService;
         
         // Cargamos configuraciones desde variables de entorno
-        this.secretKey = dotenv.get("JWT_SECRET_KEY", "as1st10_s3cr3t_k3y_m0r3_s3cur3_th4n_b3f0r3");
-        this.accessTokenValidity = Long.parseLong(dotenv.get("JWT_ACCESS_TOKEN_EXPIRATION", "1800")); // 30 min default
+        this.accessTokenValidity = Long.parseLong(dotenv.get("JWT_ACCESS_TOKEN_EXPIRATION", "900")); // 15 min default
         this.issuer = dotenv.get("JWT_ISSUER", "asist.io");
         this.audience = dotenv.get("JWT_AUDIENCE", "asist.io-client");
         
-        // Inicializamos el parser JWT con la clave segura
-        Key key = getSigningKey();
+        // Inicializamos las claves RSA
+        initRSAKeys();
+        
+        // Inicializamos el parser JWT con la clave pública
         this.jwtParser = Jwts.parserBuilder()
-                .setSigningKey(key)
+                .setSigningKey(publicKey)
                 .build();
     }
     
     /**
-     * Obtiene la clave de firma para JWT basada en la clave secreta
-     * @return Clave de firma segura para HS512
+     * Inicializa las claves RSA, cargándolas de archivos o generándolas si no existen
      */
-    private Key getSigningKey() {
+    private void initRSAKeys() {
         try {
-            // Generamos una clave segura basada en secretKey pero con longitud suficiente para HS512
-            MessageDigest md = MessageDigest.getInstance("SHA-512");
-            byte[] keyBytes = md.digest(secretKey.getBytes(StandardCharsets.UTF_8));
+            File keyDirectory = new File(KEY_DIRECTORY);
+            if (!keyDirectory.exists()) {
+                keyDirectory.mkdirs();
+            }
             
-            // Usamos Keys.hmacShaKeyFor que verifica que la clave sea suficientemente fuerte
-            return Keys.hmacShaKeyFor(keyBytes);
-        } catch (NoSuchAlgorithmException e) {
-            // Si SHA-512 no está disponible (muy poco probable), usaremos un método alternativo
-            logger.error("Error al crear clave de firma: " + e.getMessage());
+            Path privateKeyPath = Paths.get(KEY_DIRECTORY, PRIVATE_KEY_FILE);
+            Path publicKeyPath = Paths.get(KEY_DIRECTORY, PUBLIC_KEY_FILE);
             
-            // Generamos una clave segura usando SecretKey directamente para HS512
-            return Keys.secretKeyFor(SignatureAlgorithm.HS512);
+            // Si los archivos de claves no existen, generamos un nuevo par de claves
+            if (!Files.exists(privateKeyPath) || !Files.exists(publicKeyPath)) {
+                generateAndSaveKeyPair();
+            } else {
+                // Cargamos las claves existentes
+                loadKeys(privateKeyPath, publicKeyPath);
+            }
+        } catch (Exception e) {
+            logger.error("Error inicializando claves RSA: " + e.getMessage());
+            throw new RuntimeException("Error inicializando sistema de seguridad", e);
         }
     }
-
+    
+    /**
+     * Genera un nuevo par de claves RSA y las guarda en archivos
+     */
+    private void generateAndSaveKeyPair() throws NoSuchAlgorithmException, IOException {
+        logger.info("Generando nuevo par de claves RSA...");
+        
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        keyPairGenerator.initialize(2048); // Tamaño de clave recomendado para seguridad
+        KeyPair keyPair = keyPairGenerator.generateKeyPair();
+        
+        privateKey = keyPair.getPrivate();
+        publicKey = keyPair.getPublic();
+        
+        // Guardar clave privada
+        try {
+            PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(privateKey.getEncoded());
+            String privateKeyString = Base64.getEncoder().encodeToString(pkcs8EncodedKeySpec.getEncoded());
+            Files.write(Paths.get(KEY_DIRECTORY, PRIVATE_KEY_FILE), privateKeyString.getBytes());
+        } catch (IOException e) {
+            logger.error("Error guardando clave privada: " + e.getMessage());
+            throw e;
+        }
+        
+        // Guardar clave pública
+        try {
+            X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(publicKey.getEncoded());
+            String publicKeyString = Base64.getEncoder().encodeToString(x509EncodedKeySpec.getEncoded());
+            Files.write(Paths.get(KEY_DIRECTORY, PUBLIC_KEY_FILE), publicKeyString.getBytes());
+        } catch (IOException e) {
+            logger.error("Error guardando clave pública: " + e.getMessage());
+            throw e;
+        }
+        
+        logger.info("Par de claves RSA generado y guardado exitosamente");
+    }
+    
+    /**
+     * Carga las claves RSA desde archivos
+     */
+    private void loadKeys(Path privateKeyPath, Path publicKeyPath) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+        logger.info("Cargando claves RSA existentes...");
+        
+        // Cargar clave privada
+        try {
+            byte[] privateKeyBytes = Base64.getDecoder().decode(Files.readString(privateKeyPath));
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
+            privateKey = keyFactory.generatePrivate(privateKeySpec);
+        } catch (Exception e) {
+            logger.error("Error cargando clave privada: " + e.getMessage());
+            throw e;
+        }
+        
+        // Cargar clave pública
+        try {
+            byte[] publicKeyBytes = Base64.getDecoder().decode(Files.readString(publicKeyPath));
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
+            publicKey = keyFactory.generatePublic(publicKeySpec);
+        } catch (Exception e) {
+            logger.error("Error cargando clave pública: " + e.getMessage());
+            throw e;
+        }
+        
+        logger.info("Claves RSA cargadas exitosamente");
+    }
+    
     /**
      * Crea un token JWT de acceso para un usuario específico.
      * 
@@ -109,6 +198,7 @@ public class JwtUtil {
         
         Map<String, Object> claims = new HashMap<>();
         claims.put("userName", user.getNombre());
+        claims.put("nonce", UUID.randomUUID().toString()); // Añadimos un nonce para prevenir ataques de repetición
         
         return Jwts.builder()
                 .setClaims(claims)
@@ -118,7 +208,7 @@ public class JwtUtil {
                 .setIssuedAt(tokenCreateTime)
                 .setId(tokenId)
                 .setExpiration(tokenValidity)
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+                .signWith(privateKey, SignatureAlgorithm.RS256)
                 .compact();
     }
 
@@ -236,6 +326,20 @@ public class JwtUtil {
             .map(RefreshToken::getUsuario)
             .map(this::createAccessToken)
             .orElseThrow(() -> new ModelException("Refresh token inválido"));
+    }
+    
+    /**
+     * Rota las claves RSA generando un nuevo par de claves
+     * @return true si la rotación fue exitosa
+     */
+    public boolean rotateKeys() {
+        try {
+            generateAndSaveKeyPair();
+            return true;
+        } catch (Exception e) {
+            logger.error("Error rotando claves RSA: " + e.getMessage());
+            return false;
+        }
     }
 }
 

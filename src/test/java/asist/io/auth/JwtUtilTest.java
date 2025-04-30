@@ -7,6 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Base64;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,6 +24,10 @@ import asist.io.service.IRefreshTokenService;
 import asist.io.service.ITokenBlacklistService;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Header;
+import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.JwtParser;
+import io.jsonwebtoken.Jwts;
 
 class JwtUtilTest {
 
@@ -140,5 +145,85 @@ class JwtUtilTest {
         
         // Verificar
         verify(tokenBlacklistService, times(1)).addToBlacklist(any(String.class), anyLong());
+    }
+    
+    @Test
+    void createAccessToken_ShouldUseRS256Algorithm() {
+        // Ejecutar
+        String token = jwtUtil.createAccessToken(testUser);
+        
+        // Verificar que el token usa RS256
+        // Extraemos el header para verificar el algoritmo
+        String[] parts = token.split("\\.");
+        String header = new String(Base64.getUrlDecoder().decode(parts[0]));
+        
+        assertTrue(header.contains("RS256"), "El token debe usar el algoritmo RS256");
+        assertFalse(header.contains("HS512"), "El token no debe usar el algoritmo HS512");
+    }
+    
+    @Test
+    void createAccessToken_ShouldIncludeNonce() {
+        // Ejecutar
+        String token = jwtUtil.createAccessToken(testUser);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("Authorization", "Bearer " + token);
+        
+        // Verificar
+        Claims claims = jwtUtil.resolveClaims(request);
+        assertNotNull(claims.get("nonce"), "El token debe incluir un nonce");
+    }
+    
+    @Test
+    void rotateKeys_ShouldGenerateNewKeys() {
+        // Preparar - crear un token con la clave actual
+        String oldToken = jwtUtil.createAccessToken(testUser);
+        
+        // Ejecutar - rotar claves
+        boolean result = jwtUtil.rotateKeys();
+        
+        // Verificar
+        assertTrue(result, "La rotación de claves debe ser exitosa");
+        
+        // El nuevo token debe ser válido
+        String newToken = jwtUtil.createAccessToken(testUser);
+        assertNotNull(newToken);
+        
+        // Los tokens deben ser diferentes debido a las diferentes claves y nonce
+        assertNotEquals(oldToken, newToken);
+    }
+    
+    @Test
+    void validateClaims_ShouldValidateIssuerAndAudience() {
+        // Preparar
+        String token = jwtUtil.createAccessToken(testUser);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("Authorization", "Bearer " + token);
+        
+        // Ejecutar
+        Claims claims = jwtUtil.resolveClaims(request);
+        
+        // Verificar
+        assertEquals("asist.io", claims.getIssuer(), "El issuer debe ser correcto");
+        assertEquals("asist.io-client", claims.getAudience(), "El audience debe ser correcto");
+    }
+    
+    @Test
+    void tokenExpiration_ShouldBeSetTo15Minutes() {
+        // Preparar
+        String token = jwtUtil.createAccessToken(testUser);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("Authorization", "Bearer " + token);
+        
+        // Ejecutar
+        Claims claims = jwtUtil.resolveClaims(request);
+        
+        // Verificar que la diferencia entre issued at y expiration es 15 minutos (900 segundos)
+        long issuedAtMillis = claims.getIssuedAt().getTime();
+        long expirationMillis = claims.getExpiration().getTime();
+        long differenceSeconds = (expirationMillis - issuedAtMillis) / 1000;
+        
+        // Permitimos un pequeño margen de 5 segundos para la ejecución de la prueba
+        assertTrue(differenceSeconds >= 895 && differenceSeconds <= 905, 
+                   "El token debe expirar en aproximadamente 15 minutos (900 segundos)");
     }
 }
