@@ -61,6 +61,7 @@ El sistema utiliza tokens JWT firmados con RSA (algoritmo RS256) para autenticar
    El sistema expone las siguientes rutas públicas que no requieren autenticación:
    - `/api/v1/auth/login`: Para iniciar sesión
    - `/api/v1/auth/refresh-token`: Para renovar tokens de acceso
+   - `/api/v1/auth/renovar-sesion`: Para renovar la sesión completa (token, refresh token y datos de usuario)
    - `/api/v1/auth/logout`: Para cerrar sesión
    - `/api/v1/usuario/registro`: Para registro de nuevos usuarios
    - `/api/v1/usuario/validar/**`: Para validación de cuentas de usuario
@@ -138,6 +139,41 @@ Para mejorar la experiencia del usuario sin comprometer la seguridad, el sistema
      }
    }
    ```
+
+### Proceso de Renovación de Sesión Completa:
+
+1. Para restaurar una sesión completa (por ejemplo, al recargar el navegador o reabrir la aplicación), el cliente puede utilizar el endpoint de renovación de sesión:
+   ```
+   POST /api/v1/auth/renovar-sesion
+   {
+     "refreshToken": "8f7e6d5c-4b3a-2a1c-0z9y-8x7w6v5u4t3s"
+   }
+   ```
+
+2. Si el refresh token es válido, se devuelve toda la información necesaria para restaurar la sesión en una sola respuesta:
+   ```json
+   {
+     "status": "success",
+     "data": {
+       "token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
+       "refreshToken": "8f7e6d5c-4b3a-2a1c-0z9y-8x7w6v5u4t3s",
+       "usuario": {
+         "id": "550e8400-e29b-41d4-a716-446655440000",
+         "nombre": "Usuario Ejemplo",
+         "correo": "usuario@ejemplo.com"
+       }
+     }
+   }
+   ```
+
+3. Este método optimiza la experiencia del usuario al proporcionar en una sola llamada todo lo necesario para reiniciar la sesión sin requerir múltiples solicitudes al servidor.
+
+### Mejores Prácticas para Refresh Tokens:
+
+1. **Almacenamiento Seguro**: El refresh token debe almacenarse en cookies HttpOnly con SameSite=Strict y flag Secure.
+2. **Rotación Periódica**: Considerar la rotación de refresh tokens con cada uso para mejorar la seguridad.
+3. **Tiempo de Expiración Razonable**: Configurar un tiempo de expiración adecuado (7-30 días) según las necesidades de seguridad.
+4. **Monitoreo de Actividad**: Registrar y monitorear el uso de refresh tokens para detectar posibles abusos.
 
 ## Lista Negra de Tokens
 
@@ -259,6 +295,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> {
                 auth.requestMatchers("/api/v1/auth/login").permitAll();
                 auth.requestMatchers("/api/v1/auth/refresh-token").permitAll();
+                auth.requestMatchers("/api/v1/auth/renovar-sesion").permitAll();
                 auth.requestMatchers("/api/v1/auth/logout").permitAll();
                 auth.requestMatchers("/api/v1/usuario/registro").permitAll();
                 auth.requestMatchers("/api/v1/usuario/validar/**").permitAll();
