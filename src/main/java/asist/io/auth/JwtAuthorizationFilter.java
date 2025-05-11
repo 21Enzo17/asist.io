@@ -71,10 +71,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (ModelException e) {
             logger.error("Error de autenticación JWT: " + e.getMessage());
-            sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "Error de autenticación", e.getMessage());
+            sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "Error de autenticación");
         } catch (Exception e) {
             logger.error("Error inesperado al procesar token JWT: " + e.getMessage());
-            sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "Error de autenticación", "Error al procesar el token: " + e.getMessage());
+            sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "Error de autenticación");
         }
     }
     
@@ -84,10 +84,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
      * @param response La respuesta HTTP
      * @param status El código de estado HTTP
      * @param message Mensaje principal de error
-     * @param details Detalles del error
      * @throws IOException Si ocurre un error al escribir la respuesta
      */
-    private void sendErrorResponse(HttpServletResponse response, HttpStatus status, String message, String details) throws IOException {
+    private void sendErrorResponse(HttpServletResponse response, HttpStatus status, String message) throws IOException {
         response.setStatus(status.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         
