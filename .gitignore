@@ -32,7 +32,15 @@ build/
 ### VS Code ###
 .vscode/
 
-### aplication.properties ###
-src/main/resources/application.properties
+### Environment Variables ###
+.env
+
+### JWT Keys ###
+config/keys/jwt_*.key
+config/keys/archived_key_*.pub
+*.pem
+*.p12
+*.keystore
+*.jks
 
 output.log

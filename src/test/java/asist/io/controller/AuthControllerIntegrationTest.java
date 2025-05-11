@@ -1,7 +1,9 @@
 package asist.io.controller;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -14,25 +16,31 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import asist.io.auth.JwtUtil;
+import asist.io.config.TestSecurityConfig;
 import asist.io.dto.usuarioDTO.UsuarioGetDTO;
 import asist.io.dto.usuarioDTO.UsuarioGetLoginDTO;
 import asist.io.dto.usuarioDTO.UsuarioLoginDTO;
 import asist.io.exception.ModelException;
 import asist.io.service.IAuthService;
-import asist.io.service.impl.RefreshTokenServiceImpl;
-import asist.io.service.impl.UsuarioServiceImpl;
+import asist.io.service.IRefreshTokenService;
+import asist.io.service.ITokenBlacklistService;
+import asist.io.service.IUsuarioService;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(controllers = AuthController.class)
+@ActiveProfiles("test")
+@Import(TestSecurityConfig.class)
 class AuthControllerIntegrationTest {
 
     @Autowired
@@ -45,10 +53,16 @@ class AuthControllerIntegrationTest {
     private IAuthService authService;
     
     @MockBean
-    private RefreshTokenServiceImpl refreshTokenService;
+    private IRefreshTokenService refreshTokenService;
     
     @MockBean
-    private UsuarioServiceImpl usuarioService;
+    private IUsuarioService usuarioService;
+    
+    @MockBean
+    private ITokenBlacklistService tokenBlacklistService;
+    
+    @MockBean
+    private JwtUtil jwtUtil;
     
     private UsuarioLoginDTO loginRequest;
     private UsuarioGetLoginDTO loginResponse;
@@ -62,7 +76,7 @@ class AuthControllerIntegrationTest {
         loginRequest.setContrasena("password123");
         
         usuarioDTO = new UsuarioGetDTO();
-        usuarioDTO.setId(UUID.randomUUID().toString()); // Corregido a UUID en lugar de Long
+        usuarioDTO.setId(UUID.randomUUID().toString());
         usuarioDTO.setNombre("Usuario Test");
         usuarioDTO.setCorreo("test@example.com");
         usuarioDTO.setVerificado(true);
@@ -80,6 +94,7 @@ class AuthControllerIntegrationTest {
         
         // Ejecutar y verificar
         mockMvc.perform(post("/api/v1/auth/login")
+            .with(SecurityMockMvcRequestPostProcessors.csrf())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(loginRequest)))
             .andExpect(status().isOk())
@@ -98,6 +113,7 @@ class AuthControllerIntegrationTest {
         
         // Ejecutar y verificar
         mockMvc.perform(post("/api/v1/auth/login")
+            .with(SecurityMockMvcRequestPostProcessors.csrf())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(loginRequest)))
             .andExpect(status().isBadRequest())
@@ -113,6 +129,7 @@ class AuthControllerIntegrationTest {
         
         // Ejecutar y verificar
         mockMvc.perform(post("/api/v1/auth/login")
+            .with(SecurityMockMvcRequestPostProcessors.csrf())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(loginRequest)))
             .andExpect(status().isBadRequest())
@@ -131,6 +148,7 @@ class AuthControllerIntegrationTest {
         
         // Ejecutar y verificar
         mockMvc.perform(post("/api/v1/auth/refresh-token")
+            .with(SecurityMockMvcRequestPostProcessors.csrf())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(refreshRequest)))
             .andExpect(status().isOk())
@@ -146,6 +164,7 @@ class AuthControllerIntegrationTest {
         
         // Ejecutar y verificar
         mockMvc.perform(post("/api/v1/auth/refresh-token")
+            .with(SecurityMockMvcRequestPostProcessors.csrf())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(emptyRequest)))
             .andExpect(status().isBadRequest())
@@ -164,6 +183,7 @@ class AuthControllerIntegrationTest {
         
         // Ejecutar y verificar
         mockMvc.perform(post("/api/v1/auth/refresh-token")
+            .with(SecurityMockMvcRequestPostProcessors.csrf())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(refreshRequest)))
             .andExpect(status().isBadRequest())
@@ -178,8 +198,11 @@ class AuthControllerIntegrationTest {
         logoutRequest.put("token", "access-token-123");
         logoutRequest.put("refreshToken", "refresh-token-123");
         
+        doNothing().when(authService).logout(anyString(), anyString());
+        
         // Ejecutar y verificar
         mockMvc.perform(post("/api/v1/auth/logout")
+            .with(SecurityMockMvcRequestPostProcessors.csrf())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(logoutRequest)))
             .andExpect(status().isOk())
@@ -188,16 +211,44 @@ class AuthControllerIntegrationTest {
     }
     
     @Test
+    void logout_ShouldReturnSuccess_WhenHeaderTokenIsUsed() throws Exception {
+        // Preparar
+        Map<String, String> logoutRequest = new HashMap<>();
+        logoutRequest.put("refreshToken", "refresh-token-123");
+        
+        doNothing().when(authService).logout(anyString(), anyString());
+        
+        // Ejecutar y verificar
+        mockMvc.perform(post("/api/v1/auth/logout")
+            .with(SecurityMockMvcRequestPostProcessors.csrf())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(logoutRequest))
+            .header("Authorization", "Bearer access-token-123"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.message").value("Sesión cerrada correctamente"));
+            
+        // Verificar que se llamó al servicio con los tokens correctos
+        verify(authService).logout(anyString(), eq("refresh-token-123"));
+    }
+    
+    @Test
     @WithMockUser(username = "test@example.com")
     void verificarToken_ShouldReturnSuccess_WhenTokenIsValid() throws Exception {
-        // Al usar @WithMockUser, Spring Security crea automáticamente un usuario 
-        // autenticado en el contexto de seguridad para este test
-
-        mockMvc.perform(get("/api/v1/auth/verificar-token"))
+        mockMvc.perform(get("/api/v1/auth/verificar-token")
+                .with(SecurityMockMvcRequestPostProcessors.csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("Token verificado correctamente"))
                 .andExpect(jsonPath("$.data.email").value("test@example.com"))
                 .andExpect(jsonPath("$.data.authenticated").value(true));
+    }
+    
+    @Test
+    void verificarToken_ShouldReturnError_WhenNoAuthentication() throws Exception {
+        // Para este caso usamos la configuración que devuelve 401 Unauthorized
+        mockMvc.perform(get("/api/v1/auth/verificar-token")
+                .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(status().isUnauthorized());
     }
 }

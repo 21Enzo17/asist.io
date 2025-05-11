@@ -29,6 +29,14 @@ public interface IRefreshTokenService {
     Optional<RefreshToken> validarRefreshToken(String token);
     
     /**
+     * Verifica si existe un token de refresco con el valor especificado.
+     * 
+     * @param token El valor del token a verificar
+     * @return true si existe, false en caso contrario
+     */
+    boolean existsByToken(String token);
+    
+    /**
      * Revoca todos los tokens de refresco de un usuario.
      * Esto es útil cuando el usuario cierra sesión o cambia la contraseña.
      * 

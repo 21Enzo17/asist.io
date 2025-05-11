@@ -124,4 +124,15 @@ public class RefreshTokenServiceImpl implements IRefreshTokenService {
         logger.info("Eliminando tokens expirados y revocados");
         refreshTokenRepository.deleteAllExpiredOrRevoked(Instant.now());
     }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * Verifica si existe un token de refresco con el valor especificado.
+     */
+    @Override
+    public boolean existsByToken(String token) {
+        logger.info("Verificando existencia de refresh token");
+        return refreshTokenRepository.findByToken(token).isPresent();
+    }
 }

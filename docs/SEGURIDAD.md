@@ -57,14 +57,24 @@ El sistema utiliza tokens JWT firmados con RSA (algoritmo RS256) para autenticar
    }
    ```
 
-3. **Acceso a Recursos Protegidos**:
+3. **Rutas Públicas**:
+   El sistema expone las siguientes rutas públicas que no requieren autenticación:
+   - `/api/v1/auth/login`: Para iniciar sesión
+   - `/api/v1/auth/refresh-token`: Para renovar tokens de acceso
+   - `/api/v1/auth/logout`: Para cerrar sesión
+   - `/api/v1/usuario/registro`: Para registro de nuevos usuarios
+   - `/api/v1/usuario/validar/**`: Para validación de cuentas de usuario
+   - `/api/v1/usuario/olvide-mi-contrasena`: Para solicitud de recuperación de contraseña
+   - `/api/v1/usuario/cambiar-contrasena/**`: Para cambio de contraseña
+
+4. **Acceso a Recursos Protegidos**:
    Las solicitudes a endpoints protegidos deben incluir el token JWT en el encabezado de Autorización:
    ```
    GET /api/v1/recursos/protegidos
    Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
    ```
 
-4. **Verificación de Token**:
+5. **Verificación de Token**:
    El filtro `JwtAuthorizationFilter` intercepta cada solicitud, extrae el token, verifica su firma y validez, y establece el contexto de seguridad si es válido.
 
 ## Seguridad de Tokens
@@ -233,6 +243,37 @@ El sistema está diseñado para resistir diversos tipos de ataques:
 - **Beneficio**: Elimina vulnerabilidades asociadas al manejo de sesiones en servidor.
 
 ## Implementaciones Técnicas Específicas
+
+### Configuración de Spring Security:
+
+```java
+@Configuration
+@EnableMethodSecurity // Anotación moderna que reemplaza @EnableGlobalMethodSecurity
+public class SecurityConfig {
+    // ...configuración de seguridad
+    
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        return httpSecurity
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> {
+                auth.requestMatchers("/api/v1/auth/login").permitAll();
+                auth.requestMatchers("/api/v1/auth/refresh-token").permitAll();
+                auth.requestMatchers("/api/v1/auth/logout").permitAll();
+                auth.requestMatchers("/api/v1/usuario/registro").permitAll();
+                auth.requestMatchers("/api/v1/usuario/validar/**").permitAll();
+                auth.requestMatchers("/api/v1/usuario/olvide-mi-contrasena").permitAll();
+                auth.requestMatchers("/api/v1/usuario/cambiar-contrasena/**").permitAll();
+                auth.anyRequest().authenticated();
+            })
+            .sessionManagement(session -> 
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            // ...resto de la configuración
+            .build();
+    }
+}
+```
 
 ### Generación de Claves RSA:
 
