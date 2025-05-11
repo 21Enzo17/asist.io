@@ -74,7 +74,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "Error de autenticación", e.getMessage());
         } catch (Exception e) {
             logger.error("Error inesperado al procesar token JWT: " + e.getMessage());
-            sendErrorResponse(response, HttpStatus.FORBIDDEN, "Error de autenticación", "Error al procesar el token: " + e.getMessage());
+            sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "Error de autenticación", "Error al procesar el token: " + e.getMessage());
         }
     }
     
