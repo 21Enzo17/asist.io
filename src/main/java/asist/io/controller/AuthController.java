@@ -100,6 +100,31 @@ public class AuthController {
     }
     
     /**
+     * Renueva la sesión completa utilizando un refresh token, devolviendo un nuevo token de acceso y datos del usuario.
+     * Este endpoint es ideal para recuperar una sesión después de cerrar el navegador sin cerrar sesión explícitamente.
+     *
+     * @param refreshTokenRequest Un mapa que contiene el refresh token.
+     *
+     * @return Una respuesta HTTP que contiene el nuevo token de acceso, refresh token y datos del usuario.
+     */
+    @PostMapping("/renovar-sesion")
+    public ResponseEntity<ApiResponse<UsuarioGetLoginDTO>> renovarSesion(@RequestBody Map<String, String> refreshTokenRequest) {
+        try {
+            String refreshToken = refreshTokenRequest.get("refreshToken");
+            if (refreshToken == null || refreshToken.isEmpty()) {
+                return ResponseBuilder.badRequest("El refresh token es requerido");
+            }
+            
+            UsuarioGetLoginDTO sesionRenovada = authService.renovarSesion(refreshToken);
+            return ResponseBuilder.ok("Sesión renovada correctamente", sesionRenovada);
+        } catch (ModelException e) {
+            return ResponseBuilder.badRequest("Error al renovar sesión: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseBuilder.badRequest("Error inesperado al renovar sesión");
+        }
+    }
+    
+    /**
      * Maneja las solicitudes de cierre de sesión de los usuarios.
      *
      * @param tokens Un mapa que contiene los tokens a invalidar.

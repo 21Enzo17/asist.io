@@ -20,6 +20,13 @@ public interface IAuthService {
     String refreshToken(String refreshToken);
     
     /**
+     * Método encargado de renovar la sesión completa utilizando un refresh token
+     * @param refreshToken El refresh token para renovar la sesión
+     * @return Objeto UsuarioGetLoginDTO con el nuevo token de acceso, refresh token y datos del usuario
+     */
+    UsuarioGetLoginDTO renovarSesion(String refreshToken);
+    
+    /**
      * Método encargado de cerrar la sesión de un usuario
      * @param accessToken Token de acceso a invalidar
      * @param refreshToken Refresh token a invalidar (opcional)

@@ -142,4 +142,50 @@ public class AuthServiceImpl implements IAuthService {
             });
         }
     }
+    
+    /**
+     * Método encargado de renovar la sesión completa utilizando un refresh token
+     * @param refreshTokenStr El refresh token para renovar la sesión
+     * @return Objeto UsuarioGetLoginDTO con el nuevo token de acceso, refresh token y datos del usuario
+     */
+    @Override
+    @Transactional
+    public UsuarioGetLoginDTO renovarSesion(String refreshTokenStr) {
+        if (refreshTokenStr == null || refreshTokenStr.isEmpty()) {
+            throw new ModelException("Refresh token no proporcionado");
+        }
+        
+        logger.info("Intentando renovar sesión completa con refresh token");
+        
+        try {
+            // Validar el refresh token
+            Optional<RefreshToken> refreshTokenOpt = refreshTokenService.validarRefreshToken(refreshTokenStr);
+            
+            if (refreshTokenOpt.isEmpty()) {
+                throw new ModelException("Refresh token inválido o expirado");
+            }
+            
+            RefreshToken refreshToken = refreshTokenOpt.get();
+            Usuario user = refreshToken.getUsuario();
+            
+            // Generar nuevo access token
+            String accessToken = jwtUtil.createAccessToken(user);
+            
+            // Crear respuesta
+            UsuarioGetLoginDTO loginRes = new UsuarioGetLoginDTO();
+            loginRes.setUsuario(usuarioService.buscarUsuarioDto(user.getCorreo()));
+            loginRes.setToken(accessToken);
+            loginRes.setRefreshToken(refreshToken.getToken());
+            
+            logger.info("Sesión renovada correctamente para usuario: " + user.getCorreo());
+            return loginRes;
+            
+        } catch (ModelException e) {
+            logger.error("Error al renovar sesión: " + e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            logger.error("Error inesperado al renovar sesión: " + e.getMessage());
+            throw new ModelException("Error al renovar la sesión");
+        }
+    }
 }
