@@ -5,7 +5,6 @@ import asist.io.dto.cursoDTO.CursoPostDTO;
 import asist.io.dto.estudianteDTO.EstudianteGetDTO;
 import asist.io.dto.estudianteDTO.EstudiantePostDTO;
 import asist.io.dto.usuarioDTO.UsuarioPostDTO;
-import asist.io.exception.ModelException;
 import asist.io.exception.filters.HttpException;
 import asist.io.service.ICursoService;
 import asist.io.service.IEstudianteService;

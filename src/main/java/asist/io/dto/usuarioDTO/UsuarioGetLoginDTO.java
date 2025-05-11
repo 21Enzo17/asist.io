@@ -12,4 +12,5 @@ public class UsuarioGetLoginDTO implements Serializable{
 
     private UsuarioGetDTO usuario;
     private String token;
+    private String refreshToken;
 }
